@@ -1,0 +1,1080 @@
+{
+  "revision": "9bf06be193b053db256b2536824af426de046aa2",
+  "repository": "https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator",
+  "layers": {
+    "body": {
+      "source": "body/bodies/male/",
+      "z": 10,
+      "animations": {
+        "walk": {
+          "path": "body-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "body-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "body-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "head": {
+      "source": "head/heads/human/male/",
+      "z": 100,
+      "animations": {
+        "walk": {
+          "path": "head-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "head-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "head-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "plain": {
+      "source": "hair/plain/adult/",
+      "z": 120,
+      "animations": {
+        "walk": {
+          "path": "plain-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "plain-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "plain-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "afro": {
+      "source": "hair/afro/adult/",
+      "z": 120,
+      "animations": {
+        "walk": {
+          "path": "afro-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "afro-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "afro-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "bob": {
+      "source": "hair/bob/adult/",
+      "z": 120,
+      "animations": {
+        "walk": {
+          "path": "bob-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "bob-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "bob-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "pants": {
+      "source": "legs/pants/male/",
+      "z": 20,
+      "animations": {
+        "walk": {
+          "path": "pants-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "pants-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "pants-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "longsleeve": {
+      "source": "torso/clothes/longsleeve/longsleeve/male/",
+      "z": 35,
+      "animations": {
+        "walk": {
+          "path": "longsleeve-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "longsleeve-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "longsleeve-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "shortsleeve": {
+      "source": "torso/clothes/shortsleeve/shortsleeve/male/",
+      "z": 35,
+      "animations": {
+        "walk": {
+          "path": "shortsleeve-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "shortsleeve-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "shortsleeve-sit.png",
+          "frames": 3
+        }
+      }
+    }
+  },
+  "palettes": {
+    "body": {
+      "light": [
+        "#271920",
+        "#99423c",
+        "#cc8665",
+        "#E4A47C",
+        "#F9D5BA",
+        "#FAECE7"
+      ],
+      "amber": [
+        "#281716",
+        "#9E3E37",
+        "#D28144",
+        "#EA9F54",
+        "#FDD082",
+        "#FBE7A4"
+      ],
+      "olive": [
+        "#271920",
+        "#442725",
+        "#7F4C31",
+        "#AE6B3F",
+        "#D38B59",
+        "#E4A47C"
+      ],
+      "taupe": [
+        "#271920",
+        "#503734",
+        "#785946",
+        "#936849",
+        "#BA8454",
+        "#C7935F"
+      ],
+      "bronze": [
+        "#1A1213",
+        "#442725",
+        "#644133",
+        "#7F4C31",
+        "#AE6B3F",
+        "#D38B59"
+      ],
+      "brown": [
+        "#120E10",
+        "#412B29",
+        "#5F4539",
+        "#76513A",
+        "#9C663E",
+        "#B8773F"
+      ],
+      "black": [
+        "#000000",
+        "#1A1213",
+        "#2E1F1C",
+        "#442725",
+        "#603429",
+        "#7F4C31"
+      ],
+      "blue": [
+        "#16171B",
+        "#46425D",
+        "#586B90",
+        "#748DA4",
+        "#A9C9CA",
+        "#C8E8E8"
+      ],
+      "bright_green": [
+        "#02280E",
+        "#06410E",
+        "#255E1D",
+        "#5B8F11",
+        "#75AE23",
+        "#99D248"
+      ],
+      "dark_green": [
+        "#011708",
+        "#02280E",
+        "#06410E",
+        "#255E1D",
+        "#508A48",
+        "#509E59"
+      ],
+      "fur_black": [
+        "#040510",
+        "#0A0E1B",
+        "#0D1621",
+        "#14212C",
+        "#1B2C36",
+        "#154259"
+      ],
+      "fur_brown": [
+        "#000000",
+        "#1E120E",
+        "#251B19",
+        "#473730",
+        "#624135",
+        "#975B5A"
+      ],
+      "fur_copper": [
+        "#0F0506",
+        "#300500",
+        "#6A1A00",
+        "#9C3B01",
+        "#CC6901",
+        "#FAA301"
+      ],
+      "fur_gold": [
+        "#200808",
+        "#552B15",
+        "#AC5D1F",
+        "#E09E2B",
+        "#FCCF56",
+        "#FFE67D"
+      ],
+      "fur_grey": [
+        "#0F0F11",
+        "#36363F",
+        "#55585F",
+        "#6A6E74",
+        "#909699",
+        "#B8BBBC"
+      ],
+      "fur_tan": [
+        "#222121",
+        "#3A200E",
+        "#663A1A",
+        "#975F43",
+        "#B88751",
+        "#DB8E60"
+      ],
+      "fur_white": [
+        "#17171A",
+        "#36363F",
+        "#484E57",
+        "#8B9498",
+        "#B8BBBC",
+        "#D8DCDC"
+      ],
+      "green": [
+        "#140C09",
+        "#09320B",
+        "#19541D",
+        "#228236",
+        "#39AA4E",
+        "#53BF71"
+      ],
+      "lavender": [
+        "#16171B",
+        "#393B44",
+        "#787C8F",
+        "#A0A5BC",
+        "#C9D0EE",
+        "#FBECE6"
+      ],
+      "pale_green": [
+        "#271920",
+        "#314829",
+        "#456238",
+        "#5F874D",
+        "#86B278",
+        "#ADCCA6"
+      ],
+      "zombie": [
+        "#281820",
+        "#6B5C40",
+        "#928364",
+        "#A79778",
+        "#C5B38F",
+        "#DBCBAB"
+      ],
+      "zombie_green": [
+        "#101925",
+        "#074337",
+        "#4A7A69",
+        "#839F6E",
+        "#D4D887",
+        "#F2F0C4"
+      ]
+    },
+    "hair": {
+      "orange": [
+        "#260D14",
+        "#6A1108",
+        "#A42600",
+        "#BF4000",
+        "#E55600",
+        "#FF8A00"
+      ],
+      "ash": [
+        "#2D061B",
+        "#642442",
+        "#935065",
+        "#C18F8A",
+        "#EDDF95",
+        "#FFF1C1"
+      ],
+      "platinum": [
+        "#1C0E06",
+        "#7D5D5D",
+        "#A87D52",
+        "#C0AB81",
+        "#EDDF95",
+        "#F6F6F3"
+      ],
+      "white": [
+        "#1D1D21",
+        "#484E57",
+        "#8B9498",
+        "#B8BBBC",
+        "#D8DCDC",
+        "#FFFFFF"
+      ],
+      "gray": [
+        "#0E0E0E",
+        "#292929",
+        "#4B4B4B",
+        "#777777",
+        "#AAAAAA",
+        "#D9D9D9"
+      ],
+      "blonde": [
+        "#331313",
+        "#552B15",
+        "#AC5D1F",
+        "#E09E2B",
+        "#FCCF56",
+        "#FFE67D"
+      ],
+      "sandy": [
+        "#1C0E06",
+        "#633E2C",
+        "#99622D",
+        "#BF9D5A",
+        "#EDDC7E",
+        "#F6F6C2"
+      ],
+      "strawberry": [
+        "#300700",
+        "#6A2800",
+        "#9C5900",
+        "#CCA000",
+        "#FAF080",
+        "#F6F6C2"
+      ],
+      "gold": [
+        "#5C0D00",
+        "#902900",
+        "#E47100",
+        "#FFA913",
+        "#FFE453",
+        "#EEFE7E"
+      ],
+      "ginger": [
+        "#300500",
+        "#6A1A00",
+        "#9C3B01",
+        "#CC6901",
+        "#FAA301",
+        "#FFE01E"
+      ],
+      "carrot": [
+        "#5A1500",
+        "#8A2000",
+        "#AC2800",
+        "#EC673E",
+        "#F68764",
+        "#FFB39C"
+      ],
+      "redhead": [
+        "#260D14",
+        "#3E111A",
+        "#73171E",
+        "#9E1F1F",
+        "#C7341B",
+        "#E74716"
+      ],
+      "red": [
+        "#300000",
+        "#870000",
+        "#A40712",
+        "#CB0000",
+        "#E21414",
+        "#F1583A"
+      ],
+      "light_brown": [
+        "#1A0E04",
+        "#301B07",
+        "#60350F",
+        "#7D4513",
+        "#AE682A",
+        "#C88D58"
+      ],
+      "chestnut": [
+        "#200C0D",
+        "#3A130E",
+        "#63200B",
+        "#81310A",
+        "#B6550E",
+        "#D28102"
+      ],
+      "dark_brown": [
+        "#050100",
+        "#160701",
+        "#290E02",
+        "#421603",
+        "#5F1F04",
+        "#792806"
+      ],
+      "dark_gray": [
+        "#000000",
+        "#0E0E0E",
+        "#1B1B1B",
+        "#3B3B3B",
+        "#7C7C7C",
+        "#C1C1C1"
+      ],
+      "black": [
+        "#000000",
+        "#080A0A",
+        "#101414",
+        "#1C2222",
+        "#31313E",
+        "#4A5057"
+      ],
+      "raven": [
+        "#010107",
+        "#040B18",
+        "#061421",
+        "#071F2A",
+        "#0D384D",
+        "#1A5369"
+      ],
+      "rose": [
+        "#30051F",
+        "#6A1E4B",
+        "#9C4373",
+        "#CC789D",
+        "#FABBC6",
+        "#FAE1E5"
+      ],
+      "pink": [
+        "#330410",
+        "#71043A",
+        "#B60A68",
+        "#E941AA",
+        "#E976C4",
+        "#EA95D5"
+      ],
+      "purple": [
+        "#13112D",
+        "#2B225A",
+        "#402E82",
+        "#7141B2",
+        "#A966DD",
+        "#D085ED"
+      ],
+      "violet": [
+        "#1E032E",
+        "#30035C",
+        "#380392",
+        "#3C07D8",
+        "#5662F3",
+        "#5792F2"
+      ],
+      "navy": [
+        "#180716",
+        "#20102B",
+        "#281E41",
+        "#322D6A",
+        "#3C49AD",
+        "#466AC9"
+      ],
+      "blue": [
+        "#000027",
+        "#00005E",
+        "#000091",
+        "#0041B4",
+        "#0074CB",
+        "#1E85EF"
+      ],
+      "green": [
+        "#000400",
+        "#001400",
+        "#002D00",
+        "#005000",
+        "#007C00",
+        "#00A700"
+      ]
+    },
+    "eye": {
+      "blue": [
+        "#2a3c49",
+        "#5686ae",
+        "#57cee4"
+      ],
+      "green": [
+        "#2b4b29",
+        "#53b351",
+        "#84ec50"
+      ],
+      "purple": [
+        "#710862",
+        "#b90da0",
+        "#eba0e0"
+      ],
+      "red": [
+        "#532421",
+        "#cb4a39",
+        "#ff3d62"
+      ],
+      "orange": [
+        "#a45227",
+        "#be734b",
+        "#ea9b71"
+      ],
+      "yellow": [
+        "#b69953",
+        "#d9bf46",
+        "#fedf47"
+      ],
+      "brown": [
+        "#232017",
+        "#544c2e",
+        "#7e4e20"
+      ],
+      "gray": [
+        "#3d3c37",
+        "#8b8979",
+        "#ada18f"
+      ]
+    },
+    "cloth": {
+      "brown": [
+        "#1d131e",
+        "#411E05",
+        "#4B2B13",
+        "#62351C",
+        "#744B30",
+        "#996B4A"
+      ],
+      "leather": [
+        "#2b1c1d",
+        "#311210",
+        "#4B2B13",
+        "#704325",
+        "#75502D",
+        "#9A6F37"
+      ],
+      "walnut": [
+        "#1d0f0e",
+        "#3e2613",
+        "#62351c",
+        "#744b30",
+        "#996b4a",
+        "#a17c50"
+      ],
+      "yellow": [
+        "#301723",
+        "#5F2F25",
+        "#BA5B23",
+        "#D99431",
+        "#F3C03F",
+        "#FFE360"
+      ],
+      "tan": [
+        "#3e2613",
+        "#684415",
+        "#986A20",
+        "#B78C41",
+        "#B7996A",
+        "#CFC587"
+      ],
+      "orange": [
+        "#301723",
+        "#5F1D1B",
+        "#9C3F23",
+        "#D75B1A",
+        "#EF7E19",
+        "#FFA749"
+      ],
+      "rose": [
+        "#1d131e",
+        "#301723",
+        "#562323",
+        "#77372B",
+        "#8A3D28",
+        "#B05F3C"
+      ],
+      "maroon": [
+        "#1d131e",
+        "#400B1F",
+        "#551C22",
+        "#682121",
+        "#832121",
+        "#AE424A"
+      ],
+      "red": [
+        "#1d131e",
+        "#400B1F",
+        "#651117",
+        "#82171C",
+        "#AB1E1E",
+        "#CD2429"
+      ],
+      "pink": [
+        "#1d131e",
+        "#54242E",
+        "#6C3536",
+        "#AE424A",
+        "#C36072",
+        "#E08080"
+      ],
+      "lavender": [
+        "#13112d",
+        "#2B225A",
+        "#402E82",
+        "#7141B2",
+        "#A966DD",
+        "#D085ED"
+      ],
+      "purple": [
+        "#180716",
+        "#13112D",
+        "#261044",
+        "#411357",
+        "#621E78",
+        "#813089"
+      ],
+      "blue": [
+        "#180716",
+        "#281E41",
+        "#322D6A",
+        "#3C49AD",
+        "#466AC9",
+        "#61A0EF"
+      ],
+      "navy": [
+        "#180716",
+        "#20102B",
+        "#281E41",
+        "#322D6A",
+        "#3C49AD",
+        "#466AC9"
+      ],
+      "teal": [
+        "#180716",
+        "#1B2B47",
+        "#0E4E72",
+        "#156C99",
+        "#0098B2",
+        "#00CFDF"
+      ],
+      "bluegray": [
+        "#11150b",
+        "#0B2B28",
+        "#2E403A",
+        "#315B49",
+        "#557E85",
+        "#79979D"
+      ],
+      "forest": [
+        "#09131d",
+        "#07391D",
+        "#0B1F25",
+        "#0B2B28",
+        "#134507",
+        "#1B5502"
+      ],
+      "green": [
+        "#101820",
+        "#192832",
+        "#0B5C2F",
+        "#214437",
+        "#2F8136",
+        "#64A42C"
+      ],
+      "white": [
+        "#281820",
+        "#4D4A5D",
+        "#958080",
+        "#C4B59F",
+        "#E5E6C7",
+        "#FFFFFF"
+      ],
+      "sky": [
+        "#1a0d18",
+        "#313148",
+        "#586B90",
+        "#9FBBCB",
+        "#C6EEFD",
+        "#FFFFFF"
+      ],
+      "slate": [
+        "#1d131e",
+        "#31313E",
+        "#4A5057",
+        "#818B8B",
+        "#B3AFA1",
+        "#E5E6C7"
+      ],
+      "gray": [
+        "#0e0e18",
+        "#201E2B",
+        "#373340",
+        "#585561",
+        "#797580",
+        "#A2A0A4"
+      ],
+      "black": [
+        "#000000",
+        "#101414",
+        "#1C2222",
+        "#22282A",
+        "#2A3034",
+        "#4A5057"
+      ],
+      "charcoal": [
+        "#000000",
+        "#130D14",
+        "#1C2222",
+        "#2A3034",
+        "#4A5057",
+        "#6E7675"
+      ]
+    }
+  },
+  "credits": [
+    {
+      "layer": "body",
+      "file": "body/bodies/male",
+      "notes": "see details at https://opengameart.org/content/lpc-character-bases; 'Thick' Male Revised Run/Climb by JaidynReiman (based on ElizaWy's LPC Revised)",
+      "authors": [
+        "bluecarrot16",
+        "JaidynReiman",
+        "Benjamin K. Smith (BenCreating)",
+        "Evert",
+        "Eliza Wyatt (ElizaWy)",
+        "TheraHedwig",
+        "MuffinElZangano",
+        "Durrani",
+        "Johannes Sjölund (wulax)",
+        "Stephen Challener (Redshrike)"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+        "https://opengameart.org/content/lpc-male-jumping-animation-by-durrani",
+        "https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle",
+        "https://opengameart.org/content/lpc-revised-character-basics",
+        "https://opengameart.org/content/lpc-be-seated",
+        "https://opengameart.org/content/lpc-runcycle-for-male-muscular-and-pregnant-character-bases-with-modular-heads",
+        "https://opengameart.org/content/lpc-jump-expanded",
+        "https://opengameart.org/content/lpc-character-bases"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "head",
+      "file": "head/heads/human/male",
+      "notes": "original head by Redshrike, tweaks by BenCreating, modular version by bluecarrot16",
+      "authors": [
+        "bluecarrot16",
+        "Benjamin K. Smith (BenCreating)",
+        "Stephen Challener (Redshrike)"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/lpc-character-bases"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "plain",
+      "file": "hair/plain",
+      "notes": "",
+      "authors": [
+        "JaidynReiman",
+        "Manuel Riecke (MrBeast)",
+        "Joe White"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/ponytail-and-plain-hairstyles",
+        "https://opengameart.org/content/lpc-expanded-hair"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "afro",
+      "file": "hair/afro",
+      "notes": "",
+      "authors": [
+        "bluecarrot16"
+      ],
+      "licenses": [
+        "CC0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/lpc-hair"
+      ],
+      "selectedLicense": "CC0"
+    },
+    {
+      "layer": "bob",
+      "file": "hair/bob",
+      "notes": "Original by bluecarrot16. Edited and animated by ElizaWy.",
+      "authors": [
+        "ElizaWy",
+        "bluecarrot16"
+      ],
+      "licenses": [
+        "CC0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/lpc-hair",
+        "https://github.com/ElizaWy/LPC/blob/main/Characters/Hair",
+        "https://opengameart.org/content/lpc-expanded-sit-run-jump-more"
+      ],
+      "selectedLicense": "CC0"
+    },
+    {
+      "layer": "pants",
+      "file": "legs/pants/male",
+      "notes": "original male pants by wulax, recolors and edits to v3 base by bluecarrot16, climb/jump/run/sit/emotes/revised combat by JaidynReiman based on ElizaWy's LPC Revised",
+      "authors": [
+        "bluecarrot16",
+        "JaidynReiman",
+        "ElizaWy",
+        "Matthew Krohn (makrohn)",
+        "Johannes Sjölund (wulax)",
+        "Stephen Challener (Redshrike)"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "GPL 3.0",
+        "CC-BY-SA 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+        "https://opengameart.org/content/lpc-expanded-pants"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "longsleeve",
+      "file": "torso/clothes/longsleeve/longsleeve/male",
+      "notes": "original by wulax; tweaks and further recolors by bluecarrot16; cleanup and climb/jump/run/sit/emote/revised combat adapted from LPC Revised by JaidynReiman",
+      "authors": [
+        "JaidynReiman",
+        "Johannes Sjölund (wulax)"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+        "http://opengameart.org/content/lpc-clothing-updates",
+        "https://opengameart.org/content/lpc-revised-character-basics",
+        "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+        "https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+        "https://opengameart.org/content/lpc-expanded-simple-shirts"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "shortsleeve",
+      "file": "torso/clothes/shortsleeve/shortsleeve/male",
+      "notes": "original by ElizaWy walkcycle only; extended to all animations by adapting from longsleeve, edited to v3 bases by bluecarrot16; cleanup and climb/jump/run/sit/emote/revised combat adapted from LPC Revised by JaidynReiman",
+      "authors": [
+        "bluecarrot16",
+        "ElizaWy",
+        "JaidynReiman",
+        "Stephen Challener (Redshrike)"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "http://opengameart.org/content/lpc-revised-character-basics",
+        "http://opengameart.org/content/lpc-clothing-updates",
+        "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+        "https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+        "https://opengameart.org/content/lpc-expanded-simple-shirts"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    }
+  ],
+  "files": [
+    {
+      "path": "body-walk.png",
+      "source": "spritesheets/body/bodies/male/walk.png",
+      "sha256": "1e0e8f0c11ba5f4f7b3d4439fc416802b4227da2fe146c13de3de254d9f87f77"
+    },
+    {
+      "path": "body-idle.png",
+      "source": "spritesheets/body/bodies/male/idle.png",
+      "sha256": "9c3d17def9bd0574e25ce3162a243f18654479e38c04164bc12607429b013fa2"
+    },
+    {
+      "path": "body-sit.png",
+      "source": "spritesheets/body/bodies/male/sit.png",
+      "sha256": "ff339e6b3e34894d32db67c61d6a396e2d4286764aa26be79f0660f439317d0c"
+    },
+    {
+      "path": "head-walk.png",
+      "source": "spritesheets/head/heads/human/male/walk.png",
+      "sha256": "7e863954dc8c3c748d0727415c39888106bdd3779beb2e3b18011a3a9ef3e53c"
+    },
+    {
+      "path": "head-idle.png",
+      "source": "spritesheets/head/heads/human/male/idle.png",
+      "sha256": "10d58c1dd05592dfb436da42e4d6e582058306e1b6c98c85697ad97d1a5b82f4"
+    },
+    {
+      "path": "head-sit.png",
+      "source": "spritesheets/head/heads/human/male/sit.png",
+      "sha256": "5902e48ed23e8ce593e4fbf4d9f6371aba0f1d71966441075118fad0d8debd21"
+    },
+    {
+      "path": "plain-walk.png",
+      "source": "spritesheets/hair/plain/adult/walk.png",
+      "sha256": "4198b372f7381b7d12e516ddc69818dd50132224d1e6d8825f3dd920b0995b28"
+    },
+    {
+      "path": "plain-idle.png",
+      "source": "spritesheets/hair/plain/adult/idle.png",
+      "sha256": "b3eed6441080adcb418a50e323f9fd46aa1b2ba042aea662a82c9f1bc596fd85"
+    },
+    {
+      "path": "plain-sit.png",
+      "source": "spritesheets/hair/plain/adult/sit.png",
+      "sha256": "053cdd196f34f1d2ceb8de1bccaf3ab8a28dbf677a624788eab22a23a099ea0d"
+    },
+    {
+      "path": "afro-walk.png",
+      "source": "spritesheets/hair/afro/adult/walk.png",
+      "sha256": "3f01666af81773d3a844b121547f59389bbf4145ef5ad05c76ccbd1de357d134"
+    },
+    {
+      "path": "afro-idle.png",
+      "source": "spritesheets/hair/afro/adult/idle.png",
+      "sha256": "c680cfe8d8afad2a733aac79d7250dcc52f8f45d413b8806a2e5da72366b0386"
+    },
+    {
+      "path": "afro-sit.png",
+      "source": "spritesheets/hair/afro/adult/sit.png",
+      "sha256": "03b0112786e172cff58d7b117308184c2dc6f8a13ee2bd64f9c3ba349e48ac07"
+    },
+    {
+      "path": "bob-walk.png",
+      "source": "spritesheets/hair/bob/adult/walk.png",
+      "sha256": "40f1d1420f3bdbe2646654995cd2906b9a0edf4252c73060b34d5fcc27be0bcf"
+    },
+    {
+      "path": "bob-idle.png",
+      "source": "spritesheets/hair/bob/adult/idle.png",
+      "sha256": "bb3ebba5c1ccf618cc4a6ca7af39e8d39b628e7b746ad1d82d20fc188c305b13"
+    },
+    {
+      "path": "bob-sit.png",
+      "source": "spritesheets/hair/bob/adult/sit.png",
+      "sha256": "192997e01bd35645e9aae89bb1ae1e020953913aa4b7e55882a1b0971635ed9b"
+    },
+    {
+      "path": "pants-walk.png",
+      "source": "spritesheets/legs/pants/male/walk.png",
+      "sha256": "2de5a3247743ffa37febdf3464cc0a83e79f64d1028aed410832ee29bea850b6"
+    },
+    {
+      "path": "pants-idle.png",
+      "source": "spritesheets/legs/pants/male/idle.png",
+      "sha256": "717a5133533ccf18ccb3cced5653702be1d21a9ac6002dc9a84f3e1fb80087b3"
+    },
+    {
+      "path": "pants-sit.png",
+      "source": "spritesheets/legs/pants/male/sit.png",
+      "sha256": "993759f60d5098653deb549ae2457f736fe56cadd414d281e981d40c719359a5"
+    },
+    {
+      "path": "longsleeve-walk.png",
+      "source": "spritesheets/torso/clothes/longsleeve/longsleeve/male/walk.png",
+      "sha256": "8b1c79d535d7a233371c9398ca51b196aa8fdf06117bd0eafd7fbcbf438d711b"
+    },
+    {
+      "path": "longsleeve-idle.png",
+      "source": "spritesheets/torso/clothes/longsleeve/longsleeve/male/idle.png",
+      "sha256": "c543a71e589b7a7142b860813fed42a3752e71b8fa074058796afb1f7772d807"
+    },
+    {
+      "path": "longsleeve-sit.png",
+      "source": "spritesheets/torso/clothes/longsleeve/longsleeve/male/sit.png",
+      "sha256": "151c715412c988c4d3de1dac42c06b1c9eb468f93971fa5f03a8ea8dfb17d9b7"
+    },
+    {
+      "path": "shortsleeve-walk.png",
+      "source": "spritesheets/torso/clothes/shortsleeve/shortsleeve/male/walk.png",
+      "sha256": "eb9376a273ee9162fafe8e733da036dd0b7b44155b87f74951e63a26bcb73129"
+    },
+    {
+      "path": "shortsleeve-idle.png",
+      "source": "spritesheets/torso/clothes/shortsleeve/shortsleeve/male/idle.png",
+      "sha256": "d32edf21295e452b6c30c1cf5e8513c9edcac2f08ea636debe994232fe4711e5"
+    },
+    {
+      "path": "shortsleeve-sit.png",
+      "source": "spritesheets/torso/clothes/shortsleeve/shortsleeve/male/sit.png",
+      "sha256": "62c225c0be76ceba15c88b3519ba0d9917616ae4a622f4f31797d05ca51be997"
+    }
+  ]
+}

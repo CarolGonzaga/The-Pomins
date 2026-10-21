@@ -1,0 +1,19 @@
+{
+ "type":"map","version":"1.10","orientation":"orthogonal","renderorder":"right-down","width":16,"height":12,"tilewidth":24,"tileheight":24,"infinite":false,"tilesets":[],
+ "layers":[
+  {"id":1,"type":"objectgroup","name":"obstacles","objects":[
+   {"id":1,"name":"wall-top","x":0,"y":0,"width":384,"height":48},
+   {"id":2,"name":"wall-left","x":0,"y":48,"width":24,"height":240},
+   {"id":3,"name":"wall-right","x":360,"y":48,"width":24,"height":240},
+   {"id":4,"name":"wall-bottom","x":24,"y":264,"width":336,"height":24},
+   {"id":5,"name":"desk-solid","x":72,"y":48,"width":96,"height":72},
+   {"id":6,"name":"bookshelf-solid","x":240,"y":48,"width":96,"height":48},
+   {"id":7,"name":"bed-solid","x":264,"y":168,"width":72,"height":72}
+  ]},
+  {"id":2,"type":"objectgroup","name":"interactions","objects":[
+   {"id":8,"name":"desk","type":"study","point":true,"x":108,"y":132},
+   {"id":9,"name":"bookshelf","type":"read","point":true,"x":276,"y":108},
+   {"id":10,"name":"bed","type":"sleep","point":true,"x":252,"y":204}
+  ]}
+ ]
+}
