@@ -1,5 +1,10 @@
 # Publicação na Vercel e Supabase
 
+## Atualização da Entrega 4A
+
+`supabase/migrations/20261022021139_baby_care.sql` foi aplicada ao desenvolvimento após autorização, na versão atribuída pelo servidor `20261022021139`. Reutiliza os créditos existentes para cuidados, com novas RPCs e configuração protegida por RLS. Em projetos novos, aplicar depois das duas migrações anteriores; no desenvolvimento, não reaplicar. O lote inicial continua mapeando dois arquivos locais e precisa de reconciliação antes de `db push`. Recibo: `deployments/2026-10-21-baby-care.json`; detalhes e limitações: `BABY_CARE.md`. Nenhuma implantação pública foi feita.
+
+
 **Etapa 1 de 21/10:** a base contém a fundação e `supabase/migrations/202610210001_playable_room.sql`, que preserva personagens/histórico antigos e cria residência, adulto LPC, créditos e alocações. O protótipo fica em `/play`; não há novas chaves ou serviços de runtime. Antes de aplicar qualquer arquivo, conferir esquema e histórico, apresentar as migrações realmente pendentes e obter autorização. Consultar `SUPABASE_DEVELOPMENT_VALIDATION.md` e `PLAYABLE_ROOM.md`.
 
 ## Supabase

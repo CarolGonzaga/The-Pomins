@@ -1,0 +1,58 @@
+{
+  "delivery": "4A",
+  "environment": "development",
+  "base_commit": "cd47161b780032c100e8c19535b1a64987899409",
+  "migration": {
+    "version": "20261022021139",
+    "name": "baby_care",
+    "file": "supabase/migrations/20261022021139_baby_care.sql",
+    "sha256": "b208e75b460c4e9d4415ce96b9cf5a98201093fdb41cb44d5c6f99d60ffc988b",
+    "user_authorized": true,
+    "applied": true,
+    "old_migrations_changed": false
+  },
+  "postflight": {
+    "config_rls": true,
+    "authenticated_read_only": true,
+    "anon_rpc_denied": true,
+    "authenticated_rpc_allowed": true,
+    "empty_search_path": true,
+    "care_activities": 6,
+    "credit_totals_before_and_after": {
+      "eligible": 4,
+      "allocated": 2
+    }
+  },
+  "remote_validation": {
+    "script": "scripts/validate-baby-care-development.mjs",
+    "sha256": "75fa47be7a4de943746120e1f2021ba6af7f4651ceaa8d3a27f49cffa1775d80",
+    "real_auth": true,
+    "test_baby_created_if_absent": true,
+    "state_restored_after_new_login": true,
+    "account_isolation": true,
+    "history_rls": true,
+    "direct_write_denied": true,
+    "invalid_credit_rollback": true,
+    "minutes_spent": 0,
+    "successful_paid_care": false
+  },
+  "local_tests": {
+    "vitest": 97,
+    "native_postgres": 4,
+    "e2e": 32,
+    "lint": true,
+    "typecheck": true,
+    "build": true
+  },
+  "limitations": [
+    "Remote paid-care success requires confirmed focus minutes in account B.",
+    "Safari/iPhone hardware not tested.",
+    "No child art or age transition."
+  ],
+  "advisors": {
+    "authenticated_security_definer_functions": 9,
+    "previous_count": 7,
+    "owner_and_household_checks_reviewed": true,
+    "leaked_password_protection_disabled_preexisting": true
+  }
+}

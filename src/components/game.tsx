@@ -29,6 +29,8 @@ import {
 import { formatTime, type FocusSession } from '@/features/focus-engine/model';
 import { gameApi } from '@/lib/api';
 import { browserClient } from '@/lib/supabase/browser';
+import { BabyCare } from '@/features/baby-care/baby-care';
+import { localSessionCompleted } from '@/features/room/persistence';
 type Initial = {
   userId: string;
   nickname: string;
@@ -182,6 +184,10 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
       setSessions((prev) => [s, ...prev.filter((item) => item.id !== s.id)]);
       if (initial)
         setCharacter((prev) => (prev ? { ...prev, life_xp: prev.life_xp + s.reward_xp } : prev));
+      else
+        void localSessionCompleted(s).catch(() =>
+          setNotice('A sessão terminou, mas os minutos locais não puderam ser guardados.'),
+        );
     },
     [initial],
   );
@@ -372,6 +378,11 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
                       ? 'Sem pressa. Sem cobranças. Um passo de cada vez.'
                       : 'Humano ou alienígena. Uma vida única, como você.'}
                   </span>
+                  {character && (
+                    <button className="text-button" onClick={() => go('character')}>
+                      Cuidar do meu bebê
+                    </button>
+                  )}
                 </div>
                 <Nursery appearance={character?.appearance} />
               </section>
@@ -540,41 +551,51 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
               <h1>
                 Olá, <em>{character.name}.</em>
               </h1>
-              <div className="pomin-profile">
-                <div className="character-preview">
-                  <Pomin appearance={character.appearance} />
-                  <span className="pill">GERAÇÃO 1 · RECÉM-NASCIDO</span>
+              <BabyCare
+                character={character}
+                authenticated={authenticated}
+                onFocus={() => go('focus')}
+              />
+              <details>
+                <summary>Identidade e primeira memória</summary>
+                <div className="pomin-profile">
+                  <div className="character-preview">
+                    <Pomin appearance={character.appearance} />
+                    <span className="pill">GERAÇÃO 1 · RECÉM-NASCIDO</span>
+                  </div>
+                  <div>
+                    <h2>Tanto para descobrir.</h2>
+                    <p>Uma vida em Vila Aurora, cercada por possibilidades.</p>
+                    <dl>
+                      <div>
+                        <dt>Origem</dt>
+                        <dd>
+                          {character.appearance.species === 'human' ? 'Humano' : 'Alienígena'}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>XP de vida</dt>
+                        <dd>{xp} XP</dd>
+                      </div>
+                      <div>
+                        <dt>Primeira memória</dt>
+                        <dd>
+                          {character.first_memory === 'sky'
+                            ? 'A luz na janela'
+                            : character.first_memory === 'home'
+                              ? 'Uma voz acolhedora'
+                              : 'Um capítulo para ler'}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Chegada</dt>
+                        <dd>{new Date(character.born_at).toLocaleDateString('pt-BR')}</dd>
+                      </div>
+                    </dl>
+                    <Button onClick={() => go('focus')}>Reservar um tempo para crescer</Button>
+                  </div>
                 </div>
-                <div>
-                  <h2>Tanto para descobrir.</h2>
-                  <p>Uma vida em Vila Aurora, cercada por possibilidades.</p>
-                  <dl>
-                    <div>
-                      <dt>Origem</dt>
-                      <dd>{character.appearance.species === 'human' ? 'Humano' : 'Alienígena'}</dd>
-                    </div>
-                    <div>
-                      <dt>XP de vida</dt>
-                      <dd>{xp} XP</dd>
-                    </div>
-                    <div>
-                      <dt>Primeira memória</dt>
-                      <dd>
-                        {character.first_memory === 'sky'
-                          ? 'A luz na janela'
-                          : character.first_memory === 'home'
-                            ? 'Uma voz acolhedora'
-                            : 'Um capítulo para ler'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Chegada</dt>
-                      <dd>{new Date(character.born_at).toLocaleDateString('pt-BR')}</dd>
-                    </div>
-                  </dl>
-                  <Button onClick={() => go('focus')}>Reservar um tempo para crescer</Button>
-                </div>
-              </div>
+              </details>
             </section>
           )}
           {view === 'family' && (

@@ -1,0 +1,226 @@
+.baby-care {
+  margin: 32px 0;
+}
+.baby-care .section-heading {
+  margin-bottom: 20px;
+}
+.baby-care-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr);
+  gap: 28px;
+}
+.baby-care-stage {
+  background: var(--purple-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  align-self: start;
+}
+.baby-care-portrait {
+  position: relative;
+  width: min(100%, 270px);
+  margin: auto;
+  animation: baby-rest 5s ease-in-out infinite;
+}
+.baby-care-portrait > svg:first-child {
+  width: 100%;
+  height: auto;
+}
+.baby-reaction-copy {
+  min-height: 52px;
+  margin: 12px 0;
+}
+.baby-care-stage small {
+  color: var(--muted);
+}
+.baby-care-controls {
+  min-width: 0;
+}
+.baby-needs {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.baby-needs > div {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 8px;
+  align-items: center;
+}
+.baby-needs dt small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.baby-needs dd {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+}
+.baby-needs meter {
+  flex: 1;
+  min-width: 30px;
+  width: 100%;
+  accent-color: var(--purple);
+}
+.baby-needs dd span {
+  min-width: 46px;
+  font-size: 12px;
+  text-align: right;
+}
+.baby-care-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.baby-care-actions button {
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 8px;
+}
+.baby-care-actions button[aria-pressed='true'] {
+  border-color: var(--purple);
+  box-shadow: inset 0 0 0 1px var(--purple);
+  background: var(--purple-soft);
+}
+.baby-care-record {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
+}
+.baby-care-record label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.baby-care-record input {
+  width: 75px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.baby-growth {
+  margin: 20px 0;
+  padding: 15px;
+  border-left: 3px solid var(--purple);
+}
+.baby-care-history {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.baby-care-history summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+.baby-care-history ol {
+  list-style: none;
+  padding: 0;
+}
+.baby-care-history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.baby-care-history li strong {
+  white-space: nowrap;
+}
+.care-bottle {
+  position: absolute;
+  right: 12%;
+  bottom: 26%;
+  width: 35px;
+  transform: rotate(-30deg);
+  animation: baby-feed 1s ease-in-out infinite alternate;
+}
+[data-care-reaction='baby_cuddle'] .baby-care-portrait {
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #d6b4c94d, transparent 65%);
+  animation: baby-cuddle 1s ease-in-out 3;
+}
+[data-care-reaction='baby_play'] .baby-care-portrait {
+  animation: baby-cuddle 0.6s ease-in-out 4;
+}
+[data-care-reaction='baby_diaper'] .baby-care-portrait {
+  animation: baby-feed 0.8s ease-in-out 3;
+}
+.care-bubbles {
+  position: absolute;
+  inset: 20%;
+  pointer-events: none;
+}
+.care-bubbles i {
+  position: absolute;
+  border: 2px solid #769cb4;
+  background: #fff6;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: baby-bubble 1.5s ease-out infinite;
+}
+.care-bubbles i:nth-child(2) {
+  right: 0;
+  top: 30%;
+  animation-delay: 0.4s;
+}
+.care-bubbles i:nth-child(3) {
+  left: 40%;
+  top: 60%;
+  animation-delay: 0.8s;
+}
+.care-sleep {
+  position: absolute;
+  top: 12%;
+  right: 12%;
+  color: var(--purple);
+  font-family: Georgia, serif;
+  animation: baby-rest 2s ease-in-out infinite;
+}
+@keyframes baby-rest {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes baby-cuddle {
+  50% {
+    transform: rotate(3deg) translateY(-3px);
+  }
+}
+@keyframes baby-feed {
+  50% {
+    transform: translateY(-2px) rotate(-8deg);
+  }
+}
+@keyframes baby-bubble {
+  to {
+    transform: translateY(-35px);
+    opacity: 0;
+  }
+}
+@media (max-width: 700px) {
+  .baby-care-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .baby-care-portrait {
+    width: 190px;
+  }
+  .baby-care-stage {
+    padding: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .baby-care *,
+  .baby-care *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}

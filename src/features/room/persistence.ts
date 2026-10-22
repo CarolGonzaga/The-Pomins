@@ -21,7 +21,12 @@ export type RoomCommand =
     }
   | { action: 'allocate'; payload: { requestId: string; lines: AllocationLine[] } };
 const STORAGE = 'pomins-room-local-v1';
-type LocalSave = { version: 1; state: RoomState; requests: Record<string, string> };
+export type LocalSave = {
+  version: 1;
+  state: RoomState;
+  requests: Record<string, string>;
+  babyCare?: Record<string, unknown>;
+};
 function fresh(): LocalSave {
   return {
     version: 1,
@@ -44,12 +49,13 @@ function load(): LocalSave {
     version: 1,
     state: roomStateSchema.parse(parsed.state),
     requests: parsed.requests ?? {},
+    babyCare: parsed.babyCare,
   };
 }
 export function loadLocalRoom() {
   return load().state;
 }
-async function localTransaction(update: (save: LocalSave) => void) {
+export async function localTransaction(update: (save: LocalSave) => void) {
   const run = () => {
     const save = load();
     update(save);

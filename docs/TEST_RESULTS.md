@@ -1,5 +1,26 @@
 # Resultados de validação · Entrega 1
 
+## Entrega 4A — bebê e cuidados — 21/10/2026
+
+Base `cd47161b780032c100e8c19535b1a64987899409`. Verificações novas desta implementação:
+
+- `npm test`: **97 aprovados**, quatro testes nativos ignorados nesse comando. Inclui estado inicial, seis cuidados, limites de necessidades, regras configuráveis, persistência local/SQL, ano de ausência, saldo compartilhado, repetição, rollback e isolamento por usuário/residência.
+- `node .cache/run-pg-race.mjs`: **4 aprovados**, PostgreSQL nativo descartável encerrado ao final. Duas novas provas com conexões independentes: repetição simultânea de cuidado e disputa bebê/adulto pelo mesmo último minuto. As mensagens SQL de saldo insuficiente são recusas esperadas.
+- A repetição após espelhar o arquivo da migração encontrou a porta anterior ocupada; essa tentativa não foi contada como aprovação. Ajustado apenas o helper ignorado para a porta 55447: os quatro testes completos passaram novamente, em 2,64s.
+- `npm run typecheck`, `npm run lint` e `npm run build`: aprovados. O primeiro lint detectou um import de tipo sem uso no teste novo; removido e lint repetido com sucesso.
+- Playwright completo contra build de produção local, porta 3102: **32 aprovados em aproximadamente 1,1 minuto**, Chromium desktop e viewport/toque de iPhone. Seis execuções novas cobrem reações gratuitas, acessibilidade a 320px, sessão local completa pelo Pomodoro existente, cuidado salvo/recarga/repetição de pedido e rejeição de origem/autenticação no endpoint.
+- **133 testes distintos aprovados** nesta rodada: 97 + 4 + 32. Capturas locais ignoradas em `test-results/baby-care-{chromium,iphone}.png`.
+
+Os testes SQL executam as duas migrações originais e a migração nova em bancos locais. A fixture de sessão concluída não representa foco real no Supabase. O E2E controla o relógio do navegador e usa exploração local sem XP oficial. Depois de espelhar o nome atribuído pelo servidor no arquivo SQL, Vitest e PostgreSQL nativo foram repetidos para conferir os caminhos atuais.
+
+**Aplicação remota autorizada:** `20261022021139_baby_care`, após preflight real de estrutura/histórico. RLS ativo, seis atividades, RPCs sem execução anônima e com `search_path` vazio; escrita direta de regras negada. Saldo agregado preservado pela implantação: 4 elegíveis, 2 distribuídos. As migrações e funções anteriores não foram substituídas.
+
+**Validação remota nova, sem minutos gastos:** `node scripts/validate-baby-care-development.mjs` aprovado com Auth normal de A/B. Criado Bento Bebê em B somente porque não havia bebê legado. Estado inicial restaurado após novo login SDK; personagem e histórico isolados; cuidado cruzado e escrita direta negados; crédito inexistente recusado com rollback integral do estado. Não é uma simulação SQL de JWT. Não foi lido o nascimento nem escolhida uma memória pelo script. O adulto B foi preservado. **Cuidado pago remoto não concluído**: B sem saldo; os ensaios positivos de cuidado e concorrência continuam sendo locais. Recibo e hashes: [2026-10-21-baby-care.json](deployments/2026-10-21-baby-care.json). A sessão do navegador não foi encerrada; apenas sessões SDK de teste foram desconectadas.
+
+Inspeção manual final no navegador integrado: `/` autenticado restaurou Bento Bebê; **Meu Pomin** carregou necessidades reais pela nova API SSR, saldo zero e histórico vazio. Carinho gratuito mostrou a reação sem custo. Captura em `.cache/baby-care/authenticated-desktop.png`. Build atualizado disponível em `http://localhost:3000`; a aba de cuidados foi mantida aberta para revisão.
+
+Não há testes físicos de Safari/iPhone. Nenhuma dependência, asset LPC, migração antiga ou lógica do Pomodoro foi alterada. Plano e limitações: [BABY_CARE.md](BABY_CARE.md).
+
 ## Consolidação Git da Entrega 3 — 21/10/2026
 
 Rodada nova antes do commit `feat: expand LPC character customization`:

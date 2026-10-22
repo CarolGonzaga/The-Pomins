@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { careIds } from '../baby-care/model';
 import { lifeStages, adultAppearanceSchema } from '../character-visuals/model';
 export {
   lifeStages,
@@ -117,7 +118,7 @@ export const roomStateSchema = z.object({
       id: z.string(),
       session_id: z.string(),
       character_id: z.string(),
-      activity_id: z.enum(activityIds),
+      activity_id: z.enum([...activityIds, ...careIds]),
       minutes: z.number().int(),
       created_at: z.string(),
     }),

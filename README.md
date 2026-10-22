@@ -1,5 +1,7 @@
 # pomins.
 
+**Entrega 4A — cuidados do bebê:** em **Meu Pomin**, seis reações gratuitas e registro opcional de cuidados com os mesmos minutos de foco do quarto. Necessidades, histórico e prontidão configurável para crescer, sem deterioração por ausência. O nascimento e o adulto LPC foram preservados. A [migração](supabase/migrations/20261022021139_baby_care.sql) foi aplicada no desenvolvimento após autorização; 133 testes locais aprovados e isolamento/restauração inicial conferidos com Auth real. Um cuidado remoto com minutos e Safari/iPhone físico ainda precisam de validação. Veja [BABY_CARE](docs/BABY_CARE.md).
+
 **Entrega 3 técnica — personalização LPC:** o adulto de `/play` tem 7 penteados, 3 cortes de camisa e cores personalizáveis de pele, cabelo, olhos, camisa e calça. Prévia e Phaser compartilham a composição nas poses em pé, caminhada e sentado. Aparência salva/restaurada no Supabase real; 109 testes locais, lint, TypeScript e build aprovados nesta entrega. Sem migração ou dependência nova. Outras fases e alienígenas LPC aguardam arte compatível; o nascimento anterior permanece disponível. Veja [CHARACTER_VISUALS](docs/CHARACTER_VISUALS.md) e [resultados atuais](docs/TEST_RESULTS.md).
 
 **Supabase de desenvolvimento validado:** migrações autorizadas, Auth/recovery, adulto LPC, foco real, distribuição e restauração após novo login conferidos. Duas contas aprovaram 11 grupos de testes remotos de isolamento, repetição, rollback, concorrência e controle da sessão. Conta A: 4 minutos elegíveis, 2 distribuídos e 2 disponíveis; conta B: progresso e saldo próprios zerados. Consulte [SUPABASE_DEVELOPMENT_VALIDATION](docs/SUPABASE_DEVELOPMENT_VALIDATION.md) para evidências, limites e o mapeamento do lote remoto antes de novas migrações. Validação em iPhone físico e produção HTTPS ainda necessária.
@@ -31,7 +33,7 @@ Abra http://localhost:3000. Sem configuração externa, a exploração local per
 
 1. Crie um projeto gratuito no Supabase.
 2. Copie `.env.example` para `.env.local` e preencha a URL do projeto e a **publishable key**. Nenhuma service role é necessária.
-3. Aplique, em ordem e apenas se ainda não aplicadas, `supabase/migrations/202610160001_foundation.sql` e `supabase/migrations/202610210001_playable_room.sql`. Confira o histórico de migrações do projeto antes de executar SQL ou `supabase db push`.
+3. Aplique, em ordem e apenas se ainda não aplicadas, `supabase/migrations/202610160001_foundation.sql`, `supabase/migrations/202610210001_playable_room.sql` e `supabase/migrations/20261022021139_baby_care.sql`. No desenvolvimento atual, as duas primeiras estão no lote `20261021201224` e a terceira já foi aplicada. Confira/reconcilie o histórico antes de executar SQL ou `supabase db push`; não reaplique esses arquivos nesse projeto.
 4. Em Authentication, habilite e-mail/senha e confirmação de e-mail. Defina a Site URL e autorize `http://localhost:3000/auth/callback` e `https://seu-dominio/auth/callback`, incluindo a variante de recuperação com `?next=/auth?mode=update`.
 5. Reinicie o servidor. Crie uma conta, confirme o e-mail e entre. O personagem da exploração local não é importado automaticamente para a conta.
 

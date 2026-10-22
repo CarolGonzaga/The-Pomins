@@ -1,4 +1,5 @@
 'use client';
+import { careLabels, type CareId } from '../baby-care/model';
 import './room.css';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
@@ -580,7 +581,10 @@ export function RoomApp({
                             <strong>
                               {state.residents.find((c) => c.id === a.character_id)?.name ??
                                 'Pomin'}{' '}
-                              · {activities[a.activity_id].label}
+                              ·{' '}
+                              {a.activity_id in careLabels
+                                ? careLabels[a.activity_id as CareId]
+                                : activities[a.activity_id as keyof typeof activities].label}
                             </strong>
                             <span>{new Date(a.created_at).toLocaleDateString('pt-BR')}</span>
                           </div>

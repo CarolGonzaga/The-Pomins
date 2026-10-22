@@ -1,5 +1,9 @@
 # Estado de implementação
 
+## Entrega 4A — bebê e cuidados — 21/10/2026
+
+Seis reações gratuitas no bebê original; registro opcional com minutos do saldo existente, necessidades, histórico, potenciais neutros e anúncio de prontidão configurável. Nenhum envelhecimento, deterioração por ausência ou dependência nova. Commit e envio ao repositório autorizados em 22/10/2026. Migração `20261022021139_baby_care` aplicada no desenvolvimento após autorização; migrações/funções antigas preservadas. 133 testes locais aprovados. Auth, restauração do estado inicial após novo login, isolamento e escrita direta bloqueada validados com as duas contas reais. Criado Bento Bebê na conta de teste B, sem alterar seu adulto ou gastar minutos. Cuidado remoto com minutos e iPhone físico pendentes. Relatório: [BABY_CARE.md](BABY_CARE.md). Resultados: [TEST_RESULTS.md](TEST_RESULTS.md).
+
 ## Entrega 3 atual — personalização LPC — 21/10/2026
 
 Implementada sobre `55f9497adf89641ac2f94d90876543bcd174402b`, com consolidação local autorizada em `feat: expand LPC character customization`, sem push. Esta numeração segue a sequência técnica atual; as seções antigas de expansão narrativa abaixo são o roteiro original.
