@@ -59,6 +59,7 @@ export default async function Home() {
         sessions: sessions.data ?? [],
         loadError: !!(profile.error || character.error || sessions.error),
       }}
+      key={`${user.id}:${context?.save.id ?? 'legacy'}`}
     />
   );
 }

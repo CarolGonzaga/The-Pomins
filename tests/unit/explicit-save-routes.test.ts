@@ -1,0 +1,14 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const mock=vi.hoisted(()=>({rpc:vi.fn(),getUser:vi.fn()}));
+vi.mock('@/lib/supabase/server',()=>({serverClient:async()=>({rpc:mock.rpc,auth:{getUser:mock.getUser}})}));
+import {GET,POST} from '@/app/api/game-saves/[saveId]/route';
+const saveId='20000000-0000-4000-8000-000000000002',characterId='30000000-0000-4000-8000-000000000003';
+const context={params:Promise.resolve({saveId})};
+const request=(origin='http://localhost:3155',body:unknown={characterId,expectedRevision:3})=>new Request('http://0.0.0.0:3155/api/game-saves/'+saveId,{method:'POST',headers:{host:'localhost:3155',origin,'Content-Type':'application/json'},body:JSON.stringify(body)});
+beforeEach(()=>{vi.clearAllMocks();mock.getUser.mockResolvedValue({data:{user:{id:'owner'}},error:null});mock.rpc.mockResolvedValue({data:{save:{id:saveId}},error:null});});
+it('uses the browser Host rather than the internal server bind address',async()=>{expect((await POST(request(),context)).status).toBe(200);expect(mock.rpc).toHaveBeenCalledWith('select_save_protagonist',{p_save:saveId,p_character:characterId,p_expected_revision:3});});
+it('rejects cross-origin requests before touching Auth or data',async()=>{expect((await POST(request('https://foreign.test'),context)).status).toBe(403);expect(mock.getUser).not.toHaveBeenCalled();});
+it('requires authenticated selection',async()=>{mock.getUser.mockResolvedValue({data:{user:null}});expect((await POST(request(),context)).status).toBe(401);expect(mock.rpc).not.toHaveBeenCalled();});
+it('rejects malformed selection and unexpected payload properties',async()=>{expect((await POST(request(undefined,{characterId,expectedRevision:-1,owner:'other'}),context)).status).toBe(400);expect(mock.rpc).not.toHaveBeenCalled();});
+it('reports conflict and missing migration without unsafe fallback',async()=>{mock.rpc.mockResolvedValue({data:null,error:{code:'P0001'}});expect((await POST(request(),context)).status).toBe(409);mock.rpc.mockResolvedValue({data:null,error:{code:'PGRST202'}});expect((await POST(request(),context)).status).toBe(503);});
+it('does not expose a save to unauthenticated reads',async()=>{mock.getUser.mockResolvedValue({data:{user:null}});expect((await GET(new Request('http://localhost'),context)).status).toBe(401);expect(mock.rpc).not.toHaveBeenCalled();});

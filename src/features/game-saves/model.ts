@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export function saveStorageKey(userId:string,saveId:string,kind:string){return `pomins:${userId}:${saveId}:${kind}`;}
 
 const revision = z.number().int().nonnegative();
 export const gameSaveSchema = z

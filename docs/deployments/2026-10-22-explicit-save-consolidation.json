@@ -1,0 +1,84 @@
+{
+  "checked_at": "2026-10-22T20:09:02.908Z",
+  "baseline_commit": "964537a3ed2376049bf0939c5d57d2f01a54196b",
+  "commit_message": "feat: add explicit game save context",
+  "tests": {
+    "unit_integration_passed": 138,
+    "native_postgres_passed": 8,
+    "playwright_passed": 36,
+    "total_distinct_passed": 182,
+    "playwright_workers": 2,
+    "lint": "passed",
+    "typescript": "passed",
+    "build": "passed"
+  },
+  "server": {
+    "url": "http://localhost:3000",
+    "port": 3000,
+    "root_production_build": true,
+    "build_id": "MLJFKfqbDwg7j_bYwiRoa",
+    "controlled_restart": true
+  },
+  "persisted_state": {
+    "checked_at": "2026-10-22T20:07:14.934Z",
+    "sessions": [
+      {
+        "status": "paused",
+        "count": 1
+      }
+    ],
+    "critical_tables": 12,
+    "unchanged_since_before": true,
+    "active_focus": 0
+  },
+  "migration_verification": {
+    "checked_at": "2026-10-22T20:03:30.174Z",
+    "stored_sql_exact_match": true,
+    "migration_sha256": "85db70563de333fed918d850e98512c08a0e88d32fd88c081c01d5c4dd4ceb8c",
+    "functions": [
+      {
+        "name": "load_game_save",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      },
+      {
+        "name": "select_save_protagonist",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      }
+    ]
+  },
+  "remote_validation": {
+    "checked_at": "2026-10-22T20:07:09.747Z",
+    "environment": "real-supabase-development-auth",
+    "passed": [
+      "login real A/B e cookies SSR",
+      "carregamento de residência, moradores e histórico isolados",
+      "adultos e bebê existentes restaurados sem criação",
+      "acesso e seleção de outra conta recusados sem efeitos",
+      "páginas e endpoint SSR por save; / e /play preservados",
+      "endpoint alheio e URL de morador incompatível bloqueados",
+      "sessões, saldo, revisão e protagonistas inalterados"
+    ],
+    "protagonist_chosen": false,
+    "focus_commands": 0,
+    "minutes_spent": 0,
+    "characters_created": 0,
+    "browser_sessions_untouched": true
+  },
+  "backup": {
+    "private_ignored_directory": "secrets/backups/explicit-save-5c-20261022",
+    "ciphertext_sha256_matches": true,
+    "recovery_key_and_manifest_preserved": true,
+    "dpapi_current_user": true,
+    "portable_offsite_copy": false
+  },
+  "remote_migration_reapplied": false,
+  "characters_changed_automatically": false,
+  "protagonist_selected_in_real_save": false,
+  "push_performed": false
+}

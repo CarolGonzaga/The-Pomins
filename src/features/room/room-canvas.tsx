@@ -41,7 +41,7 @@ export function RoomCanvas({
         if (!live || !parent.current) return;
         const s = new RoomScene(latest.current, atlas, {
           onVisual: (state, x, y) => live && setVisual({ state, x, y }),
-          onArrive: (r) => arrive.current(r),
+          onArrive: (r) => { if(live)arrive.current(r); },
           onError: (message) => live && setError(message),
         });
         scene.current = s;

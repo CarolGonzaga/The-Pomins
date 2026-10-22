@@ -17,18 +17,20 @@ import {
 } from './model';
 import { babyApi, CareRejected, loadLocalBaby, localCare } from './persistence';
 import './baby-care.css';
-import { isCurrentSnapshot } from '../game-saves/model';
+import { isCurrentSnapshot, saveStorageKey } from '../game-saves/model';
 
 export function BabyCare({
   character,
   authenticated,
   onFocus,
   saveId,
+  accountId,
 }: {
   character: Character;
   authenticated: boolean;
   onFocus: () => void;
   saveId?: string;
+  accountId?:string;
 }) {
   const [state, setState] = useState<BabyState | null>(null);
   const [selected, setSelected] = useState<CareId>('baby_feed');
@@ -41,7 +43,8 @@ export function BabyCare({
   const [pending, setPending] = useState<CareCommand | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const writing = useRef(false);
-  const pendingKey = `pomins-baby-care-pending-${character.id}`;
+  const legacyPendingKey = `pomins-baby-care-pending-${character.id}`;
+  const pendingKey = accountId && saveId ? saveStorageKey(accountId,saveId,`baby:${character.id}`) : legacyPendingKey;
   const accept = useCallback(
     (next: BabyState) => {
       if (next.character.id !== character.id) return;
@@ -81,12 +84,15 @@ export function BabyCare({
     document.addEventListener('visibilitychange', restore);
     // Restore only the exact command; network retries keep its original request ID.
     try {
-      const raw = sessionStorage.getItem(pendingKey);
+      const raw = sessionStorage.getItem(pendingKey) ?? sessionStorage.getItem(legacyPendingKey);
       if (raw) {
         const saved = careCommandSchema.parse(JSON.parse(raw));
         // Browser storage is an external source, restored after mount.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        if (saved.characterId === character.id) setPending(saved);
+        if (saved.characterId === character.id) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setPending(saved);
+          if(pendingKey!==legacyPendingKey){sessionStorage.setItem(pendingKey,raw);sessionStorage.removeItem(legacyPendingKey);}
+        }
       }
     } catch {
       /* Invalid browser data is never sent to the server. */
@@ -98,7 +104,7 @@ export function BabyCare({
       window.removeEventListener('storage', restore);
       document.removeEventListener('visibilitychange', restore);
     };
-  }, [authenticated, character, pendingKey, accept, saveId]);
+  }, [authenticated, character, pendingKey, legacyPendingKey, accept, saveId]);
   function react(activity: CareId) {
     if (timer.current) clearTimeout(timer.current);
     setSelected(activity);

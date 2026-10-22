@@ -1,5 +1,9 @@
 # Estado de implementação
 
+## Entrega 5C — carregamento por save — desenvolvimento
+
+Base `964537a`. Rota `/game/[saveId]`, endpoint autenticado, escolha explícita de protagonista pendente, estado temporário por conta/save e remontagem de cenas implementados. Bebê/nascimento/quarto/editor reaproveitados. Foco e créditos globais preservados. 182 testes locais aprovados (138 + 8 nativos + 36 navegador), lint, TypeScript e build aprovados. **Migração `20261022191724` aplicada ao desenvolvimento após autorização, backup cifrado e restauração de 44 tabelas.** Sete grupos reais de Auth/RLS/SSR aprovados, sem gastos ou escolha de protagonista. Save pendente e sessão pausada preservados. Consolidação: os 182 testes, lint, TypeScript e build foram repetidos e aprovados; servidor de produção atualizado na porta 3000 após reinício controlado. Sete grupos reais repetidos; 12 tabelas críticas preservadas. Migração não reaplicada. Seleção humana positiva ainda pendente. Commit local autorizado, sem push. Relatório: [EXPLICIT_GAME_CONTEXT.md](EXPLICIT_GAME_CONTEXT.md).
+
 ## Entrega 5A + 5B — partidas e compatibilidade — 22/10/2026
 
 Base `6bbf3aa`, consolidação local autorizada em `feat: add game saves foundation and compatibility`, sem push. Modelo `game_saves`, backfill por residência, protagonistas auditáveis, FKs de propriedade/save e revisões separadas de mundo/créditos implementados e ensaiados localmente. As rotas antigas recebem contexto interno; há adaptadores compatíveis com RPCs/clientes anteriores e com o banco ainda não migrado. Sem mudança visual, novas fases ou seletor de slots. Nova rodada de consolidação com 164 testes aprovados (125 + 7 nativos + 32 E2E), lint, TypeScript e build aprovados. SQL registrado e catálogo remoto comparados com a migração local e o backup restaurado, sem drift. Comparação de 14 tabelas preservou integralmente colunas originais e IDs. O motor SQL de foco original permanece idêntico.

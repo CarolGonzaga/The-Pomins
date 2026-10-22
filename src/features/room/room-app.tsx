@@ -1,6 +1,6 @@
 'use client';
 import { careLabels, type CareId } from '../baby-care/model';
-import { isCurrentSnapshot } from '../game-saves/model';
+import { isCurrentSnapshot, saveStorageKey } from '../game-saves/model';
 import './room.css';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
@@ -40,11 +40,17 @@ export function RoomApp({
   authenticated,
   pending,
   error: loadError,
+  accountId,
+  preferredResidentId,
+  universeHref='/',
 }: {
   initial: RoomState | null;
   authenticated: boolean;
   pending: FocusSession | null;
   error?: string;
+  accountId?:string;
+  preferredResidentId?:string;
+  universeHref?:string;
 }) {
   const [state, setState] = useState<RoomState | null>(initial);
   const accept = useCallback((next: RoomState) => {
@@ -55,7 +61,7 @@ export function RoomApp({
         : previous,
     );
   }, []);
-  const [selected, setSelected] = useState(initial?.residents[0]?.id ?? '');
+  const [selected, setSelected] = useState(preferredResidentId ?? initial?.residents[0]?.id ?? '');
   const [view, setView] = useState<'room' | 'editor' | 'focus'>('room');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -70,7 +76,8 @@ export function RoomApp({
   const [recovered, setRecovered] = useState(pending);
   const resident = state?.residents.find((c) => c.id === selected) ?? state?.residents[0] ?? null;
   const balance = state ? totals(state) : { available: 0, distributed: 0, historical: 0 };
-  const pendingKey = `pomins-pending-allocation-${state?.household.id ?? 'local-household'}`;
+  const legacyPendingKey = `pomins-pending-allocation-${state?.household.id ?? 'local-household'}`;
+  const pendingKey = accountId && state?.save_id ? saveStorageKey(accountId,state.save_id,'allocation') : legacyPendingKey;
   // localStorage/sessionStorage are browser-only external state, restored after SSR.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
@@ -89,15 +96,19 @@ export function RoomApp({
   }, [authenticated]);
   useEffect(() => {
     try {
-      const value = sessionStorage.getItem(pendingKey);
+      setPendingAllocation(null);
+      const value = sessionStorage.getItem(pendingKey) ?? sessionStorage.getItem(legacyPendingKey);
       if (value) {
         const cmd = JSON.parse(value);
-        if (cmd.action === 'allocate' && cmd.payload?.requestId) setPendingAllocation(cmd);
+        if (cmd.action === 'allocate' && cmd.payload?.requestId && (!cmd.saveId || cmd.saveId===state?.save_id)) {
+          setPendingAllocation(cmd);
+          if(pendingKey!==legacyPendingKey){sessionStorage.setItem(pendingKey,value);sessionStorage.removeItem(legacyPendingKey);}
+        }
       }
     } catch {
       setMessage('Não foi possível recuperar o último pedido de distribuição.');
     }
-  }, [pendingKey]);
+  }, [pendingKey,legacyPendingKey,state?.save_id]);
   /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => {
     const restore = () => {
@@ -240,10 +251,10 @@ export function RoomApp({
   return (
     <div className="play-shell">
       <header className="play-header">
-        <Link href="/" className="brand">
+        <Link href={universeHref} className="brand">
           pomins<span>.</span>
         </Link>
-        <Link href="/">Meu universo</Link>
+        <Link href={universeHref}>Meu universo</Link>
         <span>{authenticated ? 'Progresso na sua conta' : 'Exploração local'}</span>
         {!authenticated && <Link href="/auth">Entrar</Link>}
       </header>
@@ -354,7 +365,7 @@ export function RoomApp({
                       </label>
                       <span>{stateLabels[resident.animation_state]}</span>
                     </div>
-                    <RoomCanvas key={resident.id} resident={resident} onArrive={arrival} />
+                    <RoomCanvas key={`${state.save_id ?? 'local'}:${resident.id}`} resident={resident} onArrive={arrival} />
                     <p className="scene-note">
                       {resident.current_activity
                         ? activities[resident.current_activity].description

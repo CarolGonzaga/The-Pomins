@@ -58,6 +58,7 @@ suite('independent PostgreSQL connections: allocation race', () => {
     await pool.query(
       readFileSync('supabase/migrations/20261022134830_game_saves_compatibility.sql', 'utf8'),
     );
+    await pool.query(readFileSync('supabase/migrations/20261022191724_explicit_save_protagonist.sql','utf8'));
     await pool.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)', [
       user,
       JSON.stringify({ nickname: 'race_test' }),
@@ -319,5 +320,15 @@ suite('independent PostgreSQL connections: allocation race', () => {
         )
       ).rows,
     ).toHaveLength(1);
+  });
+  it('serializes competing protagonist choices and retries the winner idempotently',async()=>{
+    await pool.query("update public.game_saves set state='pending_selection',protagonist_id=null where id=$1",[primarySave]);
+    const revision=(await pool.query('select world_revision from public.game_saves where id=$1',[primarySave])).rows[0].world_revision;
+    const choose=async(id:string)=>{const client=await pool.connect();try{return await acting(client,()=>client.query('select public.select_save_protagonist($1,$2,$3) data',[primarySave,id,revision]));}finally{client.release();}};
+    const results=await Promise.allSettled([choose(character),choose(baby)]);
+    expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(results.filter(r=>r.status==='rejected')).toHaveLength(1);
+    const save=(await pool.query('select protagonist_id,world_revision from public.game_saves where id=$1',[primarySave])).rows[0];
+    const retry=await choose(save.protagonist_id);expect(retry.rows[0].data.save.world_revision).toBe(Number(save.world_revision));
+    expect((await pool.query("select count(*)::integer n from public.game_events where save_id=$1 and kind='ProtagonistSelected'",[primarySave])).rows[0].n).toBe(1);
   });
 });

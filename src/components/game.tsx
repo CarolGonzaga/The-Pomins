@@ -52,7 +52,7 @@ const nav = [
   { id: 'statistics', label: 'Meu progresso', icon: TrendingUp },
 ] as const;
 const STORAGE = 'pomins-explore-v1';
-export function Game({ initial, configured }: { initial: Initial | null; configured: boolean }) {
+export function Game({ initial, configured, returnHref='/', roomHref='/play' }: { initial: Initial | null; configured: boolean; returnHref?:string; roomHref?:string }) {
   const [view, setView] = useState<View>('home');
   const [character, setCharacter] = useState<Character | null>(initial?.character ?? null);
   const [sessions, setSessions] = useState<FocusSession[]>(initial?.sessions ?? []);
@@ -134,6 +134,10 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
     };
   }, [install, menu]);
   const go = (next: View) => {
+    if(next==='focus' && pending && character && pending.character_id!==character.id){
+      setNotice('Há uma sessão de outro morador. Continue no personagem de origem antes de iniciar outra.');
+      return;
+    }
     setMenu(false);
     if (view === 'focus') {
       setNotice('Use os controles da sessão para pausar ou encerrar e voltar ao seu universo.');
@@ -213,7 +217,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
   }
   const sidebar = (
     <>
-      <Link className="brand" href="/" aria-label="Pomins início">
+      <Link className="brand" href={returnHref} aria-label="Pomins início">
         pomins<span>.</span>
       </Link>
       <p className="brand-tagline">Seu foco. As histórias deles.</p>
@@ -242,7 +246,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
         <span>Um momento de cada vez.</span>
       </div>
       <div className="sidebar-bottom">
-        <Link className="nav-item" href="/play">
+        <Link className="nav-item" href={roomHref}>
           Meu quarto · Etapa 1
         </Link>
         <button className="nav-item" onClick={() => go('settings')}>
@@ -276,7 +280,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
     <div className="app-shell">
       <aside className="sidebar">{sidebar}</aside>
       <header className="mobile-header">
-        <Link className="brand" href="/">
+        <Link className="brand" href={returnHref}>
           pomins<span>.</span>
         </Link>
         <button aria-label="Abrir menu" onClick={() => setMenu(true)}>
@@ -542,7 +546,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
               saveId={initial?.saveId}
               recovered={pending}
               onExit={() => {
-                if (authenticated) location.assign('/');
+                if (authenticated) location.assign(returnHref);
                 else {
                   setView('home');
                   setNotice('');
@@ -561,6 +565,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
               <BabyCare
                 character={character}
                 authenticated={authenticated}
+                accountId={initial?.userId}
                 saveId={initial?.saveId}
                 onFocus={() => go('focus')}
               />

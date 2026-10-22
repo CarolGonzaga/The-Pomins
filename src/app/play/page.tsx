@@ -36,6 +36,8 @@ export default async function Play() {
   const parsed = roomStateSchema.safeParse(state.data);
   return (
     <RoomApp
+      key={`${user.id}:${context?.save.id ?? 'legacy'}`}
+      accountId={user.id}
       initial={parsed.success ? parsed.data : null}
       authenticated
       pending={sessions.data}

@@ -1,0 +1,167 @@
+{
+  "applied_at": "2026-10-22T19:54:43.173Z",
+  "version": "20261022191724",
+  "migration_sha256": "85db70563de333fed918d850e98512c08a0e88d32fd88c081c01d5c4dd4ceb8c",
+  "remote_applied": true,
+  "backup_restore_verified": true,
+  "backup_ciphertext_sha256": "1bd3530ab3bdd4be737c0d31e211567b47b6ea7998cd66a80f4d41ae0f534907",
+  "backup_private_directory": "secrets/backups/explicit-save-5c-20261022",
+  "original_tables": 44,
+  "preflight": {
+    "eligible": 4,
+    "allocated": 2,
+    "save_states": [
+      {
+        "count": 1,
+        "state": "pending_selection"
+      },
+      {
+        "count": 1,
+        "state": "ready"
+      }
+    ],
+    "open_sessions": [
+      {
+        "count": 1,
+        "status": "paused"
+      }
+    ]
+  },
+  "history_registered_atomically": true,
+  "protagonist_not_selected_by_deploy": true,
+  "backup": {
+    "scope": [
+      "public",
+      "auth",
+      "supabase_migrations",
+      "game_private"
+    ],
+    "original_tables": 44,
+    "restoration_verified": true,
+    "encrypted_sha256": "1bd3530ab3bdd4be737c0d31e211567b47b6ea7998cd66a80f4d41ae0f534907",
+    "private_ignored_directory": "secrets/backups/explicit-save-5c-20261022",
+    "encryption": "AES-256-GCM; key protected by Windows DPAPI CurrentUser; recovery verified",
+    "portable_offsite_copy": false
+  },
+  "postflight": {
+    "checked_at": "2026-10-22T19:56:26.502Z",
+    "remote_applied": true,
+    "original_tables_compared": 44,
+    "original_data_mismatches": [],
+    "previous_history_rows_preserved": true,
+    "saves": [
+      {
+        "state": "pending_selection",
+        "count": 1
+      },
+      {
+        "state": "ready",
+        "count": 1
+      }
+    ],
+    "sessions": [
+      {
+        "status": "paused",
+        "count": 1
+      }
+    ],
+    "balance": {
+      "eligible": 4,
+      "allocated": 2
+    },
+    "incompatible_character_links": 0,
+    "rls": [
+      {
+        "relname": "game_saves",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "game_save_migration_audit",
+        "relrowsecurity": true
+      }
+    ],
+    "grants": {
+      "can_insert": false,
+      "can_update": false,
+      "can_delete": false,
+      "private_access": false,
+      "anon_context": false,
+      "authenticated_context": true
+    },
+    "focus_engine_unchanged": true,
+    "unvalidated_constraints": 0,
+    "migrations": [
+      {
+        "version": "20261021201224",
+        "name": "initial_pomins_foundation_and_playable_room"
+      },
+      {
+        "version": "20261022021139",
+        "name": "baby_care"
+      },
+      {
+        "version": "20261022134830",
+        "name": "game_saves_compatibility"
+      },
+      {
+        "version": "20261022191724",
+        "name": "explicit_save_protagonist"
+      }
+    ]
+  },
+  "functions": {
+    "checked_at": "2026-10-22T19:57:53.244Z",
+    "stored_sql_exact_match": true,
+    "migration_sha256": "85db70563de333fed918d850e98512c08a0e88d32fd88c081c01d5c4dd4ceb8c",
+    "functions": [
+      {
+        "name": "load_game_save",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      },
+      {
+        "name": "select_save_protagonist",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      }
+    ]
+  },
+  "real_auth_validation": {
+    "checked_at": "2026-10-22T19:57:23.039Z",
+    "environment": "real-supabase-development-auth",
+    "passed": [
+      "login real A/B e cookies SSR",
+      "carregamento de residência, moradores e histórico isolados",
+      "adultos e bebê existentes restaurados sem criação",
+      "acesso e seleção de outra conta recusados sem efeitos",
+      "páginas e endpoint SSR por save; / e /play preservados",
+      "endpoint alheio e URL de morador incompatível bloqueados",
+      "sessões, saldo, revisão e protagonistas inalterados"
+    ],
+    "protagonist_chosen": false,
+    "focus_commands": 0,
+    "minutes_spent": 0,
+    "characters_created": 0,
+    "browser_sessions_untouched": true
+  },
+  "advisors": [
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "level": "WARN",
+      "count": 19,
+      "intentional_authenticated_RPCS": true
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "count": 1,
+      "pre_existing": true
+    }
+  ],
+  "commit_created": false,
+  "push_performed": false
+}

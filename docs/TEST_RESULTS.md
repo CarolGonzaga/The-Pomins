@@ -1,5 +1,21 @@
 # Resultados de validação · Entrega 1
 
+## Consolidação Git da Entrega 5C — 22/10/2026
+
+Rodada nova antes do commit local: **138 Vitest + 8 PostgreSQL nativo descartável + 36 Playwright = 182 testes distintos aprovados**. Playwright com dois workers, aproximadamente 1,4 minuto, Chromium desktop e viewport/toque de iPhone, Auth simulado e dados locais descartáveis. Lint repetido após o ajuste do validador para aceitar a porta 3000, TypeScript explícito e build de produção da raiz aprovados.
+
+Sete grupos com Auth real A/B repetidos contra o servidor atualizado na porta 3000: cookies SSR, carregamento isolado, adulto/bebê, RLS, páginas e endpoints, referências incompatíveis e ausência de mudanças no progresso/foco. As rotas / e /play também responderam HTTP 200. Comparação de 12 tabelas críticas antes/depois do reinício preservou os dados, exceto a data esperada de última utilização dos saves. Uma sessão pausada permaneceu intacta; nenhuma ativa no preflight. Nenhuma criação, conclusão ou interrupção de foco.
+
+Migração registrada e corpos/grants das funções conferidos por leitura, sem reaplicação; migrações anteriores preservadas. Backup cifrado, chave DPAPI e manifesto continuam locais, ignorados, com hash do arquivo cifrado conferido. Protagonista real continua pendente; seleção positiva e concorrência comprovadas nos testes descartáveis. Safari físico e cópia portátil/off-site do backup permanecem pendentes. Sem push. [Recibo desta rodada](deployments/2026-10-22-explicit-save-consolidation.json).
+
+## Entrega 5C — contexto explícito
+
+**Validação real autorizada:** migração `20261022191724` aplicada após backup cifrado e restauração de 44 tabelas, incluindo helpers privados. Pós-migração sem divergências nos dados anteriores; sessões, créditos e protagonistas preservados. Corpos/SQL/grants das duas funções conferidos, sem execução anônima. `scripts/validate-explicit-saves-development.mjs` aprovou sete grupos de Auth real, carregamento/RLS, bebê/adulto, endpoints e SSR em `/game/[saveId]`, `/` e `/play`. Sem foco iniciado, minutos gastos ou protagonista escolhido. Seleção positiva e concorrência continuam comprovadas localmente; a escolha do save real permanece com o jogador. Servidor auxiliar 3183 encerrado; servidor original preservado. Lint repetido e aprovado. [Recibo real](deployments/2026-10-22-explicit-save-development.json).
+
+Rodada nova sobre `964537a`: **138 testes Vitest aprovados**, oito nativos ignorados nesse comando; **8 aprovados** em PostgreSQL descartável (incluindo disputa de protagonista) e **36 aprovados** em navegador contra produção isolada, Chromium e viewport/toque de iPhone. Total **182 distintos**. Lint, TypeScript e build aprovados. O comando `node scripts/validate-explicit-saves-local.mjs` executa o backend PGlite/Auth simulado e todos os 36 cenários sem usar o Supabase remoto. Novos testes cobrem seleção/repetição/conflito, acesso negado, outro save da mesma conta, residência/personagem incompatíveis, aparência/bebê, saldo global, sessão pausada, recarga Phaser, cookies restaurados e regressão de `/` e `/play`.
+
+A primeira rodada de navegador encontrou a comparação de origem com o bind interno e uma sobreposição da navegação com a sidebar. Corrigidas, com regressão nova; um seletor foi limitado ao alerta principal para excluir o anunciador do Next. Uma repetição com seis workers teve timeout em caminhada do cenário antigo; o comando final usa dois workers e passou nos 36 casos em aproximadamente 1,1 minuto, sem mudar a animação. Não se contam as tentativas incompletas como aprovação. A restauração de cookies dessa suíte é simulada e distinta da rodada real acima. Sem mudanças no cronômetro, créditos, migrações antigas, dependências ou assets. [Relatório e limites](EXPLICIT_GAME_CONTEXT.md).
+
 ## Consolidação Git da Entrega 5A + 5B — 22/10/2026
 
 Rodada executada antes do commit `feat: add game saves foundation and compatibility`: `npm test` **125 aprovados** (sete nativos ignorados nesse comando e executados separadamente); PostgreSQL descartável **7 aprovados em 1,24s**; Playwright contra build isolado **32 aprovados em 48,4s**. Total **164 testes distintos**. Lint, TypeScript explícito e build aprovados. Sem alterações de código após os testes.

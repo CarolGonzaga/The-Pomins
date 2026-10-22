@@ -1,5 +1,9 @@
 # Publicação na Vercel e Supabase
 
+## Entrega 5C — aplicada ao desenvolvimento
+
+`20261022191724_explicit_save_protagonist.sql` aplicada na versão exata após autorização, novo backup/restauração de 44 tabelas e preflight sem foco ativo. Acrescenta somente `load_game_save` e `select_save_protagonist`, autenticadas. SQL/histórico atômicos, cache PostgREST atualizado e dados anteriores preservados. Não reaplicar. A escolha real de protagonista permanece com o jogador. Backup privado cifrado em `secrets/backups/explicit-save-5c-20261022`, chave DPAPI dependente do perfil Windows; sem cópia portátil/off-site. Sete grupos reais Auth/RLS/SSR aprovados inicialmente na produção isolada 3183 e repetidos na consolidação contra a porta 3000. Servidor habitual atualizado com build da raiz após reinício controlado; sessão pausada e 12 tabelas críticas preservadas. Migração não reaplicada. Consolidação local autorizada, sem push. [Relatório](EXPLICIT_GAME_CONTEXT.md) e [recibo](deployments/2026-10-22-explicit-save-development.json).
+
 ## Entrega 5A + 5B — aplicada ao desenvolvimento
 
 `20261022134830_game_saves_compatibility.sql` foi aplicada ao desenvolvimento na versão exata `20261022134830`, após autorização, backup cifrado e restauração de 42 tabelas públicas/Auth/histórico em PostgreSQL local. Conector indisponível: execução pela conexão PostgreSQL com CA oficial, SQL/histórico atômicos e atualização do cache PostgREST. Nenhuma migração anterior foi reaplicada ou alterada. Uma sessão pausada e o saldo foram preservados; nenhum foco ativo interrompido. A aplicação nova negocia o contexto e mantém adaptadores para clientes anteriores.
