@@ -9,6 +9,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { browserClient, isConfigured } from '@/lib/supabase/browser';
 import { Nursery } from '@/components/characters/nursery';
+import { authErrorMessage } from './error-message';
 const schema = z.object({
   email: z.email('Digite um e-mail válido.'),
   password: z.string(),
@@ -77,11 +78,7 @@ export function AuthForm() {
           password: values.password,
         }));
       if (error) {
-        setMessage(
-          mode === 'login'
-            ? 'Não foi possível entrar. Confira e-mail, senha e confirmação do e-mail.'
-            : 'Não foi possível concluir. O apelido pode estar em uso ou o link pode ter expirado. Tente novamente.',
-        );
+        setMessage(authErrorMessage(mode, error));
       } else if (mode === 'login' || mode === 'update') location.assign('/');
       else
         setMessage(

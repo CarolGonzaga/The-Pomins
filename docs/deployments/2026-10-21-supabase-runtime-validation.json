@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-21",
+  "environment": "development",
+  "base_commit": "82e35eb",
+  "branch": "codex/consolidacao-base",
+  "method": "Normal Supabase Auth login and PostgREST RPC requests with separate user JWTs; no privileged credentials or SQL impersonation",
+  "script": "scripts/validate-supabase-development.mjs",
+  "script_sha256": "3ffbadb66c3ff029d2ef97a363fef7add653018a1fdc1eab6693ec7636986234",
+  "executions": [
+    {
+      "command": "node scripts/validate-supabase-development.mjs",
+      "exit_code": 0,
+      "check_groups_passed": 8,
+      "checks": [
+        "Two distinct confirmed accounts log in",
+        "Cross-user reads of eight tables and activity RPC denied in both directions",
+        "Account B cannot spend account A credit",
+        "Exact allocation replay does not duplicate consumption or progress",
+        "Direct XP, wallet and skill writes denied",
+        "Repeated completion leaves credit, rewards, account XP and wallet unchanged",
+        "Insufficient balance on second allocation line rolls back request, first line and progress",
+        "Two independent Auth connections race for last minute: exactly one success and one Insufficient minutes rejection"
+      ],
+      "account_A_available_minutes": 2,
+      "account_A_allocated_minutes": 2
+    },
+    {
+      "command": "node scripts/validate-supabase-development.mjs --focus-only",
+      "exit_code": 0,
+      "additional_focus_check_groups_passed": 3,
+      "checks": [
+        "Idempotent session start, pause and resume with zero artificial time",
+        "Cross-user session recovery denied; recovery by another connection of the owner revokes prior client ownership",
+        "Real 8500ms heartbeat gap interrupts without time credit; premature completion rejected; cancellation produces no credit or reward"
+      ],
+      "test_session_final_status": "cancelled",
+      "test_session_validated_ms": 0
+    }
+  ],
+  "final_remote_catalog_crosscheck": {
+    "confirmed_users": 2,
+    "completed_sessions": 2,
+    "cancelled_sessions": 1,
+    "open_sessions": 0,
+    "focus_credits": 2,
+    "focus_rewards": 2,
+    "eligible_minutes": 4,
+    "allocated_minutes": 2,
+    "allocation_minutes": 2,
+    "allocation_requests": 2,
+    "allocation_rows": 2,
+    "overdrawn_credits": 0,
+    "allocation_mismatch": 0
+  },
+  "browser_and_user_checks": {
+    "account_A_signup_confirmation_login_logout_relogin": "passed",
+    "account_A_character_appearance_activity_progress_restored": "passed",
+    "two_real_120_second_sessions_completed": "passed",
+    "password_recovery": "User received email and set a different password; authenticated return observed; user confirmed old password rejected and new password accepted",
+    "account_B_room_after_reload": "Own adult, zero distributed minutes and no account A progress; browser session survived SDK test signouts"
+  },
+  "limits": [
+    "Connection ownership tested with two independent Auth clients, not simultaneous physical browser tabs",
+    "Missing heartbeat simulated by a real wait; OS network was not disabled",
+    "Email inbox and password entry handled by user; no passwords or recovery tokens recorded here",
+    "Physical iPhone Safari, PWA install, long idle token expiry and production HTTPS deployment remain outside this validation",
+    "Existing remote migration batch must be mapped to the two local migrations before future CLI deployment"
+  ],
+  "data_changes": "One additional study minute kept on account A; adult created on B if absent; one cancelled zero-credit focus session kept on B. No deletes, resets, migration changes or remote timestamp adjustments."
+}

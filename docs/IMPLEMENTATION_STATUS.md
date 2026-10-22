@@ -1,8 +1,12 @@
 # Estado de implementação
 
+## Validação Supabase de desenvolvimento — 21/10/2026
+
+**Entrega 2 de persistência validada no desenvolvimento.** URL e chave pública configuradas; confirmação de e-mail obrigatória. Migrações autorizadas no lote `20261021201224`: 13 tabelas com RLS, 7 RPCs, 4 triggers e 14 políticas. Auth/recovery, personagem/aparência, foco, distribuição e restauração após sair/entrar foram conferidos. Corrigidos callback para endereço interno, heartbeat inicial precoce e mensagens de redefinição. Duas contas comuns aprovaram 11 grupos remotos de isolamento/RLS, repetição, rollback, concorrência, posse entre conexões e interrupção sem crédito. Estado final: 2 sessões concluídas e 1 de teste cancelada, nenhuma aberta; 4 minutos elegíveis, 2 distribuídos e 2 disponíveis em A; B separado, com saldo zero. O histórico remoto registra um lote com dois arquivos locais: reconciliar antes de usar a CLI em mudanças futuras. Produção HTTPS, iPhone físico e demais limites constam em [SUPABASE_DEVELOPMENT_VALIDATION.md](SUPABASE_DEVELOPMENT_VALIDATION.md).
+
 ## Consolidação da base — 21/10/2026
 
-Esta entrega preserva as duas experiências existentes, sem novas mecânicas nem mudanças de design. Configuração de lint, dependências de desenvolvimento explícitas, execução E2E contra produção e regras de exclusão do Git foram consolidadas. Resultados da execução atual e limites: [BASELINE_CONSOLIDATION.md](BASELINE_CONSOLIDATION.md). Supabase real e iPhone físico continuam pendentes.
+Esta entrega preserva as duas experiências existentes, sem novas mecânicas nem mudanças de design. Configuração de lint, dependências de desenvolvimento explícitas, execução E2E contra produção e regras de exclusão do Git foram consolidadas. Resultados históricos e limites: [BASELINE_CONSOLIDATION.md](BASELINE_CONSOLIDATION.md). Supabase real foi validado posteriormente conforme a seção acima; iPhone físico continua pendente.
 
 ## Atualização de 21/10/2026 — quarto adulto LPC
 
@@ -25,7 +29,7 @@ Data de referência do projeto: 16/10/2026. Base: repositório GitHub vazio, clo
 - [x] Heartbeat de servidor, sequência, lease, deduplicação, expiração e recompensa atômica.
 - [x] Histórico recente, XP de vida e temas claro/escuro.
 - [x] Exploração local explicitamente sem recompensa; personagem/memória no dispositivo.
-- [ ] Configurar um projeto Supabase real e executar a migração nele.
+- [x] Configurar Supabase real e aplicar as duas migrações iniciais com autorização; catálogo remoto conferido.
 - [ ] Testar e-mail, PKCE, cookies/SSR e PostgREST no Supabase real.
 - [ ] Publicar no Vercel com HTTPS.
 - [ ] Validar instalação, suspensão e Wake Lock em iPhone físico.

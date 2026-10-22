@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-21",
+  "environment": "development",
+  "base_commit": "82e35eb",
+  "authorization": "Explicit user approval in this conversation before execution",
+  "method": "Supabase apply_migration integration",
+  "remote_migration": {
+    "version": "20261021201224",
+    "name": "initial_pomins_foundation_and_playable_room"
+  },
+  "sources": [
+    {
+      "file": "supabase/migrations/202610160001_foundation.sql",
+      "sha256": "81dc4ce5fc1047162ee07ae1df0de82a4aa38d33b34f05ed459cde13fa636991"
+    },
+    {
+      "file": "supabase/migrations/202610210001_playable_room.sql",
+      "sha256": "caa66f52028a7b9e84a7c29c5ec059f0744016f78645c1193110e48c62b7931c"
+    }
+  ],
+  "preflight": {
+    "pomins_tables": 0,
+    "auth_users": 0,
+    "migration_history_present": false,
+    "dashboard_project_matches_local_config": true
+  },
+  "verification": {
+    "apply_success": true,
+    "tables_with_rls": 13,
+    "application_rpcs": 7,
+    "rpcs_allow_anon_execute": false,
+    "rpcs_allow_authenticated_execute": true,
+    "rpcs_have_empty_search_path": true,
+    "application_triggers": 4,
+    "policies": 14,
+    "activities": ["read", "sleep", "study"],
+    "unexpected_anon_or_public_table_grants": 0,
+    "authenticated_column_updates": ["profiles.is_public"],
+    "authenticated_end_to_end_journey": "not yet executed"
+  },
+  "advisors": {
+    "authenticated_security_definer_function_executable": 7,
+    "unindexed_foreign_keys": 10,
+    "unused_indexes_on_fresh_database": 4
+  },
+  "history_note": "Both unchanged local SQL files were applied in one remote migration batch. Remote version differs from the two local file versions. Do not blindly run db push; reconcile the version mapping explicitly before switching to CLI-managed migrations. No migration repair was performed."
+}

@@ -282,7 +282,8 @@ export function Focus({
       clearInterval(interval);
       clearInterval(visual);
     };
-  }, [authenticated, apply, release, onCompleted]);
+    // Start a fresh interval when start/resume is acknowledged, not at mount time.
+  }, [authenticated, apply, release, onCompleted, status]);
   async function start() {
     if (!navigator.onLine || document.visibilityState !== 'visible') {
       setMessage('Conecte-se e mantenha o Pomins visível para começar.');

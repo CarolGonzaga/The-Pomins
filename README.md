@@ -1,5 +1,7 @@
 # pomins.
 
+**Supabase de desenvolvimento validado:** migrações autorizadas, Auth/recovery, adulto LPC, foco real, distribuição e restauração após novo login conferidos. Duas contas aprovaram 11 grupos de testes remotos de isolamento, repetição, rollback, concorrência e controle da sessão. Conta A: 4 minutos elegíveis, 2 distribuídos e 2 disponíveis; conta B: progresso e saldo próprios zerados. Consulte [SUPABASE_DEVELOPMENT_VALIDATION](docs/SUPABASE_DEVELOPMENT_VALIDATION.md) para evidências, limites e o mapeamento do lote remoto antes de novas migrações. Validação em iPhone físico e produção HTTPS ainda necessária.
+
 **Atualização de 21/10/2026 — Etapa 1 jogável:** abra **`/play`** para criar um adulto LPC, escolher estudar/ler/dormir, observar a caminhada automática pelo quarto e distribuir os minutos de sessões concluídas. O fluxo de bebê e nascimento em `/` foi preservado. A nova especificação em `docs/specs/` passa a orientar o jogo 2D em pixel art.
 
 Leia [PLAYABLE_ROOM](docs/PLAYABLE_ROOM.md) para arquitetura, migração adicional, execução, testes e limites, e [LPC_ASSETS](docs/LPC_ASSETS.md) para as fontes/atribuições dos sprites. **Projetos Supabase existentes precisam aplicar `202610210001_playable_room.sql` após a migração de fundação.** Sem backend, a exploração local continua explicitamente separada do progresso na conta.

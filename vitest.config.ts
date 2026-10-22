@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 export default defineConfig({
   test: {
     include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],
@@ -6,6 +7,6 @@ export default defineConfig({
     hookTimeout: 30000,
   },
   resolve: {
-    alias: { '@': new URL('./src', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1') },
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
 });

@@ -60,10 +60,14 @@ test('background and connectivity interrupt local focus without rewards', async 
   await seed(page);
   await page.goto('/');
   await page.getByRole('button', { name: 'Encontrar meu foco' }).click();
+  await page.context().setOffline(false);
+  await page.bringToFront();
   await page.getByRole('button', { name: 'Começar meu foco' }).click();
+  await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await expect(page.getByRole('button', { name: 'Retomar meu foco' })).toBeVisible();
   await page.getByRole('button', { name: 'Retomar meu foco' }).click();
+  await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new Event('offline')));
   await expect(page.getByRole('button', { name: 'Retomar meu foco' })).toBeVisible();
   await expect(page.getByText('Exploração local · sem recompensas')).toBeVisible();

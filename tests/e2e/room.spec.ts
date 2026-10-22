@@ -110,8 +110,13 @@ test('reuses the strict timer, distributes a complete local session and persists
   await page.clock.install();
   await create(page);
   await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  // Starting just before the mount-time timer tick must still get a full interval.
+  await page.clock.runFor(4500);
   await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
-  await page.clock.runFor(125000);
+  await page.clock.runFor(5000);
+  await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
+  await expect(page.getByText(/Confirmado: 00:05/)).toBeVisible();
+  await page.clock.runFor(120000);
   await expect(page.getByText('2 min locais para distribuir', { exact: true })).toBeVisible();
   await page
     .locator('.completion')
