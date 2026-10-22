@@ -1,5 +1,17 @@
 # Resultados de validação · Entrega 1
 
+## Entrega 5D — validação local nova, 22/10/2026
+
+**Consolidação Git 5D:** rodada repetida antes do commit `feat: add multi-save management`: 160 unidade/integração, 11 PostgreSQL nativo descartável e 40 Playwright (2,1 min), **211 distintos**, lint, TypeScript e build isolado aprovados. Criação/continuação/arquivamento/restauração exercitados no navegador. Conferência remota somente por leitura: SQL e três funções idênticos, tabela privada com colunas/FKs/RLS/grants esperados. Nenhuma migração reaplicada nem alteração nas sessões/dados remotos. Os grupos reais da implantação abaixo não foram repetidos como mutações nesta consolidação.
+
+**Validação real posterior à autorização:** migração `20261022202113` aplicada após backup cifrado/restauração de 44 tabelas e preflight sem foco ativo. Comparação pós-aplicação sem divergência nos dados anteriores. Oito grupos com Auth real aprovaram duas partidas/residências, criação concorrente repetida, nascimento/aparências/memórias, RLS, arquivamento/restauração e novo login. As duas histórias de teste ficaram arquivadas e recuperáveis; personagens e protagonista pendente anteriores intactos, sem gasto ou comando de foco. Build da raiz aprovado e disponibilizado em 3000 após reinício controlado, com oito conferências reais adicionais de leitura/SSR e 12 tabelas críticas preservadas. Lint e TypeScript repetidos e aprovados. [Recibo real](deployments/2026-10-22-save-manager-development.json).
+
+**211 testes distintos aprovados:** 160 unidade/integração (`npm test`), 11 PostgreSQL nativo descartável com conexões independentes (1,41s) e 40 Playwright contra produção isolada (aproximadamente 1,6 minuto, dois workers). Os 11 nativos ignorados em `npm test` foram executados separadamente. Lint sem avisos, TypeScript explícito e build aprovados.
+
+Casos novos: lista vazia/isolada, múltiplos saves/residências, pedido repetido e payload conflitante, nascimento/memórias reaproveitados, aparência persistida, arquivos sem exclusão, restauração/revisões, acesso alheio negado, foco pendente, grants/RLS, disputa de criação e arquivamento versus nascimento. Navegador descartou a resposta após SQL confirmado e recuperou um único save após recarga; criou duas histórias, preservou personagens/memórias e saldo global, arquivou/restaurou e removeu/restaurou cookies. Capturas desktop/mobile conferidas, sem overflow ou violações WCAG A/AA nas listas testadas. Auth do gateway é simulado; SQL e HTTP/SSR são locais reais. Não comprova login remoto nem Safari físico.
+
+Primeiras tentativas locais encontraram tipos ausentes no teste e seletor ambíguo com o anunciador Next; corrigidos, com repetição completa aprovada. Porta PostgreSQL anterior ocupada: usado cluster descartável em outra porta, sem encerrar o processo existente. Essa fase usou apenas dados descartáveis. A validação real posterior está identificada acima; não altera configurações Auth nem contabiliza testes antigos como evidência nova. Sem commit/push. [Relatório e limites](SAVE_MANAGER.md).
+
 ## Consolidação Git da Entrega 5C — 22/10/2026
 
 Rodada nova antes do commit local: **138 Vitest + 8 PostgreSQL nativo descartável + 36 Playwright = 182 testes distintos aprovados**. Playwright com dois workers, aproximadamente 1,4 minuto, Chromium desktop e viewport/toque de iPhone, Auth simulado e dados locais descartáveis. Lint repetido após o ajuste do validador para aceitar a porta 3000, TypeScript explícito e build de produção da raiz aprovados.

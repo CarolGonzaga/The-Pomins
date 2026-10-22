@@ -40,9 +40,14 @@ export function SavePlayer({
       setBusy(false);
     }
   }
+  if(s.state==='draft' && initial.characters.length===0)
+    return <Game key={`${userId}:${s.id}:birth`} configured returnHref={path} roomHref={path}
+      initial={{userId,saveId:s.id,nickname:initial.profile.nickname,isPublic:initial.profile.is_public,
+        accountXp:initial.profile.account_xp,character:null,sessions:focusSessions(initial),loadError:false}}/>;
   if (s.state !== 'ready')
     return (
       <main className="simple-page">
+        <a href="/saves">Minhas partidas</a>
         <h1>Quem protagoniza esta história?</h1>
         <p>Os outros moradores continuam nesta partida.</p>
         {choices.map((c) => (

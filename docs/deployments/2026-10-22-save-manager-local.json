@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-10-22T20:36:03.886Z",
+  "baseline": "c2bb55336dbbfecd253f9a5914ed3bb72453df36",
+  "environment": "local-disposable-only",
+  "migration": "20261022202113_save_manager.sql",
+  "migration_sha256": "69f5aea55a153bdc9b107412dab38d43946ef6c1d5396fe0eea0ebe77dca84e5",
+  "tests": {
+    "unit_integration": 160,
+    "native_postgres": 11,
+    "playwright": 40,
+    "total_distinct": 211,
+    "lint": "passed",
+    "typescript": "passed",
+    "production_build": "passed"
+  },
+  "browser_auth": "simulated",
+  "remote_tests_performed": false,
+  "remote_migration_applied": false,
+  "root_server_restarted": false,
+  "commit_created": false,
+  "push_performed": false,
+  "credential_audit_passed": true
+}

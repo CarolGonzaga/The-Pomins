@@ -1,0 +1,215 @@
+{
+  "checked_at": "2026-10-22T20:47:57.078Z",
+  "application": {
+    "applied_at": "2026-10-22T20:39:44.098Z",
+    "version": "20261022202113",
+    "migration_sha256": "69f5aea55a153bdc9b107412dab38d43946ef6c1d5396fe0eea0ebe77dca84e5",
+    "remote_applied": true,
+    "backup_restore_verified": true,
+    "backup_ciphertext_sha256": "cefcff2a967ef064f96249b44f1e884e13f39b19f187dde120f3c7d938432d37",
+    "backup_private_directory": "secrets/backups/save-manager-5d-20261022",
+    "original_tables": 44,
+    "preflight": {
+      "eligible": 4,
+      "allocated": 2,
+      "save_states": [
+        {
+          "count": 1,
+          "state": "pending_selection"
+        },
+        {
+          "count": 1,
+          "state": "ready"
+        }
+      ],
+      "open_sessions": [
+        {
+          "count": 1,
+          "status": "paused"
+        }
+      ]
+    },
+    "history_registered_atomically": true,
+    "protagonist_not_selected_by_deploy": true
+  },
+  "backup": {
+    "schemas": [
+      "public",
+      "auth",
+      "supabase_migrations",
+      "game_private"
+    ],
+    "original_tables": 44,
+    "restore_verified": true,
+    "original_columns_preserved_after_migration": true,
+    "private_ignored_directory": "secrets/backups/save-manager-5d-20261022",
+    "ciphertext_sha256_matches": true,
+    "key_and_manifest_preserved": true,
+    "dpapi_current_user": true,
+    "portable_offsite_copy": false
+  },
+  "postflight": {
+    "checked_at": "2026-10-22T20:40:33.259Z",
+    "remote_applied": true,
+    "original_tables_compared": 44,
+    "original_data_mismatches": [],
+    "previous_history_rows_preserved": true,
+    "saves": [
+      {
+        "state": "pending_selection",
+        "count": 1
+      },
+      {
+        "state": "ready",
+        "count": 1
+      }
+    ],
+    "sessions": [
+      {
+        "status": "paused",
+        "count": 1
+      }
+    ],
+    "balance": {
+      "eligible": 4,
+      "allocated": 2
+    },
+    "incompatible_character_links": 0,
+    "rls": [
+      {
+        "relname": "game_saves",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "game_save_migration_audit",
+        "relrowsecurity": true
+      }
+    ],
+    "grants": {
+      "can_insert": false,
+      "can_update": false,
+      "can_delete": false,
+      "private_access": false,
+      "anon_context": false,
+      "authenticated_context": true
+    },
+    "focus_engine_unchanged": true,
+    "unvalidated_constraints": 0,
+    "migrations": [
+      {
+        "version": "20261021201224",
+        "name": "initial_pomins_foundation_and_playable_room"
+      },
+      {
+        "version": "20261022021139",
+        "name": "baby_care"
+      },
+      {
+        "version": "20261022134830",
+        "name": "game_saves_compatibility"
+      },
+      {
+        "version": "20261022191724",
+        "name": "explicit_save_protagonist"
+      },
+      {
+        "version": "20261022202113",
+        "name": "save_manager"
+      }
+    ]
+  },
+  "functions": {
+    "checked_at": "2026-10-22T20:40:23.941Z",
+    "stored_sql_exact_match": true,
+    "migration_sha256": "69f5aea55a153bdc9b107412dab38d43946ef6c1d5396fe0eea0ebe77dca84e5",
+    "functions": [
+      {
+        "name": "list_game_saves",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      },
+      {
+        "name": "create_game_save",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      },
+      {
+        "name": "set_game_save_archived",
+        "body_matches": true,
+        "authenticated_execute": true,
+        "anon_execute": false,
+        "empty_search_path": true
+      }
+    ]
+  },
+  "development_auth_validation": {
+    "checked_at": "2026-10-22T20:43:57.661Z",
+    "environment": "real-supabase-development-auth",
+    "passed": [
+      "login real de duas contas e cookies SSR",
+      "listas por proprietário, SSR /saves e /saves/new, rotas antigas e bloqueio anônimo",
+      "duas partidas reais independentes; criação concorrente repetida sem duplicação",
+      "nascimento, aparência e memórias persistidos separadamente; referência incompatível recusada",
+      "RLS e endpoints recusam leitura ou arquivamento pela outra conta",
+      "arquivamento repetido, restauração integral e duas histórias de teste preservadas como arquivadas",
+      "novo login real restaura lista, protagonistas e aparências dos saves de teste",
+      "sessões, saldo e mundos originais intactos, incluindo protagonista pendente"
+    ],
+    "test_saves": 2,
+    "test_saves_archived": 2,
+    "test_babies": 2,
+    "focus_commands": 0,
+    "minutes_spent": 0,
+    "original_characters_unchanged": true,
+    "original_protagonists_unchanged": true,
+    "browser_sessions_untouched": true
+  },
+  "root_server_validation": {
+    "checked_at": "2026-10-22T20:46:15.997Z",
+    "environment": "real-supabase-development-auth",
+    "passed": [
+      "login real A/B e cookies SSR",
+      "carregamento de residência, moradores e histórico isolados",
+      "adultos e bebê existentes restaurados sem criação",
+      "acesso e seleção de outra conta recusados sem efeitos",
+      "páginas e endpoint SSR por save; / e /play preservados",
+      "gerenciador 5D em 3000: listas isoladas, arquivadas, formulário e SSR",
+      "endpoint alheio e URL de morador incompatível bloqueados",
+      "sessões, saldo, revisão e protagonistas inalterados"
+    ],
+    "protagonist_chosen": false,
+    "focus_commands": 0,
+    "minutes_spent": 0,
+    "characters_created": 0,
+    "browser_sessions_untouched": true
+  },
+  "server": {
+    "url": "http://localhost:3000/saves",
+    "build_id": "Bti03O4S2pVgywzsRRk6Q",
+    "controlled_restart": true,
+    "persisted_state": {
+      "checked_at": "2026-10-22T20:46:50.266Z",
+      "sessions": [
+        {
+          "status": "paused",
+          "count": 1
+        }
+      ],
+      "critical_tables": 12,
+      "unchanged_since_before": true,
+      "active_focus": 0
+    }
+  },
+  "security_advisors": {
+    "errors": 0,
+    "authenticated_security_definer_functions": 22,
+    "intentional_private_table_rls_without_policies": 1,
+    "preexisting_leaked_password_protection_disabled": true
+  },
+  "commit_created": false,
+  "push_performed": false
+}

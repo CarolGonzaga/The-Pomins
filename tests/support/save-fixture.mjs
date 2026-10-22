@@ -11,6 +11,7 @@ export async function createSaveFixture() {
     '20261022021139_baby_care.sql',
     '20261022134830_game_saves_compatibility.sql',
     '20261022191724_explicit_save_protagonist.sql',
+    '20261022202113_save_manager.sql',
   ])
     await db.exec(readFileSync('supabase/migrations/' + name, 'utf8'));
   let queue = Promise.resolve();

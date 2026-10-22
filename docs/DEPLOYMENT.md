@@ -1,5 +1,9 @@
 # Publicação na Vercel e Supabase
 
+## Entrega 5D — desenvolvimento atualizado após autorização
+
+Nova migração `20261022202113_save_manager.sql`, posterior à 5C, acrescenta somente tabela privada de recibos com RLS e três RPCs autenticadas para listar/criar/arquivar/restaurar saves. Não substituir migrações anteriores. Validada em bancos descartáveis, com 211 testes locais, lint, TypeScript e build aprovados. **Aplicada ao desenvolvimento após autorização específica**, backup cifrado/restauração de 44 tabelas e preflight. SQL/histórico atômicos, dados anteriores preservados, três RPCs e permissões conferidas. Não reaplicar. Oito grupos reais passaram com duas histórias de teste, posteriormente arquivadas. Build da raiz 5D disponível em 3000 após reinício controlado; 12 tabelas e a sessão pausada preservadas. [Plano, recibo e limitações](SAVE_MANAGER.md). Sem commit/push.
+
 ## Entrega 5C — aplicada ao desenvolvimento
 
 `20261022191724_explicit_save_protagonist.sql` aplicada na versão exata após autorização, novo backup/restauração de 44 tabelas e preflight sem foco ativo. Acrescenta somente `load_game_save` e `select_save_protagonist`, autenticadas. SQL/histórico atômicos, cache PostgREST atualizado e dados anteriores preservados. Não reaplicar. A escolha real de protagonista permanece com o jogador. Backup privado cifrado em `secrets/backups/explicit-save-5c-20261022`, chave DPAPI dependente do perfil Windows; sem cópia portátil/off-site. Sete grupos reais Auth/RLS/SSR aprovados inicialmente na produção isolada 3183 e repetidos na consolidação contra a porta 3000. Servidor habitual atualizado com build da raiz após reinício controlado; sessão pausada e 12 tabelas críticas preservadas. Migração não reaplicada. Consolidação local autorizada, sem push. [Relatório](EXPLICIT_GAME_CONTEXT.md) e [recibo](deployments/2026-10-22-explicit-save-development.json).

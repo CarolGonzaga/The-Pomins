@@ -255,6 +255,7 @@ export function RoomApp({
           pomins<span>.</span>
         </Link>
         <Link href={universeHref}>Meu universo</Link>
+        {authenticated && <Link href="/saves" onClick={e=>{if(document.documentElement.dataset.focusActive==='true'){e.preventDefault();setMessage('Use os controles da sessão antes de abrir suas partidas.');}}}>Minhas partidas</Link>}
         <span>{authenticated ? 'Progresso na sua conta' : 'Exploração local'}</span>
         {!authenticated && <Link href="/auth">Entrar</Link>}
       </header>

@@ -79,7 +79,10 @@ export function AuthForm() {
         }));
       if (error) {
         setMessage(authErrorMessage(mode, error));
-      } else if (mode === 'login' || mode === 'update') location.assign('/');
+      } else if (mode === 'login' || mode === 'update') {
+        const next=params.get('next');
+        location.assign(mode==='login' && (next==='/saves' || next==='/saves/new') ? next : '/');
+      }
       else
         setMessage(
           mode === 'signup'

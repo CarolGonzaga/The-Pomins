@@ -59,6 +59,7 @@ suite('independent PostgreSQL connections: allocation race', () => {
       readFileSync('supabase/migrations/20261022134830_game_saves_compatibility.sql', 'utf8'),
     );
     await pool.query(readFileSync('supabase/migrations/20261022191724_explicit_save_protagonist.sql','utf8'));
+    await pool.query(readFileSync('supabase/migrations/20261022202113_save_manager.sql','utf8'));
     await pool.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)', [
       user,
       JSON.stringify({ nickname: 'race_test' }),
@@ -330,5 +331,34 @@ suite('independent PostgreSQL connections: allocation race', () => {
     const save=(await pool.query('select protagonist_id,world_revision from public.game_saves where id=$1',[primarySave])).rows[0];
     const retry=await choose(save.protagonist_id);expect(retry.rows[0].data.save.world_revision).toBe(Number(save.world_revision));
     expect((await pool.query("select count(*)::integer n from public.game_events where save_id=$1 and kind='ProtagonistSelected'",[primarySave])).rows[0].n).toBe(1);
+  });
+  it('serializes identical save creation requests without duplicating homes or credits',async()=>{
+    const id=randomUUID();
+    const create=async()=>{const client=await pool.connect();try{return await acting(client,()=>client.query("select public.create_game_save($1,'História concorrente') data",[id]));}finally{client.release();}};
+    const before=(await pool.query('select * from public.focus_credits where user_id=$1 order by session_id',[user])).rows;
+    const [a,b]=await Promise.all([create(),create()]);expect(a.rows[0].data.id).toBe(b.rows[0].data.id);
+    expect((await pool.query('select count(*)::integer n from public.households where save_id=$1',[a.rows[0].data.id])).rows[0].n).toBe(1);
+    expect((await pool.query('select * from public.focus_credits where user_id=$1 order by session_id',[user])).rows).toEqual(before);
+  });
+  it('creates independent saves concurrently and archives each without changing global focus',async()=>{
+    const create=async()=>{const client=await pool.connect();try{return (await acting(client,()=>client.query("select public.create_game_save($1,'Outra linha') data",[randomUUID()]))).rows[0].data;}finally{client.release();}};
+    const before=(await pool.query('select * from public.focus_sessions where user_id=$1 order by id',[user])).rows;
+    const saves=await Promise.all([create(),create()]);expect(saves[0].id).not.toBe(saves[1].id);
+    const archive=async(s:{id:string;world_revision:number})=>{const client=await pool.connect();try{return await acting(client,()=>client.query('select public.set_game_save_archived($1,true,$2) data',[s.id,s.world_revision]));}finally{client.release();}};
+    await Promise.all(saves.map(archive));await archive(saves[0]);
+    expect((await pool.query('select * from public.focus_sessions where user_id=$1 order by id',[user])).rows).toEqual(before);
+  });
+  it('serializes archive versus character creation without inserting into an archived world',async()=>{
+    const client=await pool.connect();let s;
+    try{s=(await acting(client,()=>client.query("select public.create_game_save($1,'Corrida de nascimento') data",[randomUUID()]))).rows[0].data;}finally{client.release();}
+    const call=async(sql:string,args:unknown[])=>{const c=await pool.connect();try{return await acting(c,()=>c.query(sql,args));}finally{c.release();}};
+    const results=await Promise.allSettled([
+      call('select public.set_game_save_archived($1,true,$2)',[s.id,s.world_revision]),
+      call('select public.create_character_for_save($1,$2,$3::jsonb)',[s.id,'Pequeno',JSON.stringify(defaultAppearance)])
+    ]);
+    expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);
+    const current=(await pool.query('select archived_at,state from public.game_saves where id=$1',[s.id])).rows[0];
+    const characters=(await pool.query('select id from public.characters where save_id=$1',[s.id])).rows;
+    expect(current.archived_at?characters.length===0:characters.length===1).toBe(true);
   });
 });

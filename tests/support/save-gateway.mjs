@@ -34,6 +34,11 @@ const rpcNames = new Set([
   'select_save_protagonist',
   'room_command_for_save',
   'baby_care_for_save',
+  'list_game_saves',
+  'create_game_save',
+  'set_game_save_archived',
+  'create_character_for_save',
+  'read_birth_for_save',
 ]);
 const server = http.createServer(async (req, res) => {
   const send = (status, data) => {

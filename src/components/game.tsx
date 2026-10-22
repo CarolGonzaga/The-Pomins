@@ -246,6 +246,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
         <span>Um momento de cada vez.</span>
       </div>
       <div className="sidebar-bottom">
+        {authenticated && <Link className="nav-item" href="/saves" onClick={e=>{if(document.documentElement.dataset.focusActive==='true'){e.preventDefault();setNotice('Use os controles da sessão antes de abrir suas partidas.');}}}>Minhas partidas</Link>}
         <Link className="nav-item" href={roomHref}>
           Meu quarto · Etapa 1
         </Link>

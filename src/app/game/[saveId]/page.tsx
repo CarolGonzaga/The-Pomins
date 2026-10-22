@@ -26,6 +26,7 @@ export default async function GamePage({
         </p>
         <Link href="/auth">Entrar</Link>
         <Link href="/">Meu universo</Link>
+        <Link href="/saves">Minhas partidas</Link>
       </main>
     );
   }
