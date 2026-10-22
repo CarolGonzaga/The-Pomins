@@ -1,5 +1,17 @@
 # Estado de implementação
 
+## Entrega 3 atual — personalização LPC — 21/10/2026
+
+Implementada sobre `55f9497adf89641ac2f94d90876543bcd174402b`, com consolidação local autorizada em `feat: expand LPC character customization`, sem push. Esta numeração segue a sequência técnica atual; as seções antigas de expansão narrativa abaixo são o roteiro original.
+
+- Editor de adulto humano com 7 penteados, 3 camisas, 5 categorias de cores e prévia imediata em 3 poses/4 direções.
+- Composição central compartilhada com Phaser; 24 PNGs originais preservados e 18 novos licenciados, incluindo partes traseiras dos cabelos.
+- Aparência v2 compatível com o JSONB e as migrações existentes; salvamento e restauração após novo login verificados no Supabase real.
+- Modelo preparado para 5 fases e 2 espécies, com suporte visual explicitamente limitado ao adulto humano disponível.
+- 109 testes locais aprovados, lint, TypeScript e build aprovados. Sem dependências novas ou alterações no foco, distribuição, quarto ou nascimento.
+- Pendências: arte e encaixes das outras fases/espécies, Safari/iPhone físico e HTTPS. Relatório: [CHARACTER_VISUALS.md](CHARACTER_VISUALS.md); evidências: [TEST_RESULTS.md](TEST_RESULTS.md).
+
+
 ## Validação Supabase de desenvolvimento — 21/10/2026
 
 **Entrega 2 de persistência validada no desenvolvimento.** URL e chave pública configuradas; confirmação de e-mail obrigatória. Migrações autorizadas no lote `20261021201224`: 13 tabelas com RLS, 7 RPCs, 4 triggers e 14 políticas. Auth/recovery, personagem/aparência, foco, distribuição e restauração após sair/entrar foram conferidos. Corrigidos callback para endereço interno, heartbeat inicial precoce e mensagens de redefinição. Duas contas comuns aprovaram 11 grupos remotos de isolamento/RLS, repetição, rollback, concorrência, posse entre conexões e interrupção sem crédito. Estado final: 2 sessões concluídas e 1 de teste cancelada, nenhuma aberta; 4 minutos elegíveis, 2 distribuídos e 2 disponíveis em A; B separado, com saldo zero. O histórico remoto registra um lote com dois arquivos locais: reconciliar antes de usar a CLI em mudanças futuras. Produção HTTPS, iPhone físico e demais limites constam em [SUPABASE_DEVELOPMENT_VALIDATION.md](SUPABASE_DEVELOPMENT_VALIDATION.md).

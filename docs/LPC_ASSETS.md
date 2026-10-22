@@ -22,13 +22,18 @@ As autorias e fontes exatas de cada camada estão em **`public/assets/lpc/CREDIT
 - Cabelo curto (`hair/plain`): JaidynReiman, Manuel Riecke/MrBeast, Joe White.
 - Afro (`hair/afro`): bluecarrot16, CC0.
 - Chanel (`hair/bob`), calça, camisas: consultar os registros individuais do manifesto para os nomes e fontes completos.
+- Longo e rabo de cavalo: JaidynReiman e Manuel Riecke/MrBeast, CC BY-SA 3.0. O rabo inclui as partes dianteira e traseira.
+- Ondulado: JaidynReiman e Nila122, CC BY-SA 3.0, com partes dianteira e traseira.
+- Camisa sem mangas (`sleeveless2/male`): ElizaWy, JaidynReiman, Stephen Challener/Redshrike e Johannes Sjölund/wulax, OGA-BY 3.0. Texto original em `public/assets/lpc/OGA-BY-3.0.txt`.
 
-Para cada camada não CC0 foi selecionada a alternativa **[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)** explicitamente oferecida nos metadados. Não se aplica automaticamente a licença GPL do código do gerador a toda a aplicação. Recoloração e composição de arte derivada são disponibilizadas sob CC BY-SA 3.0, com identificação das modificações e preservação dos créditos. Não há endosso dos artistas.
+Foi selecionada a alternativa **[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)** onde oferecida, CC0 para afro e **[OGA-BY 3.0](https://opengameart.org/content/oga-by-30-faq)** para a nova camisa sem mangas. Os PNGs originais mantêm suas licenças e atribuições individuais; recoloração/composição são identificadas como modificações e a arte composta é disponibilizada sob CC BY-SA 3.0, conservando também os avisos da camada OGA-BY. Não se aplica automaticamente a licença GPL do código do gerador à aplicação. Nenhum código do gerador foi incorporado; não há endosso dos artistas.
+
+Na Entrega 3 são **42 PNGs**: os 24 anteriores preservados byte a byte e 18 novos (3 longo, 6 rabo de cavalo, 6 ondulado, 3 camisa sem mangas). Manifesto e `/credits` incluem todas as partes. A importação interrompe ao detectar mudança de hash em um arquivo existente. `tests/fixtures/lpc-original-assets.json` preserva a lista e os hashes dos 24 originais.
 
 O script interrompe se não encontrar crédito e licença selecionável para uma camada. Ele verifica PNGs com quatro direções em células de 64×64. A suíte verifica hashes, dimensões e alteração real de pixels, inclusive olhos, sem afetar alpha.
 
 ## Lacunas declaradas
 
-A base é tecnicamente chamada `male` no catálogo; na interface é “corpo-base A” e não define a identidade de gênero do Pomin. Não há promessa de todas as bases disponíveis no Universal LPC. O subconjunto inclui walk, idle e sit; leitura/estudo usam pose compatível e objetos; sono dedicado deitado é uma lacuna e tem adaptação de repouso sentado documentada. `none` remove o cabelo de verdade. A calça é fixa; a cor editável de roupa altera a camisa. O formato de rosto, antenas e expressões do criador legado não são falsamente oferecidos neste editor adulto.
+A base é tecnicamente chamada `male` no catálogo; na interface é “corpo-base A” e não define a identidade de gênero do Pomin. Não há promessa de todas as bases disponíveis no Universal LPC. O subconjunto inclui walk, idle e sit; leitura/estudo usam pose compatível e objetos; sono dedicado deitado é uma lacuna e tem adaptação de repouso sentado documentada. `none` remove o cabelo de verdade. A calça tem corte fixo e cor editável; camisas possuem três cortes. O formato de rosto, antenas e expressões do criador legado não são falsamente oferecidos neste editor adulto.
 
 Para acrescentar uma camada: escolher uma definição e animações compatíveis, revisar créditos/licenças, atualizar script/manifesto e contrato de aparência, incluir o controle somente quando a prévia/renderer realmente o suportarem. Novas fases precisam de bases específicas; não basta desenhar um adulto menor.

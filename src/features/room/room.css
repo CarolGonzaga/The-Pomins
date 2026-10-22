@@ -618,3 +618,76 @@
     height: 44px;
   }
 }
+.adult-editor .custom-color {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+.adult-editor .custom-color input {
+  width: 48px;
+  min-height: 44px;
+  padding: 3px;
+  cursor: pointer;
+}
+.adult-editor .custom-color span {
+  font-family: monospace;
+  color: var(--muted);
+}
+.adult-preview .preview-poses {
+  margin: 22px 0 12px;
+}
+.adult-preview .preview-poses legend {
+  margin-bottom: 10px;
+}
+.adult-preview .choice-row {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.adult-preview label {
+  display: grid;
+  gap: 8px;
+  margin: 14px auto;
+  max-width: 260px;
+}
+.adult-preview .choice-row button {
+  min-height: 44px;
+}
+@media (max-width: 760px) {
+  .adult-editor .adult-preview {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--bg);
+    padding: 12px;
+    border: 1px solid var(--border, #e9e3da);
+    border-radius: 16px;
+  }
+  .adult-editor .adult-preview > .lpc-preview {
+    width: 112px;
+    height: 112px;
+    float: left;
+    margin-right: 14px;
+  }
+  .adult-editor .adult-preview h2 {
+    font-size: 22px;
+    margin: 4px 0;
+  }
+  .adult-editor .adult-preview > p {
+    margin: 6px 0;
+  }
+  .adult-editor .adult-preview .preview-poses {
+    clear: both;
+    margin: 8px 0;
+  }
+  .adult-editor .adult-preview label {
+    margin: 8px auto;
+    display: flex;
+    align-items: center;
+  }
+  .adult-editor .adult-preview > small:last-child {
+    display: none;
+  }
+}

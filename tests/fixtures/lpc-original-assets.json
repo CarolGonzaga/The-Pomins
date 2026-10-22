@@ -1,0 +1,98 @@
+[
+  {
+    "path": "body-walk.png",
+    "sha256": "1e0e8f0c11ba5f4f7b3d4439fc416802b4227da2fe146c13de3de254d9f87f77"
+  },
+  {
+    "path": "body-idle.png",
+    "sha256": "9c3d17def9bd0574e25ce3162a243f18654479e38c04164bc12607429b013fa2"
+  },
+  {
+    "path": "body-sit.png",
+    "sha256": "ff339e6b3e34894d32db67c61d6a396e2d4286764aa26be79f0660f439317d0c"
+  },
+  {
+    "path": "head-walk.png",
+    "sha256": "7e863954dc8c3c748d0727415c39888106bdd3779beb2e3b18011a3a9ef3e53c"
+  },
+  {
+    "path": "head-idle.png",
+    "sha256": "10d58c1dd05592dfb436da42e4d6e582058306e1b6c98c85697ad97d1a5b82f4"
+  },
+  {
+    "path": "head-sit.png",
+    "sha256": "5902e48ed23e8ce593e4fbf4d9f6371aba0f1d71966441075118fad0d8debd21"
+  },
+  {
+    "path": "plain-walk.png",
+    "sha256": "4198b372f7381b7d12e516ddc69818dd50132224d1e6d8825f3dd920b0995b28"
+  },
+  {
+    "path": "plain-idle.png",
+    "sha256": "b3eed6441080adcb418a50e323f9fd46aa1b2ba042aea662a82c9f1bc596fd85"
+  },
+  {
+    "path": "plain-sit.png",
+    "sha256": "053cdd196f34f1d2ceb8de1bccaf3ab8a28dbf677a624788eab22a23a099ea0d"
+  },
+  {
+    "path": "afro-walk.png",
+    "sha256": "3f01666af81773d3a844b121547f59389bbf4145ef5ad05c76ccbd1de357d134"
+  },
+  {
+    "path": "afro-idle.png",
+    "sha256": "c680cfe8d8afad2a733aac79d7250dcc52f8f45d413b8806a2e5da72366b0386"
+  },
+  {
+    "path": "afro-sit.png",
+    "sha256": "03b0112786e172cff58d7b117308184c2dc6f8a13ee2bd64f9c3ba349e48ac07"
+  },
+  {
+    "path": "bob-walk.png",
+    "sha256": "40f1d1420f3bdbe2646654995cd2906b9a0edf4252c73060b34d5fcc27be0bcf"
+  },
+  {
+    "path": "bob-idle.png",
+    "sha256": "bb3ebba5c1ccf618cc4a6ca7af39e8d39b628e7b746ad1d82d20fc188c305b13"
+  },
+  {
+    "path": "bob-sit.png",
+    "sha256": "192997e01bd35645e9aae89bb1ae1e020953913aa4b7e55882a1b0971635ed9b"
+  },
+  {
+    "path": "pants-walk.png",
+    "sha256": "2de5a3247743ffa37febdf3464cc0a83e79f64d1028aed410832ee29bea850b6"
+  },
+  {
+    "path": "pants-idle.png",
+    "sha256": "717a5133533ccf18ccb3cced5653702be1d21a9ac6002dc9a84f3e1fb80087b3"
+  },
+  {
+    "path": "pants-sit.png",
+    "sha256": "993759f60d5098653deb549ae2457f736fe56cadd414d281e981d40c719359a5"
+  },
+  {
+    "path": "longsleeve-walk.png",
+    "sha256": "8b1c79d535d7a233371c9398ca51b196aa8fdf06117bd0eafd7fbcbf438d711b"
+  },
+  {
+    "path": "longsleeve-idle.png",
+    "sha256": "c543a71e589b7a7142b860813fed42a3752e71b8fa074058796afb1f7772d807"
+  },
+  {
+    "path": "longsleeve-sit.png",
+    "sha256": "151c715412c988c4d3de1dac42c06b1c9eb468f93971fa5f03a8ea8dfb17d9b7"
+  },
+  {
+    "path": "shortsleeve-walk.png",
+    "sha256": "eb9376a273ee9162fafe8e733da036dd0b7b44155b87f74951e63a26bcb73129"
+  },
+  {
+    "path": "shortsleeve-idle.png",
+    "sha256": "d32edf21295e452b6c30c1cf5e8513c9edcac2f08ea636debe994232fe4711e5"
+  },
+  {
+    "path": "shortsleeve-sit.png",
+    "sha256": "62c225c0be76ceba15c88b3519ba0d9917616ae4a622f4f31797d05ca51be997"
+  }
+]

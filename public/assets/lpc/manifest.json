@@ -145,6 +145,114 @@
           "frames": 3
         }
       }
+    },
+    "long": {
+      "source": "hair/long/adult/",
+      "z": 120,
+      "animations": {
+        "walk": {
+          "path": "long-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "long-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "long-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "ponytail": {
+      "source": "hair/ponytail/adult/fg/",
+      "z": 120,
+      "animations": {
+        "walk": {
+          "path": "ponytail-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "ponytail-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "ponytail-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "ponytail-2": {
+      "source": "hair/ponytail/adult/bg/",
+      "z": 9,
+      "animations": {
+        "walk": {
+          "path": "ponytail-2-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "ponytail-2-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "ponytail-2-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "wavy": {
+      "source": "hair/wavy/adult/fg/",
+      "z": 120,
+      "animations": {
+        "walk": {
+          "path": "wavy-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "wavy-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "wavy-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "wavy-2": {
+      "source": "hair/wavy/adult/bg/",
+      "z": 9,
+      "animations": {
+        "walk": {
+          "path": "wavy-2-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "wavy-2-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "wavy-2-sit.png",
+          "frames": 3
+        }
+      }
+    },
+    "sleeveless": {
+      "source": "torso/clothes/sleeveless/sleeveless2/male/",
+      "z": 35,
+      "animations": {
+        "walk": {
+          "path": "sleeveless-walk.png",
+          "frames": 9
+        },
+        "idle": {
+          "path": "sleeveless-idle.png",
+          "frames": 2
+        },
+        "sit": {
+          "path": "sleeveless-sit.png",
+          "frames": 3
+        }
+      }
     }
   },
   "palettes": {
@@ -953,6 +1061,121 @@
         "https://opengameart.org/content/lpc-expanded-simple-shirts"
       ],
       "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "long",
+      "file": "hair/long",
+      "notes": "",
+      "authors": [
+        "JaidynReiman",
+        "Manuel Riecke (MrBeast)"
+      ],
+      "licenses": [
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/lpc-expanded-hair"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "ponytail",
+      "file": "hair/ponytail",
+      "notes": "",
+      "authors": [
+        "JaidynReiman",
+        "Manuel Riecke (MrBeast)"
+      ],
+      "licenses": [
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/lpc-expanded-hair"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "ponytail-2",
+      "file": "hair/ponytail",
+      "notes": "",
+      "authors": [
+        "JaidynReiman",
+        "Manuel Riecke (MrBeast)"
+      ],
+      "licenses": [
+        "CC-BY-SA 3.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+        "https://opengameart.org/content/lpc-expanded-hair"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "wavy",
+      "file": "hair/wavy",
+      "notes": "",
+      "authors": [
+        "JaidynReiman",
+        "Nila122"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 2.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/3-hairs-for-lpc",
+        "https://opengameart.org/content/lpc-expanded-hair"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "wavy-2",
+      "file": "hair/wavy",
+      "notes": "",
+      "authors": [
+        "JaidynReiman",
+        "Nila122"
+      ],
+      "licenses": [
+        "OGA-BY 3.0",
+        "CC-BY-SA 3.0",
+        "GPL 2.0",
+        "GPL 3.0"
+      ],
+      "urls": [
+        "https://opengameart.org/content/3-hairs-for-lpc",
+        "https://opengameart.org/content/lpc-expanded-hair"
+      ],
+      "selectedLicense": "CC-BY-SA 3.0"
+    },
+    {
+      "layer": "sleeveless",
+      "file": "torso/clothes/sleeveless/sleeveless2",
+      "notes": "original by ElizaWy; sleeveless adapted from original by JaidynReiman",
+      "authors": [
+        "ElizaWy",
+        "JaidynReiman",
+        "Stephen Challener (Redshrike)",
+        "Johannes Sjölund (wulax)"
+      ],
+      "licenses": [
+        "OGA-BY 3.0"
+      ],
+      "urls": [
+        "http://opengameart.org/content/lpc-revised-character-basics",
+        "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing",
+        "https://opengameart.org/content/lpc-expanded-sit-run-jump-more",
+        "https://opengameart.org/content/lpc-expanded-simple-shirts"
+      ],
+      "selectedLicense": "OGA-BY 3.0"
     }
   ],
   "files": [
@@ -1075,6 +1298,96 @@
       "path": "shortsleeve-sit.png",
       "source": "spritesheets/torso/clothes/shortsleeve/shortsleeve/male/sit.png",
       "sha256": "62c225c0be76ceba15c88b3519ba0d9917616ae4a622f4f31797d05ca51be997"
+    },
+    {
+      "path": "long-walk.png",
+      "source": "spritesheets/hair/long/adult/walk.png",
+      "sha256": "e5017ce13b1788fb70e0268170cebff2819f5dbf3256a108189816b3f219bbb0"
+    },
+    {
+      "path": "long-idle.png",
+      "source": "spritesheets/hair/long/adult/idle.png",
+      "sha256": "0a34120b5a95f090dac1268b378285632735872c5489343c624ea5d715f61d3e"
+    },
+    {
+      "path": "long-sit.png",
+      "source": "spritesheets/hair/long/adult/sit.png",
+      "sha256": "23e212d60c06ab55b4c2b09028b95f2e4d9d32d855c9b0549782c48a5acb3559"
+    },
+    {
+      "path": "ponytail-walk.png",
+      "source": "spritesheets/hair/ponytail/adult/fg/walk.png",
+      "sha256": "60034a16cedd173b1d8191da4987aeeb4648a534c0f58cd00e10a2d45606ae2b"
+    },
+    {
+      "path": "ponytail-idle.png",
+      "source": "spritesheets/hair/ponytail/adult/fg/idle.png",
+      "sha256": "8b62663001dd938dbdf77eef87fc6fb04417d3af2d4058b0149fb37c429e2f3f"
+    },
+    {
+      "path": "ponytail-sit.png",
+      "source": "spritesheets/hair/ponytail/adult/fg/sit.png",
+      "sha256": "665e9a2d88479d9765313343e27ad7d25127540cf8199dc760bae8137ab68f49"
+    },
+    {
+      "path": "ponytail-2-walk.png",
+      "source": "spritesheets/hair/ponytail/adult/bg/walk.png",
+      "sha256": "227756cbc31ce8a0f8ee64705610d5213cbc8a373f71de7128fe8534f782f41d"
+    },
+    {
+      "path": "ponytail-2-idle.png",
+      "source": "spritesheets/hair/ponytail/adult/bg/idle.png",
+      "sha256": "0c3e75b800488692934b292f865b1190e5e605d02f8016260a1928237333ba63"
+    },
+    {
+      "path": "ponytail-2-sit.png",
+      "source": "spritesheets/hair/ponytail/adult/bg/sit.png",
+      "sha256": "fdd4e5e7f73b10454e0deb9a862ab27ca401e0bcb9a26d39010187045319f865"
+    },
+    {
+      "path": "wavy-walk.png",
+      "source": "spritesheets/hair/wavy/adult/fg/walk.png",
+      "sha256": "3660e0a80bce493892c17c9da9243313d4a325750b497f2df051de7e046a0a2f"
+    },
+    {
+      "path": "wavy-idle.png",
+      "source": "spritesheets/hair/wavy/adult/fg/idle.png",
+      "sha256": "1af81bf2ad6019a95cc8632abc52a4ede0f9073f3334642da1f9bcd8c3d99e6c"
+    },
+    {
+      "path": "wavy-sit.png",
+      "source": "spritesheets/hair/wavy/adult/fg/sit.png",
+      "sha256": "ec01851314eae31eb577575096aeb749c0f148fc2456b629b710b2ca78dfedea"
+    },
+    {
+      "path": "wavy-2-walk.png",
+      "source": "spritesheets/hair/wavy/adult/bg/walk.png",
+      "sha256": "e791541ef0e89e194300708f5f1f0873b17da72c8eb5cd72f13f9371a4eeee03"
+    },
+    {
+      "path": "wavy-2-idle.png",
+      "source": "spritesheets/hair/wavy/adult/bg/idle.png",
+      "sha256": "e98b9fcaefcad69bfacb4fde5efedc732f805b966123b467763cd8d1742b5f4b"
+    },
+    {
+      "path": "wavy-2-sit.png",
+      "source": "spritesheets/hair/wavy/adult/bg/sit.png",
+      "sha256": "c4cc65cd8eddfe6dafb1a55a8b55658b399547e7fbc4defbe473ffa351fa7d83"
+    },
+    {
+      "path": "sleeveless-walk.png",
+      "source": "spritesheets/torso/clothes/sleeveless/sleeveless2/male/walk.png",
+      "sha256": "f532eab031a7c4b8e47634e60138e0be32f568659381bda1038689a0fca94836"
+    },
+    {
+      "path": "sleeveless-idle.png",
+      "source": "spritesheets/torso/clothes/sleeveless/sleeveless2/male/idle.png",
+      "sha256": "6afa5c5c53bd5eaefb83fbd66406dafa4fa532c077e5b5a64eddec3186d1db8f"
+    },
+    {
+      "path": "sleeveless-sit.png",
+      "source": "spritesheets/torso/clothes/sleeveless/sleeveless2/male/sit.png",
+      "sha256": "4e48d202c92f04f2206674db74af93c08ab52b10d874fed62c530e0b395b0342"
     }
   ]
 }

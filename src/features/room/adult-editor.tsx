@@ -1,7 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { HUMAN_SKINS, HAIR_COLORS } from '../character-creator/model';
+import {
+  hairOptions,
+  clothingOptions,
+  visualPalettes,
+  type VisualClip,
+} from '../character-visuals/catalog';
+import { customizeAppearance, resolveAppearance } from '../character-visuals/model';
 import { defaultAdultAppearance, type AdultAppearance, adultAppearanceSchema } from './domain';
 import { SpritePreview } from './sprite-preview';
 export function AdultEditor({
@@ -20,9 +26,21 @@ export function AdultEditor({
   const [name, setName] = useState(initialName);
   const [a, setA] = useState(initial ?? defaultAdultAppearance);
   const [error, setError] = useState('');
+  const [pose, setPose] = useState<VisualClip>('idle');
+  const [direction, setDirection] = useState(2);
+  const selected = resolveAppearance(a);
+  const changeColor = (
+    key: 'skin' | 'hairColor' | 'eyeColor' | 'clothingColor' | 'pantsColor',
+    color: string,
+  ) =>
+    setA((current) =>
+      key === 'pantsColor'
+        ? customizeAppearance(current, { pantsColor: color })
+        : { ...current, [key]: color },
+    );
   const colors = (
     label: string,
-    key: 'skin' | 'hairColor' | 'eyeColor' | 'clothingColor',
+    key: 'skin' | 'hairColor' | 'eyeColor' | 'clothingColor' | 'pantsColor',
     values: string[],
   ) => (
     <fieldset>
@@ -33,13 +51,23 @@ export function AdultEditor({
             key={color}
             style={{ backgroundColor: color }}
             aria-label={`${label} ${color}`}
-            aria-pressed={a[key] === color}
-            onClick={() => setA({ ...a, [key]: color })}
+            aria-pressed={selected[key] === color}
+            onClick={() => changeColor(key, color)}
           >
-            {a[key] === color && <span className="color-selected" aria-hidden="true" />}
+            {selected[key] === color && <span className="color-selected" aria-hidden="true" />}
           </button>
         ))}
       </div>
+      <label className="custom-color">
+        Outra cor
+        <input
+          type="color"
+          aria-label={`${label} personalizado`}
+          value={selected[key]}
+          onChange={(event) => changeColor(key, event.target.value)}
+        />
+        <span>{selected[key]}</span>
+      </label>
     </fieldset>
   );
   return (
@@ -55,10 +83,45 @@ export function AdultEditor({
       </div>
       <div className="adult-editor-grid">
         <div className="adult-preview">
-          <SpritePreview appearance={a} label={`Prévia adulta de ${name || 'seu Pomin'}`} />
+          <SpritePreview
+            appearance={a}
+            clip={pose}
+            direction={direction}
+            animated={pose === 'walk'}
+            label={`Prévia adulta de ${name || 'seu Pomin'}`}
+          />
           <h2>{name || 'Uma vida por descobrir'}</h2>
           <p>Base adulta LPC · corpo-base A</p>
           <small>A base visual não define gênero ou personalidade.</small>
+          <fieldset className="preview-poses">
+            <legend>Conferir aparência</legend>
+            <div className="choice-row">
+              {(
+                [
+                  ['idle', 'Em pé'],
+                  ['walk', 'Caminhar'],
+                  ['sit', 'Sentar'],
+                ] as const
+              ).map(([id, label]) => (
+                <button key={id} aria-pressed={pose === id} onClick={() => setPose(id)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <label>
+            Direção da prévia
+            <select
+              value={direction}
+              onChange={(event) => setDirection(Number(event.target.value))}
+            >
+              <option value={2}>Frente</option>
+              <option value={0}>Costas</option>
+              <option value={1}>Esquerda</option>
+              <option value={3}>Direita</option>
+            </select>
+          </label>
+          <small>A mesma composição acompanha todas as poses.</small>
         </div>
         <div className="panel">
           <label>
@@ -71,57 +134,41 @@ export function AdultEditor({
               placeholder="Como vamos chamar essa história?"
             />
           </label>
-          {colors('Tom de pele', 'skin', HUMAN_SKINS)}
+          {colors('Tom de pele', 'skin', visualPalettes.skin)}
           <fieldset>
             <legend>Penteado</legend>
             <div className="choice-row">
-              {(
-                [
-                  ['plain', 'Curto'],
-                  ['afro', 'Afro'],
-                  ['bob', 'Chanel'],
-                  ['none', 'Sem cabelo'],
-                ] as const
-              ).map(([id, label]) => (
+              {hairOptions.map(({ id, label }) => (
                 <button
                   key={id}
-                  aria-pressed={a.hairStyle === id}
-                  className={a.hairStyle === id ? 'selected' : ''}
-                  onClick={() => setA({ ...a, hairStyle: id })}
+                  aria-pressed={selected.hair === id}
+                  className={selected.hair === id ? 'selected' : ''}
+                  onClick={() => setA(customizeAppearance(a, { hair: id }))}
                 >
                   {label}
                 </button>
               ))}
             </div>
           </fieldset>
-          {colors('Cor do cabelo', 'hairColor', HAIR_COLORS)}
-          {colors('Cor dos olhos', 'eyeColor', [
-            '#628472',
-            '#7897b3',
-            '#544532',
-            '#89709e',
-            '#303139',
-          ])}
+          {colors('Cor do cabelo', 'hairColor', visualPalettes.hairColor)}
+          {colors('Cor dos olhos', 'eyeColor', visualPalettes.eyeColor)}
           <label>
             Roupa
             <select
-              value={a.clothing}
+              value={selected.top}
               onChange={(e) =>
-                setA({ ...a, clothing: e.target.value as AdultAppearance['clothing'] })
+                setA(customizeAppearance(a, { top: e.target.value as typeof selected.top }))
               }
             >
-              <option value="longsleeve">Camisa de manga longa</option>
-              <option value="shortsleeve">Camisa de manga curta</option>
+              {clothingOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </label>
-          {colors('Cor da roupa', 'clothingColor', [
-            '#8975aa',
-            '#91a57f',
-            '#c48d90',
-            '#d0ae6e',
-            '#769cb4',
-            '#765c50',
-          ])}
+          {colors('Cor da roupa', 'clothingColor', visualPalettes.clothingColor)}
+          {colors('Cor da calça', 'pantsColor', visualPalettes.pantsColor)}
           <p className="small-note">
             As opções alteram as camadas reais do personagem. Outras bases e fases de vida serão
             adicionadas ao catálogo.

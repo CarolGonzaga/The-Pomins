@@ -16,8 +16,8 @@ export default function Credits() {
         créditos de cada artista.
       </p>
       <p>
-        Revisão: <code>{manifest.revision}</code>. Arte selecionada sob CC BY-SA 3.0 e CC0;
-        adaptações visuais sob CC BY-SA 3.0. Sem endosso dos autores.
+        Revisão: <code>{manifest.revision}</code>. Arte selecionada sob CC BY-SA 3.0, OGA-BY 3.0 e
+        CC0; adaptações visuais sob CC BY-SA 3.0. Sem endosso dos autores.
       </p>
       {manifest.credits.map((credit, index) => (
         <section className="panel" key={index}>
@@ -37,6 +37,8 @@ export default function Credits() {
         <a href="/assets/lpc/CREDITS.txt">Créditos completos</a> ·{' '}
         <a href="/assets/lpc/manifest.json">Catálogo, fontes, licenças e hashes dos PNGs</a> ·{' '}
         <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>
+        {' · '}
+        <a href="https://opengameart.org/content/oga-by-30-faq">OGA-BY 3.0</a>
       </p>
       <p>
         O quarto demonstrativo é arte original desenhada por código. Nenhum código do gerador GPL

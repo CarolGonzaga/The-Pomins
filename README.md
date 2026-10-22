@@ -1,5 +1,7 @@
 # pomins.
 
+**Entrega 3 técnica — personalização LPC:** o adulto de `/play` tem 7 penteados, 3 cortes de camisa e cores personalizáveis de pele, cabelo, olhos, camisa e calça. Prévia e Phaser compartilham a composição nas poses em pé, caminhada e sentado. Aparência salva/restaurada no Supabase real; 109 testes locais, lint, TypeScript e build aprovados nesta entrega. Sem migração ou dependência nova. Outras fases e alienígenas LPC aguardam arte compatível; o nascimento anterior permanece disponível. Veja [CHARACTER_VISUALS](docs/CHARACTER_VISUALS.md) e [resultados atuais](docs/TEST_RESULTS.md).
+
 **Supabase de desenvolvimento validado:** migrações autorizadas, Auth/recovery, adulto LPC, foco real, distribuição e restauração após novo login conferidos. Duas contas aprovaram 11 grupos de testes remotos de isolamento, repetição, rollback, concorrência e controle da sessão. Conta A: 4 minutos elegíveis, 2 distribuídos e 2 disponíveis; conta B: progresso e saldo próprios zerados. Consulte [SUPABASE_DEVELOPMENT_VALIDATION](docs/SUPABASE_DEVELOPMENT_VALIDATION.md) para evidências, limites e o mapeamento do lote remoto antes de novas migrações. Validação em iPhone físico e produção HTTPS ainda necessária.
 
 **Atualização de 21/10/2026 — Etapa 1 jogável:** abra **`/play`** para criar um adulto LPC, escolher estudar/ler/dormir, observar a caminhada automática pelo quarto e distribuir os minutos de sessões concluídas. O fluxo de bebê e nascimento em `/` foi preservado. A nova especificação em `docs/specs/` passa a orientar o jogo 2D em pixel art.

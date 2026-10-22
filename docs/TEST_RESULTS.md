@@ -1,5 +1,34 @@
 # Resultados de validação · Entrega 1
 
+## Consolidação Git da Entrega 3 — 21/10/2026
+
+Rodada nova antes do commit `feat: expand LPC character customization`:
+
+- `npm run lint`, `npm run typecheck` e `npm run build`: aprovados.
+- `npm test`: 81 aprovados; 2 testes nativos ignorados nesse comando e executados separadamente.
+- `node .cache/run-pg-race.mjs`: 2 aprovados em PostgreSQL descartável; servidor encerrado ao final. A mensagem SQL `Insufficient minutes` é a recusa esperada no teste de disputa do saldo.
+- E2E completo contra o build de produção local na porta 3101: 26 aprovados em 58,9s, Chromium desktop e viewport/toque de iPhone. Total desta rodada: **109 testes distintos aprovados**.
+- As primeiras execuções restritas de PostgreSQL/navegador não concluíram e foram interrompidas. A primeira repetição nativa encontrou a porta ainda ocupada e não foi contada como aprovação; após liberação, a execução completa acima passou. Os processos auxiliares foram executados com permissão ampliada, sem acesso a banco remoto.
+- Revisados os 44 arquivos alterados/adicionados, créditos, licenças e hashes dos assets. Sem achados de credenciais ou arquivos privados; `.env.local` e `.env.supabase-test.local` continuam ignorados.
+- Migrações, Auth/SSR, endpoints, Pomodoro, persistência/distribuição de minutos e dependências sem alteração em relação à base `55f9497`. Sem push. A verificação Supabase remota da implementação abaixo não foi repetida nesta consolidação.
+
+## Entrega 3 — personalização LPC — 21/10/2026
+
+Rodada atual, sobre a base `55f9497adf89641ac2f94d90876543bcd174402b`, sem reutilizar aprovações antigas:
+
+- `npm test`: **81 aprovados**, 2 testes nativos ignorados por esse comando.
+- `node .cache/run-pg-race.mjs`: os **2 testes nativos aprovados** em PostgreSQL local descartável, encerrado ao final.
+- `npm run lint`, `npm run typecheck` e `npm run build`: **aprovados**, repetidos após os ajustes finais de código.
+- Playwright completo contra o build de produção: **26 aprovados em 53,8s**, Chromium desktop e viewport/toque de iPhone. Inclui quatro cenários novos de personalização, poses/direções, animação, salvamento local, recarga, acessibilidade e largura mobile de 320px.
+- Total: **109 testes locais distintos aprovados**. Os testes de persistência em PGlite usam identidades simuladas e as migrações originais; não são testes do Supabase remoto.
+- Os 24 PNGs originais mantiveram seus hashes; os 42 recursos atuais têm dimensões, hashes e licenças verificados. Os 18 novos sprites foram recoloridos nas três poses preservando o canal alfa. Catálogo, ordenação das camadas traseiras/dianteiras, compatibilidade legada e fases sem arte têm testes próprios.
+
+**Verificação efetiva no Supabase de desenvolvimento:** a conta B salvou pelo aplicativo cabelo ondulado, camisa sem mangas e novas cores. `node scripts/verify-lpc-persistence.mjs` autenticou com senha normal, leu o quarto, encerrou apenas sua própria sessão SDK e autenticou novamente em outro cliente. Resultado: `remote_appearance_restored`, `layers_preserved`, `progress_balance_activity_unchanged` e `fresh_password_login` verdadeiros; **zero escritas de banco pelo script**. SHA-256 do script executado: `a52941933eb08b4a980db89ff0c9c6ce7074c30c6ce7da2146e7444e9e76c5c7`. A gravação foi feita pela interface real, não pelo script. A seleção também apareceu no Phaser após recarga; depois foi escolhida a atividade estudar para inspeção visual. Nenhum minuto foi distribuído nesta verificação.
+
+Não foram repetidos os ensaios remotos de foco, concorrência e recuperação de senha da Entrega 2; eles permanecem evidência histórica. Não houve alterações nessas regras, endpoints, persistência do quarto, migrações ou dependências. A prova atual de persistência remota não substitui um novo ensaio completo desses fluxos.
+
+Capturas locais ignoradas: `.cache/character-visuals/editor-desktop.png`, `.cache/character-visuals/phaser-study.png` e `test-results/visual-editor-iphone.png`. Mobile foi verificado em Chromium; Safari/iPhone físico e produção HTTPS continuam pendentes. Detalhes e limites: [CHARACTER_VISUALS.md](CHARACTER_VISUALS.md).
+
 ## Consolidação Git da Entrega 2 — 21/10/2026
 
 Verificações repetidas para o commit local `chore: validate supabase development integration`:

@@ -2,7 +2,13 @@ import * as Phaser from 'phaser';
 import { Navigator } from './navigation';
 import { roomMap } from './map';
 import { activities, type Resident, type AnimationState } from './domain';
-import { composeAtlas } from './sprites';
+import {
+  composeAtlas,
+  frameIndex,
+  ATLAS_COLUMNS,
+  FRAME_SIZE,
+} from '../character-visuals/compositor';
+import { appearanceKey } from '../character-visuals/model';
 export type SceneCallbacks = {
   onVisual: (state: AnimationState, x: number, y: number) => void;
   onArrive: (resident: Resident) => void;
@@ -43,7 +49,7 @@ export class RoomScene extends Phaser.Scene {
       .text(0, 0, 'z', { fontFamily: 'Georgia', fontSize: '10px', color: '#625575' })
       .setVisible(false);
     this.installTexture(this.atlas);
-    this.appearanceKey = JSON.stringify(this.resident.appearance);
+    this.appearanceKey = appearanceKey(this.resident.appearance);
     this.ready = true;
     this.sync(this.resident);
     this.events.once('shutdown', () => {
@@ -55,12 +61,23 @@ export class RoomScene extends Phaser.Scene {
     const old = this.textureKey;
     this.textureKey = `resident-${++this.textureId}`;
     const texture = this.textures.addCanvas(this.textureKey, atlas)!;
-    for (let i = 0; i < 108; i++) texture.add(i, 0, (i % 9) * 64, Math.floor(i / 9) * 64, 64, 64);
-    this.actor.setTexture(this.textureKey, 54);
+    for (let i = 0; i < 12 * ATLAS_COLUMNS; i++)
+      texture.add(
+        i,
+        0,
+        (i % ATLAS_COLUMNS) * FRAME_SIZE,
+        Math.floor(i / ATLAS_COLUMNS) * FRAME_SIZE,
+        FRAME_SIZE,
+        FRAME_SIZE,
+      );
+    this.actor.setTexture(this.textureKey, frameIndex('idle'));
     for (let d = 0; d < 4; d++)
       this.anims.create({
         key: `${this.textureKey}-walk-${d}`,
-        frames: Array.from({ length: 9 }, (_, i) => ({ key: this.textureKey, frame: d * 9 + i })),
+        frames: Array.from({ length: ATLAS_COLUMNS }, (_, i) => ({
+          key: this.textureKey,
+          frame: frameIndex('walk', d, i),
+        })),
         frameRate: 8,
         repeat: -1,
       });
@@ -72,14 +89,16 @@ export class RoomScene extends Phaser.Scene {
   sync(resident: Resident) {
     this.resident = resident;
     if (!this.ready) return;
-    const appearance = JSON.stringify(resident.appearance);
+    const appearance = appearanceKey(resident.appearance);
     if (appearance !== this.appearanceKey) {
       this.appearanceKey = appearance;
       composeAtlas(resident.appearance)
         .then((atlas) => {
           if (this.ready && this.appearanceKey === appearance) this.installTexture(atlas);
         })
-        .catch((e) => this.callbacks.onError(e.message));
+        .catch((e) => {
+          if (this.ready && this.appearanceKey === appearance) this.callbacks.onError(e.message);
+        });
     }
     if (this.version !== resident.activity_revision) {
       this.version = resident.activity_revision;
@@ -121,7 +140,7 @@ export class RoomScene extends Phaser.Scene {
         this.actor.play(key);
     } else {
       this.actor.anims.stop();
-      this.actor.setFrame((activity ? 8 : 4) * 9 + direction * 9);
+      this.actor.setFrame(frameIndex(activity ? 'sit' : 'idle', direction));
       if (activity?.id === 'read') {
         this.prop.fillStyle(0x735787).fillRect(x - 9, y - 25, 18, 9);
         this.prop.fillStyle(0xf7e9cb).fillRect(x - 7, y - 24, 14, 6);

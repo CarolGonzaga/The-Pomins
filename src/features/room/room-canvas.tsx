@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Resident, AnimationState } from './domain';
 import type { RoomScene } from './scene';
 import { composeAtlas } from './sprites';
+import { visualSupport } from '../character-visuals/model';
 export function RoomCanvas({
   resident,
   onArrive,
@@ -31,7 +32,11 @@ export function RoomCanvas({
       if (document.visibilityState === 'hidden') game?.loop.sleep();
       else game?.loop.wake();
     };
-    Promise.all([import('phaser'), import('./scene'), composeAtlas(latest.current.appearance)])
+    const support = visualSupport({ species: 'human', lifeStage: latest.current.life_stage });
+    const atlas = support.supported
+      ? composeAtlas(latest.current.appearance)
+      : Promise.reject(new Error(support.reason));
+    Promise.all([import('phaser'), import('./scene'), atlas])
       .then(([Phaser, { RoomScene }, atlas]) => {
         if (!live || !parent.current) return;
         const s = new RoomScene(latest.current, atlas, {

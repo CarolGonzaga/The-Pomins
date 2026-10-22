@@ -3,6 +3,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { defaultAppearance } from '../../src/features/character-creator/model';
+import { customizeAppearance } from '../../src/features/character-visuals/model';
 import {
   activities,
   defaultAdultAppearance,
@@ -132,6 +133,19 @@ describe('room migration, credits and safe allocations', () => {
       expect(row.destination).toEqual(activities[row.id].destination);
       expect(row.effects).toEqual(activities[row.id].effects);
     }
+  });
+  it('persists visual v2 through existing SQL and restores it under a fresh Auth identity', async () => {
+    const appearance = customizeAppearance(
+      { ...defaultAdultAppearance, hairColor: '#739b9a', eyeColor: '#aa794b' },
+      { hair: 'ponytail', top: 'sleeveless', pantsColor: '#746b8b' },
+    );
+    await command(a, 'appearance', { characterId: residentA, appearance });
+    expect((await state(a)).residents[0].appearance).toEqual(appearance);
+    expect((await state(b)).residents.some((resident) => resident.id === residentA)).toBe(false);
+    await expect(
+      command(b, 'appearance', { characterId: residentA, appearance }),
+    ).rejects.toThrow();
+    expect((await state(a)).residents[0].appearance).toEqual(appearance);
   });
   it('persists appearance and ignores arrival from a superseded activity', async () => {
     const appearance = { ...defaultAdultAppearance, hairStyle: 'afro', eyeColor: '#7897b3' };

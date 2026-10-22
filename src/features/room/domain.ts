@@ -1,25 +1,11 @@
 import { z } from 'zod';
-export const lifeStages = ['baby', 'child', 'teen', 'adult', 'elder'] as const;
-const color = z.string().regex(/^#[0-9a-fA-F]{6}$/);
-export const adultAppearanceSchema = z.object({
-  body: z.literal('male'),
-  skin: color,
-  hairStyle: z.enum(['plain', 'afro', 'bob', 'none']),
-  hairColor: color,
-  eyeColor: color,
-  clothing: z.enum(['longsleeve', 'shortsleeve']),
-  clothingColor: color,
-});
-export type AdultAppearance = z.infer<typeof adultAppearanceSchema>;
-export const defaultAdultAppearance: AdultAppearance = {
-  body: 'male',
-  skin: '#d8a17d',
-  hairStyle: 'plain',
-  hairColor: '#49352e',
-  eyeColor: '#628472',
-  clothing: 'longsleeve',
-  clothingColor: '#8975aa',
-};
+import { lifeStages, adultAppearanceSchema } from '../character-visuals/model';
+export {
+  lifeStages,
+  adultAppearanceSchema,
+  defaultAdultAppearance,
+} from '../character-visuals/model';
+export type { AdultAppearance } from '../character-visuals/model';
 export const attributes = z.object({
   knowledge: z.number().int().nonnegative(),
   creativity: z.number().int().nonnegative(),
