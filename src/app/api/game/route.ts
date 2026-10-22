@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { serverClient } from '@/lib/supabase/server';
 import { characterSchema } from '@/features/character-creator/model';
+import { resolveGameContext, SaveContextError } from '@/features/game-saves/server';
 const focusSchema = z.object({
   action: z.enum(['start', 'heartbeat', 'pause', 'resume', 'cancel', 'complete', 'recover']),
   id: z.uuid(),
@@ -11,6 +12,8 @@ const focusSchema = z.object({
   task: z.string().trim().max(160).optional(),
   firstStep: z.string().trim().max(160).optional(),
   residentId: z.uuid().optional(),
+  characterId: z.uuid().optional(),
+  saveId: z.uuid().optional(),
 });
 export async function POST(request: Request) {
   let sameOrigin = false;
@@ -38,22 +41,104 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Requisição inválida.' }, { status: 400 });
   }
   let result;
+  let context;
+  try {
+    // Heartbeats and recovery remain account/session scoped, including pre-migration sessions.
+    if (
+      body.kind === 'character' ||
+      body.kind === 'birth' ||
+      (body.kind === 'focus' && body.action === 'start')
+    )
+      context = await resolveGameContext(db, z.uuid().optional().parse(body.saveId));
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof SaveContextError ? e.message : 'Partida inválida.' },
+      { status: e instanceof SaveContextError ? e.status : 400 },
+    );
+  }
   if (body.kind === 'character') {
     const parsed = characterSchema.safeParse(body.character);
     if (!parsed.success)
       return NextResponse.json({ error: 'Revise o nome e a aparência.' }, { status: 400 });
-    result = await db
-      .rpc('create_character', { p_name: parsed.data.name, p_appearance: parsed.data.appearance })
-      .single();
+    result = context
+      ? await db
+          .rpc('create_character_for_save', {
+            p_save: context.save.id,
+            p_name: parsed.data.name,
+            p_appearance: parsed.data.appearance,
+          })
+          .single()
+      : await db
+          .rpc('create_character', {
+            p_name: parsed.data.name,
+            p_appearance: parsed.data.appearance,
+          })
+          .single();
   } else if (body.kind === 'birth') {
-    const parsed = z.object({ memory: z.enum(['sky', 'home']) }).safeParse(body);
+    const parsed = z
+      .object({ memory: z.enum(['sky', 'home']), characterId: z.uuid().optional() })
+      .safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: 'Memória inválida.' }, { status: 400 });
-    result = await db.rpc('read_birth', { p_memory: parsed.data.memory }).single();
+    if (context) {
+      let characterId = parsed.data.characterId;
+      if (!characterId) {
+        const legacy = await db
+          .from('characters')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('save_id', context.save.id)
+          .eq('render_system', 'legacy')
+          .is('archived_at', null)
+          .maybeSingle();
+        if (legacy.error || !legacy.data)
+          return NextResponse.json(
+            { error: 'Informe o personagem desta partida.' },
+            { status: 409 },
+          );
+        characterId = legacy.data.id;
+      }
+      result = await db
+        .rpc('read_birth_for_save', {
+          p_save: context.save.id,
+          p_character: characterId,
+          p_memory: parsed.data.memory,
+        })
+        .single();
+    } else result = await db.rpc('read_birth', { p_memory: parsed.data.memory }).single();
   } else if (body.kind === 'focus') {
     const parsed = focusSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: 'Sessão inválida.' }, { status: 400 });
     const a = parsed.data;
-    if (a.action === 'start' && a.residentId) {
+    if (a.action === 'start' && context) {
+      let characterId = a.residentId ?? a.characterId;
+      if (!characterId) {
+        const legacy = await db
+          .from('characters')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('save_id', context.save.id)
+          .eq('render_system', 'legacy')
+          .is('archived_at', null)
+          .maybeSingle();
+        if (legacy.error || !legacy.data)
+          return NextResponse.json(
+            { error: 'Informe o personagem desta partida.' },
+            { status: 409 },
+          );
+        characterId = legacy.data.id;
+      }
+      result = await db
+        .rpc('start_save_focus', {
+          p_save: context.save.id,
+          p_id: a.id,
+          p_client: a.clientId,
+          p_character: characterId,
+          p_seconds: (a.minutes ?? 25) * 60,
+          p_task: a.task ?? '',
+          p_step: a.firstStep ?? '',
+        })
+        .single();
+    } else if (a.action === 'start' && a.residentId) {
       result = await db
         .rpc('start_resident_focus', {
           p_id: a.id,

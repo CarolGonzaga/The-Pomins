@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { characterSchema, type Character } from '../character-creator/model';
+import { saveContextFields } from '../game-saves/model';
 
 export const careIds = [
   'baby_feed',
@@ -104,9 +105,11 @@ export const babyStatsSchema = z.object({
 });
 export type BabyStats = z.infer<typeof babyStatsSchema>;
 export const babyStateSchema = z.object({
+  ...saveContextFields,
   revision: counter,
   household_id: z.string(),
   character: characterSchema.extend({
+    save_id: z.string().optional(),
     id: z.string(),
     born_at: z.string(),
     life_xp: counter,

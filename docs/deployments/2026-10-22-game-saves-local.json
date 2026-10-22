@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-22",
+  "baseline_commit": "6bbf3aa67d715a05318c45a27dc81fb2e7e8096d",
+  "environment": "local-pglite-simulated-auth",
+  "migration": "supabase/migrations/20261022134830_game_saves_compatibility.sql",
+  "migration_sha256": "352e3bfc2861fb658ba846df92ee6862ed50a7d07e13cd59154be278139e6038",
+  "tables": {
+    "profiles": {
+      "before": 3,
+      "after": 3,
+      "original_columns_equal": true
+    },
+    "households": {
+      "before": 3,
+      "after": 3,
+      "original_columns_equal": true
+    },
+    "characters": {
+      "before": 4,
+      "after": 4,
+      "original_columns_equal": true
+    },
+    "focus_sessions": {
+      "before": 3,
+      "after": 3,
+      "original_columns_equal": true
+    },
+    "focus_events": {
+      "before": 6,
+      "after": 6,
+      "original_columns_equal": true
+    },
+    "focus_rewards": {
+      "before": 2,
+      "after": 2,
+      "original_columns_equal": true
+    },
+    "wallets": {
+      "before": 3,
+      "after": 3,
+      "original_columns_equal": true
+    },
+    "focus_credits": {
+      "before": 2,
+      "after": 2,
+      "original_columns_equal": true
+    },
+    "focus_allocations": {
+      "before": 2,
+      "after": 2,
+      "original_columns_equal": true
+    },
+    "allocation_requests": {
+      "before": 2,
+      "after": 2,
+      "original_columns_equal": true
+    },
+    "character_memories": {
+      "before": 1,
+      "after": 1,
+      "original_columns_equal": true
+    },
+    "game_events": {
+      "before": 4,
+      "after": 4,
+      "original_columns_equal": true
+    },
+    "baby_care_config": {
+      "before": 1,
+      "after": 1,
+      "original_columns_equal": true
+    },
+    "activities": {
+      "before": 9,
+      "after": 9,
+      "original_columns_equal": true
+    }
+  },
+  "focus_engine_unchanged": true,
+  "paused_session_preserved": true,
+  "existing_ids_preserved": true,
+  "game_saves_created": 3,
+  "native_concurrency": "reported separately",
+  "remote_applied": false,
+  "tests": {
+    "vitest_passed": 125,
+    "native_postgres_passed": 7,
+    "playwright_passed": 32,
+    "total_distinct": 164,
+    "lint": "passed",
+    "typescript": "passed",
+    "build": "passed",
+    "playwright_environment": "isolated local production; Chromium desktop and iPhone viewport/touch; not physical Safari"
+  },
+  "remote_writes": false,
+  "backup_created": false,
+  "live_server_untouched": true
+}

@@ -1,5 +1,11 @@
 # Publicação na Vercel e Supabase
 
+## Entrega 5A + 5B — aplicada ao desenvolvimento
+
+`20261022134830_game_saves_compatibility.sql` foi aplicada ao desenvolvimento na versão exata `20261022134830`, após autorização, backup cifrado e restauração de 42 tabelas públicas/Auth/histórico em PostgreSQL local. Conector indisponível: execução pela conexão PostgreSQL com CA oficial, SQL/histórico atômicos e atualização do cache PostgREST. Nenhuma migração anterior foi reaplicada ou alterada. Uma sessão pausada e o saldo foram preservados; nenhum foco ativo interrompido. A aplicação nova negocia o contexto e mantém adaptadores para clientes anteriores.
+
+Recibo: [2026-10-22-game-saves-development.json](deployments/2026-10-22-game-saves-development.json). Cópia cifrada privada em `secrets/backups/game-saves-20261022` (ignorada; chave DPAPI depende do perfil Windows desta máquina). Não há backup portátil/off-site. Plano com limites de recuperação: [GAME_SAVES_FOUNDATION.md](GAME_SAVES_FOUNDATION.md). Não existe downgrade automático que apague slots ou recrie unicidade por conta. O lote inicial remoto continua mapeando dois arquivos locais; reconciliar antes de futuras operações CLI, sem alterar registros antigos às cegas. Não aplicar esta migração novamente ao desenvolvimento. Nenhuma publicação pública ou push realizado.
+
 ## Atualização da Entrega 4A
 
 `supabase/migrations/20261022021139_baby_care.sql` foi aplicada ao desenvolvimento após autorização, na versão atribuída pelo servidor `20261022021139`. Reutiliza os créditos existentes para cuidados, com novas RPCs e configuração protegida por RLS. Em projetos novos, aplicar depois das duas migrações anteriores; no desenvolvimento, não reaplicar. O lote inicial continua mapeando dois arquivos locais e precisa de reconciliação antes de `db push`. Recibo: `deployments/2026-10-21-baby-care.json`; detalhes e limitações: `BABY_CARE.md`. Nenhuma implantação pública foi feita.

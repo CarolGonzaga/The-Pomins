@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { careIds } from '../baby-care/model';
+import { saveContextFields } from '../game-saves/model';
 import { lifeStages, adultAppearanceSchema } from '../character-visuals/model';
 export {
   lifeStages,
@@ -80,6 +81,7 @@ export const activities: Record<ActivityId, Activity> = {
   },
 };
 export const residentSchema = z.object({
+  save_id: z.string().optional(),
   id: z.string(),
   household_id: z.string(),
   name: z.string().min(2).max(32),
@@ -103,12 +105,14 @@ export const creditSchema = z.object({
   created_at: z.string(),
 });
 export const allocationLineSchema = z.object({
+  saveId: z.uuid().optional(),
   sessionId: z.uuid(),
   characterId: z.uuid(),
   activity: z.enum(activityIds),
   minutes: z.number().int().min(1).max(120),
 });
 export const roomStateSchema = z.object({
+  ...saveContextFields,
   revision: z.number().int().nonnegative().default(0),
   household: z.object({ id: z.string(), name: z.string() }),
   residents: z.array(residentSchema),
@@ -116,6 +120,7 @@ export const roomStateSchema = z.object({
   allocations: z.array(
     z.object({
       id: z.string(),
+      save_id: z.string().optional(),
       session_id: z.string(),
       character_id: z.string(),
       activity_id: z.enum([...activityIds, ...careIds]),

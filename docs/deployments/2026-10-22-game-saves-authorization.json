@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-22",
+  "authorization": "development-only-after-prerequisites",
+  "remote_applied": false,
+  "backup_created": false,
+  "backup_restore_verified": false,
+  "backup_dashboard": "Free Plan does not include project backups.",
+  "pending": "PostgreSQL connection for logical backup and isolated restore rehearsal",
+  "function_drift_since_preflight": [],
+  "counts": {
+    "events": 5,
+    "credits": 2,
+    "rewards": 2,
+    "memories": 0,
+    "profiles": 2,
+    "requests": 2,
+    "sessions": 4,
+    "characters": 3,
+    "households": 2,
+    "allocations": 2
+  },
+  "totals": {
+    "coins": 8,
+    "eligible": 4,
+    "allocated": 2,
+    "account_xp": 40,
+    "wallet_energy": 4,
+    "allocated_rows": 2
+  },
+  "open_sessions": {
+    "paused": 1
+  },
+  "incompatible_links": {
+    "credit_session": 0,
+    "event_character": 0,
+    "memory_character": 0,
+    "allocation_credit": 0,
+    "session_character": 0,
+    "allocation_request": 0,
+    "character_household": 0,
+    "allocation_character": 0,
+    "profiles_without_household": 0
+  }
+}

@@ -1,5 +1,26 @@
 # Resultados de validação · Entrega 1
 
+## Consolidação Git da Entrega 5A + 5B — 22/10/2026
+
+Rodada executada antes do commit `feat: add game saves foundation and compatibility`: `npm test` **125 aprovados** (sete nativos ignorados nesse comando e executados separadamente); PostgreSQL descartável **7 aprovados em 1,24s**; Playwright contra build isolado **32 aprovados em 48,4s**. Total **164 testes distintos**. Lint, TypeScript explícito e build aprovados. Sem alterações de código após os testes.
+
+Nova restauração local do backup cifrado e comparação de catálogo com Supabase somente por leitura: SQL do histórico idêntico ao arquivo, esquema de `public`/`game_private` equivalente, migrações antigas preservadas e sessão pausada intacta. Tratada no comparador a representação adicional de `NOT NULL` no catálogo PostgreSQL 18; nulabilidade comparada em ambos. Backup/chave/manifesto preservados fora do Git; credenciais e arquivos privados excluídos. Auth real não repetido nesta consolidação; sua evidência é a rodada de aplicação abaixo. Sem push. [Recibo atual](deployments/2026-10-22-game-saves-consolidation.json).
+
+## Entrega 5A + 5B — partidas — 22/10/2026
+
+**Validação remota após autorização:** migração `20261022134830` aplicada em 22/10/2026. Backup cifrado de 42 tabelas (`public`, `auth`, `supabase_migrations`), decriptação e restauração local comprovados. Ensaio sobre dados reais e comparação pós-migração preservaram todas as colunas anteriores/IDs, os dois registros anteriores de migração, saldos e sessão pausada. RLS/grants/FKs e motor de foco conferidos. Seis grupos de Auth real com duas contas aprovaram contexto, isolamento, quarto/aparência, bebê e cookies SSR de `/` e `/play` em servidor isolado 3156; sem gastos ou criação de foco. Sessões SDK desconectadas com escopo local; navegador e servidor 3000 preservados. Lint repetido com o script novo e aprovado. Advisors sem erros, com avisos documentados de RPCs autenticadas intencionais e proteção de senha pré-existente. Recibo: [aplicação real](deployments/2026-10-22-game-saves-development.json). Os itens abaixo registram a rodada local e o preflight anteriores; não indicam que a aplicação remota ainda esteja pendente.
+
+Verificações novas sobre `6bbf3aa`, não reaproveitando aprovações históricas:
+
+- `npm test`: **125 aprovados**, sete ignorados por dependerem de PostgreSQL nativo e executados separadamente.
+- PostgreSQL nativo descartável: **7 aprovados**, última rodada em 845ms; concorrência real entre conexões, mesma requisição, bebê/adulto e saves disputando o último minuto, uma sessão aberta por conta. Mensagens de saldo insuficiente/índice `one_open_session` são recusas esperadas. Banco encerrado e auxiliar finalizado com saída zero.
+- Playwright em build de produção isolado na porta 3155: **32 aprovados em 57,5s**, desktop e viewport/toque de iPhone. Rotas antigas, nascimento, quarto, LPC, cuidados, persistência e foco local preservados. Não representa Safari físico ou autenticação real pós-migração.
+- **164 testes distintos aprovados**. `npm run lint`, `npm run typecheck` e build Next.js aprovados. TypeScript e build na cópia de fontes/configuração `.cache/game-saves-validation`; nenhuma compilação na pasta `.next` do servidor real. Aviso benigno de múltiplos lockfiles na cópia aninhada. A execução inicial restrita do lint não retornou prontamente; execução completa com acesso ampliado terminou com saída zero.
+- Ensaio PGlite: quatro personagens (incluindo arquivado), adulto/bebê, memória, cuidados, recompensas, créditos, pedidos antigos e sessão pausada. Três saves novos; todos os IDs/colunas anteriores das **14 tabelas** idênticos. Motor SQL de foco comparado integralmente. Testes novos de RLS/grants, isolamento entre contas e saves, FKs, rollback, repetição de pedidos antigos, aparência/restauração, revisão de foco separada e exclusão de conta.
+- Preflight remoto exclusivamente de leitura: nove verificações de vínculos sem falhas e hashes de 11 funções compatíveis com as migrações locais. Não se aplicou a migração, não se fez login SDK nem consumo de minutos no remoto. Uma sessão pausada foi preservada; o navegador real não foi manipulado.
+
+Recibos: [ensaio local](deployments/2026-10-22-game-saves-local.json), [preflight remoto](deployments/2026-10-22-game-saves-preflight.json). Relatório, limitações e arquivos: [GAME_SAVES_FOUNDATION.md](GAME_SAVES_FOUNDATION.md). Base 5A/5B e compatibilidade autenticada validadas localmente e no desenvolvimento. Cuidado pago/concorrência comprovados localmente; sem novos gastos remotos. iPhone físico pendente. Sem dependências novas, migrações antigas alteradas, commit ou push.
+
 ## Entrega 4A — bebê e cuidados — 21/10/2026
 
 Base `cd47161b780032c100e8c19535b1a64987899409`. Verificações novas desta implementação:

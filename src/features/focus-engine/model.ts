@@ -43,6 +43,7 @@ export function formatTime(ms: number) {
 export type FocusSession = {
   id: string;
   character_id: string;
+  origin_save_id?: string;
   status: FocusStatus;
   planned_seconds: number;
   validated_ms: number;

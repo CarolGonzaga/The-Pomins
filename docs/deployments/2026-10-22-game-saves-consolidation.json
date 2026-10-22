@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-10-22T19:14:40.693Z",
+  "migration_version": "20261022134830",
+  "stored_sql_exact_match": true,
+  "schema_matches_restored_backup_plus_local_migration": true,
+  "catalog_counts": {
+    "columns": 136,
+    "constraints": 107,
+    "indexes": 38,
+    "policies": 17,
+    "functions": 32,
+    "triggers": 9,
+    "access": 16
+  },
+  "backup_ciphertext_sha256": "c71fbc62e95ed53a30b10143094b2a282673cfe85650dfe56a469dd370b05e0a",
+  "backup_decryption_and_restore_verified": true,
+  "backup_ignored_path": "secrets/backups/game-saves-20261022",
+  "open_sessions_untouched": [
+    {
+      "status": "paused",
+      "count": 1
+    }
+  ],
+  "remote_read_only": true,
+  "baseline_commit": "6bbf3aa67d715a05318c45a27dc81fb2e7e8096d",
+  "commit_message": "feat: add game saves foundation and compatibility",
+  "tests": {
+    "vitest_passed": 125,
+    "vitest_native_skipped": 7,
+    "native_postgres_passed": 7,
+    "playwright_passed": 32,
+    "playwright_seconds": 48.4,
+    "total_distinct_passed": 164,
+    "lint": "passed",
+    "typescript": "passed",
+    "build": "passed"
+  },
+  "credentials_or_private_files_to_commit": false,
+  "previous_migrations_unchanged": true,
+  "real_auth_tests_repeated": false,
+  "push_performed": false
+}

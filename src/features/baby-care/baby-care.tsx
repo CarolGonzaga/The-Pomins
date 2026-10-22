@@ -17,15 +17,18 @@ import {
 } from './model';
 import { babyApi, CareRejected, loadLocalBaby, localCare } from './persistence';
 import './baby-care.css';
+import { isCurrentSnapshot } from '../game-saves/model';
 
 export function BabyCare({
   character,
   authenticated,
   onFocus,
+  saveId,
 }: {
   character: Character;
   authenticated: boolean;
   onFocus: () => void;
+  saveId?: string;
 }) {
   const [state, setState] = useState<BabyState | null>(null);
   const [selected, setSelected] = useState<CareId>('baby_feed');
@@ -42,18 +45,22 @@ export function BabyCare({
   const accept = useCallback(
     (next: BabyState) => {
       if (next.character.id !== character.id) return;
-      setState((prev) => (!prev || next.revision >= prev.revision ? next : prev));
+      setState((prev) => (!prev || isCurrentSnapshot(prev, next) ? next : prev));
     },
     [character.id],
   );
   const refresh = useCallback(async () => {
-    accept(authenticated ? await babyApi(character.id) : loadLocalBaby(character));
-  }, [authenticated, character, accept]);
+    accept(
+      authenticated ? await babyApi(character.id, undefined, saveId) : loadLocalBaby(character),
+    );
+  }, [authenticated, character, accept, saveId]);
   useEffect(() => {
     let live = true;
     const load = async () => {
       try {
-        const next = authenticated ? await babyApi(character.id) : loadLocalBaby(character);
+        const next = authenticated
+          ? await babyApi(character.id, undefined, saveId)
+          : loadLocalBaby(character);
         if (live) {
           accept(next);
           setError('');
@@ -91,7 +98,7 @@ export function BabyCare({
       window.removeEventListener('storage', restore);
       document.removeEventListener('visibilitychange', restore);
     };
-  }, [authenticated, character, pendingKey, accept]);
+  }, [authenticated, character, pendingKey, accept, saveId]);
   function react(activity: CareId) {
     if (timer.current) clearTimeout(timer.current);
     setSelected(activity);
@@ -109,7 +116,7 @@ export function BabyCare({
       sessionStorage.setItem(pendingKey, JSON.stringify(input));
       setPending(input);
       const next = authenticated
-        ? await babyApi(character.id, input)
+        ? await babyApi(character.id, input, saveId)
         : await localCare(character, input);
       accept(next);
       sessionStorage.removeItem(pendingKey);

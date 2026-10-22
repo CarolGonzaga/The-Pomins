@@ -13,6 +13,8 @@ suite('independent PostgreSQL connections: allocation race', () => {
   let character: string;
   let baby: string;
   const sharedSession = randomUUID();
+  const crossSaveSession = randomUUID();
+  let primarySave: string, secondarySave: string, secondaryCharacter: string;
   async function acting<T>(client: PoolClient, fn: () => Promise<T>) {
     await client.query('begin');
     try {
@@ -53,6 +55,9 @@ suite('independent PostgreSQL connections: allocation race', () => {
     for (const path of ['202610160001_foundation.sql', '202610210001_playable_room.sql'])
       await pool.query(readFileSync(`supabase/migrations/${path}`, 'utf8'));
     await pool.query(readFileSync('supabase/migrations/20261022021139_baby_care.sql', 'utf8'));
+    await pool.query(
+      readFileSync('supabase/migrations/20261022134830_game_saves_compatibility.sql', 'utf8'),
+    );
     await pool.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)', [
       user,
       JSON.stringify({ nickname: 'race_test' }),
@@ -73,6 +78,9 @@ suite('independent PostgreSQL connections: allocation race', () => {
         ]),
       );
       baby = created.rows[0].id;
+      primarySave = (
+        await acting(client, () => client.query('select public.get_game_context() data'))
+      ).rows[0].data.save.id;
     } finally {
       client.release();
     }
@@ -83,6 +91,39 @@ suite('independent PostgreSQL connections: allocation race', () => {
     await pool.query(
       "insert into public.focus_sessions(id,user_id,character_id,status,planned_seconds,validated_ms,client_id) values($1,$2,$3,'completed',120,120000,$4)",
       [sharedSession, user, baby, randomUUID()],
+    );
+    // This second slot exists only in the disposable DB fixture, never in the public UI.
+    secondarySave = randomUUID();
+    const household = randomUUID();
+    await pool.query(
+      "insert into public.game_saves(id,user_id,name) values($1,$2,'Outra partida')",
+      [secondarySave, user],
+    );
+    await pool.query('insert into public.households(id,user_id,save_id) values($1,$2,$3)', [
+      household,
+      user,
+      secondarySave,
+    ]);
+    await pool.query('update public.game_saves set primary_household_id=$1 where id=$2', [
+      household,
+      secondarySave,
+    ]);
+    const other = await pool.connect();
+    try {
+      secondaryCharacter = (
+        await acting(other, () =>
+          other.query("select public.room_command_for_save($1,'create',$2::jsonb) data", [
+            secondarySave,
+            JSON.stringify({ name: 'Outra vida', appearance: defaultAdultAppearance }),
+          ]),
+        )
+      ).rows[0].data.residents[0].id;
+    } finally {
+      other.release();
+    }
+    await pool.query(
+      "insert into public.focus_sessions(id,user_id,character_id,status,planned_seconds,validated_ms,client_id) values($1,$2,$3,'completed',120,120000,$4)",
+      [crossSaveSession, user, secondaryCharacter, randomUUID()],
     );
   });
   afterAll(async () => {
@@ -186,5 +227,97 @@ suite('independent PostgreSQL connections: allocation race', () => {
     } finally {
       client.release();
     }
+  });
+  async function allocateInSave(save: string, char: string, requestId: string) {
+    const client = await pool.connect();
+    try {
+      return await acting(client, () =>
+        client.query("select public.room_command_for_save($1,'allocate',$2::jsonb)", [
+          save,
+          JSON.stringify({
+            requestId,
+            lines: [
+              { sessionId: crossSaveSession, characterId: char, activity: 'study', minutes: 1 },
+            ],
+          }),
+        ]),
+      );
+    } finally {
+      client.release();
+    }
+  }
+  it('deduplicates a scoped request concurrently without changing its global identity', async () => {
+    const request = randomUUID();
+    const result = await Promise.allSettled([
+      allocateInSave(secondarySave, secondaryCharacter, request),
+      allocateInSave(secondarySave, secondaryCharacter, request),
+    ]);
+    expect(result.every((r) => r.status === 'fulfilled')).toBe(true);
+    expect(
+      (
+        await pool.query('select allocated_minutes from public.focus_credits where session_id=$1', [
+          crossSaveSession,
+        ])
+      ).rows[0].allocated_minutes,
+    ).toBe(1);
+    expect(
+      (await pool.query('select * from public.focus_allocations where request_id=$1', [request]))
+        .rows,
+    ).toHaveLength(1);
+  });
+  it('lets only one save consume the final account minute', async () => {
+    const result = await Promise.allSettled([
+      allocateInSave(primarySave, character, randomUUID()),
+      allocateInSave(secondarySave, secondaryCharacter, randomUUID()),
+    ]);
+    expect(result.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
+    expect(result.filter((r) => r.status === 'rejected')).toHaveLength(1);
+    expect(
+      (
+        await pool.query('select allocated_minutes from public.focus_credits where session_id=$1', [
+          crossSaveSession,
+        ])
+      ).rows[0].allocated_minutes,
+    ).toBe(2);
+    expect(
+      (
+        await pool.query(
+          'select sum(minutes)::integer total from public.focus_allocations where session_id=$1',
+          [crossSaveSession],
+        )
+      ).rows[0].total,
+    ).toBe(2);
+  });
+  it('allows only one open focus when two saves start simultaneously', async () => {
+    const ids = [randomUUID(), randomUUID()],
+      characters = [character, secondaryCharacter],
+      saves = [primarySave, secondarySave];
+    const result = await Promise.allSettled(
+      ids.map(async (id, i) => {
+        const client = await pool.connect();
+        try {
+          return await acting(client, () =>
+            client.query("select public.start_save_focus($1,$2,$3,$4,120,'','')", [
+              saves[i],
+              id,
+              randomUUID(),
+              characters[i],
+            ]),
+          );
+        } finally {
+          client.release();
+        }
+      }),
+    );
+    expect(result.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
+    expect(result.filter((r) => r.status === 'rejected')).toHaveLength(1);
+    expect(
+      (
+        await pool.query(
+          "select * from public.focus_sessions where user_id=$1 and status in ('active','paused','interrupted')",
+          [user],
+        )
+      ).rows,
+    ).toHaveLength(1);
   });
 });

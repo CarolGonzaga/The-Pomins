@@ -33,6 +33,7 @@ import { BabyCare } from '@/features/baby-care/baby-care';
 import { localSessionCompleted } from '@/features/room/persistence';
 type Initial = {
   userId: string;
+  saveId?: string;
   nickname: string;
   isPublic: boolean;
   accountXp: number;
@@ -150,7 +151,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
     setBusy(true);
     try {
       const saved = authenticated
-        ? await gameApi<Character>({ kind: 'character', character: draft })
+        ? await gameApi<Character>({ kind: 'character', character: draft, saveId: initial?.saveId })
         : {
             ...draft,
             id: crypto.randomUUID(),
@@ -170,7 +171,12 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
     setBusy(true);
     try {
       const saved = authenticated
-        ? await gameApi<Character>({ kind: 'birth', memory })
+        ? await gameApi<Character>({
+            kind: 'birth',
+            memory,
+            characterId: character.id,
+            saveId: initial?.saveId,
+          })
         : { ...character, birth_read: true, first_memory: memory };
       setCharacter(saved);
       setView('home');
@@ -533,6 +539,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
             <Focus
               character={character}
               authenticated={authenticated}
+              saveId={initial?.saveId}
               recovered={pending}
               onExit={() => {
                 if (authenticated) location.assign('/');
@@ -554,6 +561,7 @@ export function Game({ initial, configured }: { initial: Initial | null; configu
               <BabyCare
                 character={character}
                 authenticated={authenticated}
+                saveId={initial?.saveId}
                 onFocus={() => go('focus')}
               />
               <details>

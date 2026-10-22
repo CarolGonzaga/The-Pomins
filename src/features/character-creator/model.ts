@@ -44,6 +44,7 @@ export type Character = CharacterDraft & {
   life_xp: number;
   birth_read: boolean;
   first_memory: string | null;
+  save_id?: string;
 };
 export const defaultAppearance: Appearance = {
   species: 'human',

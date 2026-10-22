@@ -20,9 +20,12 @@ export function loadLocalBaby(character: Character): BabyState {
   const raw = localStorage.getItem('pomins-room-local-v1');
   const save = raw ? (JSON.parse(raw) as LocalSave) : null;
   return babyStateSchema.parse({
+    save_id: room.save_id,
+    world_revision: room.world_revision,
+    focus_revision: room.focus_revision,
     revision: room.revision,
     household_id: room.household.id,
-    character,
+    character: { ...character, save_id: room.save_id },
     stats: save ? statsFor(save, character.id) : initialBabyStats(),
     rules: defaultCareRules,
     credits: room.credits,
@@ -32,6 +35,8 @@ export async function localCare(character: Character, input: CareCommand) {
   const command = careCommandSchema.parse(input);
   if (command.characterId !== character.id) throw Error('Bebê não encontrado.');
   await localTransaction((save) => {
+    if (character.save_id && character.save_id !== save.state.save_id)
+      throw Error('O bebê pertence a outra partida.');
     const signature = JSON.stringify({ babyCare: command });
     const previous = save.requests[command.requestId];
     if (previous) {
@@ -46,6 +51,7 @@ export async function localCare(character: Character, input: CareCommand) {
       credit.allocated_minutes += line.minutes;
       total += line.minutes;
       save.state.allocations.unshift({
+        save_id: save.state.save_id,
         id: `${command.requestId}-${index}`,
         character_id: character.id,
         session_id: line.sessionId,
@@ -64,7 +70,7 @@ export async function localCare(character: Character, input: CareCommand) {
     });
     save.babyCare = { ...save.babyCare, [character.id]: stats };
     save.requests[command.requestId] = signature;
-  });
+  }, 'both');
   return loadLocalBaby(character);
 }
 export class CareRejected extends Error {
@@ -75,8 +81,13 @@ export class CareRejected extends Error {
     super(message);
   }
 }
-export async function babyApi(characterId: string, command?: CareCommand): Promise<BabyState> {
-  const response = await fetch(`/api/baby?characterId=${encodeURIComponent(characterId)}`, {
+export async function babyApi(
+  characterId: string,
+  command?: CareCommand,
+  saveId?: string,
+): Promise<BabyState> {
+  const scope = saveId ? `&saveId=${encodeURIComponent(saveId)}` : '';
+  const response = await fetch(`/api/baby?characterId=${encodeURIComponent(characterId)}${scope}`, {
     method: command ? 'POST' : 'GET',
     headers: command ? { 'Content-Type': 'application/json' } : undefined,
     body: command ? JSON.stringify(careCommandSchema.parse(command)) : undefined,

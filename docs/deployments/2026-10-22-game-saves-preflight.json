@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-22",
+  "environment": "supabase-development",
+  "mode": "read-only",
+  "remote_applied": false,
+  "backup_created": false,
+  "function_bodies_compared": 11,
+  "function_body_drift": [],
+  "counts": {
+    "events": 5,
+    "credits": 2,
+    "rewards": 2,
+    "memories": 0,
+    "profiles": 2,
+    "requests": 2,
+    "sessions": 4,
+    "characters": 3,
+    "households": 2,
+    "allocations": 2
+  },
+  "totals": {
+    "coins": 8,
+    "eligible": 4,
+    "allocated": 2,
+    "account_xp": 40,
+    "wallet_energy": 4,
+    "allocated_rows": 2
+  },
+  "functions": [
+    {
+      "name": "assign_household",
+      "body_md5": "81e10e07bdadba11df4930b2151a8570",
+      "security_definer": true
+    },
+    {
+      "name": "baby_care",
+      "body_md5": "6266b58f9f7ee2aa351af7fcf4a39fc8",
+      "security_definer": true
+    },
+    {
+      "name": "baby_state",
+      "body_md5": "e47d3090ff28858b70332c8c16cad9e5",
+      "security_definer": true
+    },
+    {
+      "name": "create_character",
+      "body_md5": "f4293f759a8900c6278b23e1e36a2756",
+      "security_definer": true
+    },
+    {
+      "name": "credit_completed_focus",
+      "body_md5": "d3fc53078ae0f07ba9d7483a02eac253",
+      "security_definer": true
+    },
+    {
+      "name": "focus_command",
+      "body_md5": "7f66af1ca73d1d9e05c4df87959d3a21",
+      "security_definer": true
+    },
+    {
+      "name": "new_household",
+      "body_md5": "d79145b0dd8a437f863c8e13ef084d3c",
+      "security_definer": true
+    },
+    {
+      "name": "read_birth",
+      "body_md5": "29cf8f3f4c29f353ea969c8f2c260f9c",
+      "security_definer": true
+    },
+    {
+      "name": "room_command",
+      "body_md5": "b9d479946539ba97f5853a3a2c7ca2ca",
+      "security_definer": true
+    },
+    {
+      "name": "room_state",
+      "body_md5": "670d9e73e7b2b7483b3df4b7090ee58c",
+      "security_definer": true
+    },
+    {
+      "name": "start_resident_focus",
+      "body_md5": "997c3bf7120aa9b00d11f0b8660654c6",
+      "security_definer": true
+    }
+  ],
+  "open_sessions": {
+    "paused": 1
+  },
+  "incompatible_links": {
+    "credit_session": 0,
+    "event_character": 0,
+    "memory_character": 0,
+    "allocation_credit": 0,
+    "session_character": 0,
+    "allocation_request": 0,
+    "character_household": 0,
+    "allocation_character": 0,
+    "profiles_without_household": 0
+  },
+  "saves_already_present": false
+}

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { serverClient } from '@/lib/supabase/server';
 import { careCommandSchema } from '@/features/baby-care/model';
+import { resolveGameContext, SaveContextError } from '@/features/game-saves/server';
 const headers = { 'Cache-Control': 'private, no-store' };
 async function execute(request: Request, write: boolean) {
   if (write) {
@@ -32,23 +33,32 @@ async function execute(request: Request, write: boolean) {
     );
   let id: string;
   let command;
+  let context;
   try {
     id = z.uuid().parse(new URL(request.url).searchParams.get('characterId'));
+    const saveId = new URL(request.url).searchParams.get('saveId') ?? undefined;
+    context = await resolveGameContext(db, saveId);
     if (write) {
       const raw = await request.text();
       if (raw.length > 12000) throw Error();
       command = careCommandSchema.parse(JSON.parse(raw));
       if (command.characterId !== id) throw Error();
     }
-  } catch {
+  } catch (e) {
+    if (e instanceof SaveContextError)
+      return NextResponse.json({ error: e.message }, { status: e.status, headers });
     return NextResponse.json(
       { error: 'Revise o bebê e os minutos escolhidos.' },
       { status: 400, headers },
     );
   }
   const { data, error } = command
-    ? await db.rpc('baby_care', { p_payload: command })
-    : await db.rpc('baby_state', { p_character: id });
+    ? context
+      ? await db.rpc('baby_care_for_save', { p_save: context.save.id, p_payload: command })
+      : await db.rpc('baby_care', { p_payload: command })
+    : context
+      ? await db.rpc('baby_state_for_save', { p_save: context.save.id, p_character: id })
+      : await db.rpc('baby_state', { p_character: id });
   if (error)
     return NextResponse.json(
       {

@@ -1,5 +1,6 @@
 'use client';
 import { careLabels, type CareId } from '../baby-care/model';
+import { isCurrentSnapshot } from '../game-saves/model';
 import './room.css';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
@@ -48,7 +49,8 @@ export function RoomApp({
   const [state, setState] = useState<RoomState | null>(initial);
   const accept = useCallback((next: RoomState) => {
     setState((previous) =>
-      !previous || previous.household.id !== next.household.id || next.revision >= previous.revision
+      !previous ||
+      (previous.household.id === next.household.id && isCurrentSnapshot(previous, next))
         ? next
         : previous,
     );
@@ -110,11 +112,13 @@ export function RoomApp({
   }, [authenticated]);
   const run = useCallback(
     async (command: RoomCommand) => {
-      const next = authenticated ? await roomApi(command) : await localCommand(command);
+      const next = authenticated
+        ? await roomApi(command, state?.save_id)
+        : await localCommand(command);
       accept(next);
       return next;
     },
-    [authenticated, accept],
+    [authenticated, accept, state?.save_id],
   );
   const arrival = useCallback(
     (arrived: Resident) => {
@@ -137,7 +141,7 @@ export function RoomApp({
   const completed = useCallback(
     (session: FocusSession) => {
       setRecovered(null);
-      (authenticated ? refreshRoom() : localSessionCompleted(session))
+      (authenticated ? refreshRoom(state?.save_id) : localSessionCompleted(session))
         .then((next) => {
           accept(next);
           setMessage(
@@ -150,7 +154,7 @@ export function RoomApp({
           ),
         );
     },
-    [authenticated, accept],
+    [authenticated, accept, state?.save_id],
   );
   async function changeActivity(activity: AllocationLine['activity']) {
     if (!resident) return;
@@ -198,7 +202,11 @@ export function RoomApp({
               'A distribuição ultrapassa os minutos disponíveis. Ajuste os valores e tente novamente.',
             );
         }
-        cmd = { action: 'allocate', payload: { requestId: crypto.randomUUID(), lines: checked } };
+        cmd = {
+          action: 'allocate',
+          saveId: authenticated ? state?.save_id : undefined,
+          payload: { requestId: crypto.randomUUID(), lines: checked },
+        };
         sessionStorage.setItem(pendingKey, JSON.stringify(cmd));
         setPendingAllocation(cmd);
       }
@@ -213,7 +221,7 @@ export function RoomApp({
         setPendingAllocation(null);
         setAllocation(false);
         if (authenticated)
-          refreshRoom()
+          refreshRoom(state?.save_id)
             .then(accept)
             .catch(() => {});
       }
@@ -300,6 +308,7 @@ export function RoomApp({
                   first_memory: null,
                 }}
                 authenticated={authenticated}
+                saveId={state.save_id}
                 residentId={focusResident.id}
                 recovered={recovered}
                 portrait={
@@ -311,7 +320,7 @@ export function RoomApp({
                 onExit={() => {
                   setView('room');
                   if (authenticated)
-                    refreshRoom()
+                    refreshRoom(state?.save_id)
                       .then(accept)
                       .catch(() => setMessage('Recarregue para conferir o estado salvo.'));
                 }}

@@ -25,6 +25,7 @@ export function Focus({
   onCompleted,
   portrait,
   residentId,
+  saveId,
   distributeMinutes = false,
   exitLabel = 'Voltar ao meu universo',
 }: {
@@ -35,6 +36,7 @@ export function Focus({
   onCompleted: (s: FocusSession) => void;
   portrait?: React.ReactNode;
   residentId?: string;
+  saveId?: string;
   distributeMinutes?: boolean;
   exitLabel?: string;
 }) {
@@ -299,6 +301,8 @@ export function Focus({
       if (authenticated)
         s = await gameApi<FocusSession>({
           kind: 'focus',
+          saveId,
+          characterId: character.id,
           action: 'start',
           id: startId.current,
           clientId: client.current,

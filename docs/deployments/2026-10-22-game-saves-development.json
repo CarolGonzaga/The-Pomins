@@ -1,0 +1,124 @@
+{
+  "applied_at": "2026-10-22T18:38:20.136Z",
+  "version": "20261022134830",
+  "name": "game_saves_compatibility",
+  "migration_sha256": "352e3bfc2861fb658ba846df92ee6862ed50a7d07e13cd59154be278139e6038",
+  "transport": "direct PostgreSQL with verified SSL; connector failed without applying",
+  "history_registered_atomically": true,
+  "remote_applied": true,
+  "backup_restore_verified": true,
+  "backup": {
+    "scope": [
+      "public",
+      "auth",
+      "supabase_migrations"
+    ],
+    "original_tables": 42,
+    "encrypted_backup_sha256": "c71fbc62e95ed53a30b10143094b2a282673cfe85650dfe56a469dd370b05e0a",
+    "restore_verified": true,
+    "original_columns_preserved_after_local_migration": true,
+    "private_ignored_directory": "secrets/backups/game-saves-20261022",
+    "encryption": "AES-256-GCM; key protected by Windows DPAPI CurrentUser; local decryption verified",
+    "portable_offsite_copy": false
+  },
+  "postflight": {
+    "checked_at": "2026-10-22T18:39:17.855Z",
+    "remote_applied": true,
+    "original_tables_compared": 42,
+    "original_data_mismatches": [],
+    "previous_history_rows_preserved": true,
+    "saves": [
+      {
+        "state": "pending_selection",
+        "count": 1
+      },
+      {
+        "state": "ready",
+        "count": 1
+      }
+    ],
+    "sessions": [
+      {
+        "status": "paused",
+        "count": 1
+      }
+    ],
+    "balance": {
+      "eligible": 4,
+      "allocated": 2
+    },
+    "incompatible_character_links": 0,
+    "rls": [
+      {
+        "relname": "game_saves",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "game_save_migration_audit",
+        "relrowsecurity": true
+      }
+    ],
+    "grants": {
+      "can_insert": false,
+      "can_update": false,
+      "can_delete": false,
+      "private_access": false,
+      "anon_context": false,
+      "authenticated_context": true
+    },
+    "focus_engine_unchanged": true,
+    "unvalidated_constraints": 0,
+    "migrations": [
+      {
+        "version": "20261021201224",
+        "name": "initial_pomins_foundation_and_playable_room"
+      },
+      {
+        "version": "20261022021139",
+        "name": "baby_care"
+      },
+      {
+        "version": "20261022134830",
+        "name": "game_saves_compatibility"
+      }
+    ]
+  },
+  "auth_validation": {
+    "checked_at": "2026-10-22T18:40:49.625Z",
+    "environment": "real-supabase-development-auth",
+    "passed": [
+      "login real das duas contas de teste",
+      "contextos independentes e proprietário validado",
+      "RLS e RPCs recusam a partida da outra conta",
+      "quarto e aparência restaurados pelas RPCs novas e antigas",
+      "bebê restaurado e isolado da outra conta",
+      "cookies SSR e rotas / e /play com as duas contas reais"
+    ],
+    "game_writes": false,
+    "focus_sessions_created": 0,
+    "minutes_spent": 0,
+    "browser_sessions_untouched": true
+  },
+  "advisors": [
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "level": "WARN",
+      "count": 17,
+      "intentional_authenticated_RPC": true
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "count": 1,
+      "pre_existing": true
+    }
+  ],
+  "local_tests": {
+    "unit_integration": 125,
+    "native_concurrency": 7,
+    "playwright": 32,
+    "total": 164
+  },
+  "commit_created": false,
+  "push_performed": false
+}
