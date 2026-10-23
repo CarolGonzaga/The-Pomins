@@ -1,9 +1,10 @@
 // Disposable local test server. No credentials or connection to Supabase.
 import http from 'node:http';
 import { createSaveFixture } from './save-fixture.mjs';
-const f = await createSaveFixture();
+const f = await createSaveFixture({immersive:true});
 const commands = [];
 const metadata=new Map([[f.ids.a,{nickname:'fixture_a'}],[f.ids.b,{nickname:'fixture_b'}]]);
+const allowedUsers=[f.ids.a,f.ids.b,...Object.values(f.ids.immersive).map(x=>x.userId)];
 const user = (id) => ({
   id,
   aud: 'authenticated',
@@ -53,6 +54,11 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(data));
   };
   try {
+    if(req.url?.startsWith('/__test/immersive?')){
+      const project=new URL(req.url,'http://fixture.test').searchParams.get('project');
+      const info=f.ids.immersive[project];if(!info)return send(400,{});
+      return send(200,{...info,session:{access_token:token(info.userId),refresh_token:'fixture-refresh-only',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,user:user(info.userId)}});
+    }
     if (req.url === '/__test/info' || req.url === '/__test/info?account=b') {
       const testUser=req.url.endsWith('?account=b')?f.ids.b:f.ids.a;
       return send(200, {
@@ -81,7 +87,7 @@ const server = http.createServer(async (req, res) => {
     try {
       uid = JSON.parse(Buffer.from(bearer.split('.')[1], 'base64url').toString()).sub;
     } catch {}
-    if (![f.ids.a, f.ids.b].includes(uid))
+    if (!allowedUsers.includes(uid))
       return send(401, { message: 'Fixture authentication required' });
     if(req.url?.startsWith('/auth/v1/logout')){commands.push('auth:logout');res.writeHead(204);return res.end();}
     if(req.url?.startsWith('/auth/v1/recover')){commands.push('auth:password-link');return send(200,{});}

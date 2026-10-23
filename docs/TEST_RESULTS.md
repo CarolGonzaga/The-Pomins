@@ -1,5 +1,13 @@
 # Resultados de validação · Entrega 1
 
+## Entrega 5F — interface imersiva
+
+**244 distintos aprovados**: 177 unidade/integração, 11 de concorrência PostgreSQL nativo nesta mesma rodada de trabalho (SQL preservado), 56 Playwright em produção isolada (2,1 min), desktop Chromium e viewport/toque iPhone. Os oito cenários novos são repetidos após o ajuste tipográfico final, sem duplicar a contagem. Lint, TypeScript, build isolado e build final da raiz aprovados. Capturas conferidas, controles sem transbordamento e auditorias WCAG A/AA aprovadas.
+
+Fixtures/SQL descartáveis validam cuidados persistidos, saldo e restauração. Respostas de foco ativo/pausado nos testes novos são simuladas explicitamente; não representam uma nova sessão remota concluída. Nove conferências reais autenticadas em 3000 e comparação de 12 tabelas preservaram saldo, protagonista, preferências e a sessão pausada. Nenhum comando de foco, minuto gasto, personagem escolhido ou migração remota nesta entrega. Safari/iPhone físico e PWA instalado continuam pendentes. [Relatório 5F](IMMERSIVE_GAME.md).
+
+**Consolidação 5E:** commit `777e381c7d437cb8cc167b130e076b8325b82b20`, 47 arquivos revisados, 233 testes repetidos, lint/TypeScript/build aprovados, sem segredos e árvore limpa ao concluir o commit. As alterações 5F posteriores permanecem sem commit.
+
 ## Entrega 5E — validação nova, 22/10/2026
 
 **233 testes distintos aprovados:** 174 unidade/integração, 11 PostgreSQL descartável (835ms) e 48 Playwright em produção isolada (rodada final aproximadamente 1,5 minuto, dois workers, Chromium desktop e viewport/toque de iPhone). Lint sem avisos, TypeScript explícito e build da raiz aprovados. Os 11 nativos ignorados em `npm test` foram executados separadamente. Menu/configurações conferidos em capturas; auditoria WCAG A/AA sem violações nas telas novas testadas; largura e botões mobile verificados.

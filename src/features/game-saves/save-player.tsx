@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { RoomApp } from '../room/room-app';
 import { characterSchema, type Character } from '../character-creator/model';
 import { eligibleProtagonist, focusSessions, type LoadedSave } from './loading';
-import {PortalLink} from '../portal/navigation';
+import { GameScreen } from '../game-screen/game-screen';
+import { worldPresentation } from '../game-screen/presentation';
+import { Landscape } from '../portal/landscape';
 export function SavePlayer({
   initial,
   userId,
@@ -41,25 +43,56 @@ export function SavePlayer({
       setBusy(false);
     }
   }
-  if(s.state==='draft' && initial.characters.length===0)
-    return <Game key={`${userId}:${s.id}:birth`} configured returnHref={path} roomHref={path}
-      initial={{userId,saveId:s.id,nickname:initial.profile.nickname,isPublic:initial.profile.is_public,
-        accountXp:initial.profile.account_xp,character:null,sessions:focusSessions(initial),loadError:false}}/>;
+  if (s.state === 'draft' && initial.characters.length === 0)
+    return (
+      <Game
+        immersive
+        generation={s.current_generation}
+        key={`${userId}:${s.id}:birth`}
+        configured
+        returnHref={path}
+        roomHref={path}
+        initial={{
+          userId,
+          saveId: s.id,
+          nickname: initial.profile.nickname,
+          isPublic: initial.profile.is_public,
+          accountXp: initial.profile.account_xp,
+          character: null,
+          sessions: focusSessions(initial),
+          loadError: false,
+        }}
+      />
+    );
   if (s.state !== 'ready')
     return (
-      <main className="simple-page">
-        <a href="/saves">Minhas partidas</a>
-        <PortalLink href="/menu">Menu principal</PortalLink>
-        <h1>Quem protagoniza esta história?</h1>
-        <p>Os outros moradores continuam nesta partida.</p>
-        {choices.map((c) => (
-          <Button key={c.id} disabled={busy} onClick={() => choose(c.id)}>
-            {c.name}
-          </Button>
-        ))}
-        {!choices.length && <p>Nenhum morador elegível está disponível.</p>}
-        {error && <p role="alert">{error}</p>}
-      </main>
+      <GameScreen
+        name={s.name}
+        stage="Protagonista pendente"
+        generation={s.current_generation}
+        world={<Landscape />}
+        panels={[
+          {
+            id: 'protagonist',
+            label: 'Protagonista',
+            content: (
+              <>
+                <h2>Quem protagoniza esta história?</h2>
+                <p>Os outros moradores continuam nesta partida.</p>
+                <div className="game-protagonist-choices">
+                  {choices.map((c) => (
+                    <Button key={c.id} disabled={busy} onClick={() => choose(c.id)}>
+                      {c.name}
+                    </Button>
+                  ))}
+                </div>
+                {!choices.length && <p>Nenhum morador elegível está disponível.</p>}
+                {error && <p role="alert">{error}</p>}
+              </>
+            ),
+          },
+        ]}
+      />
     );
   if (!selected)
     return (
@@ -73,46 +106,51 @@ export function SavePlayer({
     pending = sessions.find((f) => ['active', 'paused', 'interrupted'].includes(f.status)) ?? null;
   const key = `${userId}:${s.id}:${selected.id}`;
   const legacy =
-    selected.render_system === 'legacy'
+    worldPresentation(selected.life_stage as 'baby' | 'adult', selected.render_system) === 'baby'
       ? ({ ...selected, ...characterSchema.parse(selected) } as Character)
       : null;
+  const residents = (
+    <nav aria-label="Moradores da partida">
+      {choices.map((c) => (
+        <a
+          key={c.id}
+          href={`${path}?character=${c.id}`}
+          aria-current={selected.id === c.id ? 'page' : undefined}
+          onClick={(e) => {
+            if (document.documentElement.dataset.focusActive === 'true') {
+              e.preventDefault();
+              setError('Use os controles da sessão antes de trocar de morador.');
+            }
+          }}
+        >
+          {c.name}
+          {s.protagonist_id === c.id ? ' · Protagonista' : ''}{' '}
+        </a>
+      ))}
+      {pending && pending.origin_save_id && (
+        <a
+          href={`/game/${pending.origin_save_id}?character=${pending.character_id}`}
+          onClick={(e) => {
+            if (document.documentElement.dataset.focusActive === 'true') e.preventDefault();
+          }}
+        >
+          Sessão de foco existente
+        </a>
+      )}
+    </nav>
+  );
   return (
     <>
-      <nav aria-label="Moradores da partida" className={legacy?'app-content panel':'panel'}>
-        {choices.map((c) => (
-          <a
-            key={c.id}
-            href={`${path}?character=${c.id}`}
-            aria-current={selected.id === c.id ? 'page' : undefined}
-            onClick={(e) => {
-              if (document.documentElement.dataset.focusActive === 'true') {
-                e.preventDefault();
-                setError('Use os controles da sessão antes de trocar de morador.');
-              }
-            }}
-          >
-            {c.name}
-            {s.protagonist_id === c.id ? ' · Protagonista' : ''}{' '}
-          </a>
-        ))}
-        {pending && pending.origin_save_id && (
-          <a
-            href={`/game/${pending.origin_save_id}?character=${pending.character_id}`}
-            onClick={(e) => {
-              if (document.documentElement.dataset.focusActive === 'true') e.preventDefault();
-            }}
-          >
-            Sessão de foco existente
-          </a>
-        )}
-      </nav>
       {error && <p role="alert">{error}</p>}
       {legacy ? (
         <Game
+          immersive
+          residents={residents}
+          generation={s.current_generation}
           key={key}
           configured
           returnHref={`${path}?character=${selected.id}`}
-          roomHref={`${path}?character=${choices.find(c=>c.render_system==='lpc')?.id ?? selected.id}`}
+          roomHref={`${path}?character=${choices.find((c) => c.render_system === 'lpc')?.id ?? selected.id}`}
           initial={{
             userId,
             saveId: s.id,
@@ -126,6 +164,9 @@ export function SavePlayer({
         />
       ) : (
         <RoomApp
+          immersive
+          residents={residents}
+          generation={s.current_generation}
           key={key}
           accountId={userId}
           preferredResidentId={selected.id}

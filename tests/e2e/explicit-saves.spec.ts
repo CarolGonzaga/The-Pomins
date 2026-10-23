@@ -16,20 +16,23 @@ test('loads independent saves, chooses protagonist and restores SQL state and Ph
   await context.addCookies([cookie()]);
   await page.goto('/game/' + info.one);
   await expect(page.getByTestId('room-canvas').locator('canvas')).toBeVisible();
+  await page.getByRole('button',{name:'Moradores',exact:true}).click();
   await expect(page.getByRole('navigation', { name: 'Moradores da partida' })).toContainText(
     'Aurora',
   );
   await page.goto('/game/' + info.two);
   if (await page.getByRole('heading', { name: 'Quem protagoniza esta história?' }).isVisible())
     await page.getByRole('button', { name: 'Nina', exact: true }).click();
+  await page.getByRole('button',{name:'Moradores',exact:true}).click();
   await expect(page.getByRole('navigation', { name: 'Moradores da partida' })).toContainText(
     'Nina · Protagonista',
   );
   await expect(page.getByRole('navigation', { name: 'Moradores da partida' })).not.toContainText(
     'Aurora',
   );
-  await page.getByRole('button',{name:'Cuidar do meu bebê'}).click();
-  await expect(page.locator('.baby-care').getByRole('meter',{name:'Fome',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Cuidados',exact:true}).click();
+  await expect(page.getByRole('meter',{name:'Fome',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Moradores',exact:true}).click();
   await page
     .getByRole('navigation', { name: 'Moradores da partida' })
     .getByRole('link', { name: 'Sol', exact: true })
@@ -42,6 +45,7 @@ test('loads independent saves, chooses protagonist and restores SQL state and Ph
   await expect(page).toHaveURL(/\/auth\?next=/);
   await context.addCookies([cookie()]);
   await page.goto('/game/' + info.two);
+  await page.getByRole('button',{name:'Moradores',exact:true}).click();
   await expect(page.getByRole('navigation', { name: 'Moradores da partida' })).toContainText(
     'Nina · Protagonista',
   );

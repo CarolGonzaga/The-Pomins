@@ -31,9 +31,10 @@ import { gameApi } from '@/lib/api';
 import { browserClient } from '@/lib/supabase/browser';
 import { BabyCare } from '@/features/baby-care/baby-care';
 import { localSessionCompleted } from '@/features/room/persistence';
-import {PortalLink} from '@/features/portal/navigation';
-import {PixelAvatar} from '@/features/preferences/avatar';
-import {usePreferences} from '@/features/preferences/provider';
+import { GameScreen } from '@/features/game-screen/game-screen';
+import { PortalLink } from '@/features/portal/navigation';
+import { PixelAvatar } from '@/features/preferences/avatar';
+import { usePreferences } from '@/features/preferences/provider';
 type Initial = {
   userId: string;
   saveId?: string;
@@ -55,8 +56,26 @@ const nav = [
   { id: 'statistics', label: 'Meu progresso', icon: TrendingUp },
 ] as const;
 const STORAGE = 'pomins-explore-v1';
-export function Game({ initial, configured, returnHref='/', roomHref='/play' }: { initial: Initial | null; configured: boolean; returnHref?:string; roomHref?:string }) {
-  const accountPreferences=usePreferences();
+export function Game({
+  initial,
+  configured,
+  returnHref = '/',
+  roomHref = '/play',
+  immersive = false,
+  residents,
+  generation = 1,
+}: {
+  immersive?: boolean;
+  residents?: React.ReactNode;
+  generation?: number;
+  initial: Initial | null;
+  configured: boolean;
+  returnHref?: string;
+  roomHref?: string;
+}) {
+  const accountPreferences = usePreferences();
+  const [gamePanel, setGamePanel] = useState('care');
+  const [focusMounted, setFocusMounted] = useState(false);
   const [view, setView] = useState<View>('home');
   const [character, setCharacter] = useState<Character | null>(initial?.character ?? null);
   const [sessions, setSessions] = useState<FocusSession[]>(initial?.sessions ?? []);
@@ -80,14 +99,15 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
     try {
       const savedTheme = localStorage.getItem('pomins-theme') ?? 'light';
       setTheme(savedTheme);
-      if(!initial)document.documentElement.dataset.theme = savedTheme;
+      if (!initial) document.documentElement.dataset.theme = savedTheme;
       if (!initial) {
         const saved = JSON.parse(localStorage.getItem(STORAGE) ?? 'null');
         if (saved && characterSchema.safeParse(saved).success && typeof saved.id === 'string') {
           setCharacter({ ...saved, life_xp: 0 });
         }
       }
-      if(initial && new URLSearchParams(location.search).get('panel')==='preferences')setView('settings');
+      if (initial && new URLSearchParams(location.search).get('panel') === 'preferences')
+        setView('settings');
     } catch {}
     setReady(true);
   }, [initial]);
@@ -139,8 +159,10 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
     };
   }, [install, menu]);
   const go = (next: View) => {
-    if(next==='focus' && pending && character && pending.character_id!==character.id){
-      setNotice('Há uma sessão de outro morador. Continue no personagem de origem antes de iniciar outra.');
+    if (next === 'focus' && pending && character && pending.character_id !== character.id) {
+      setNotice(
+        'Há uma sessão de outro morador. Continue no personagem de origem antes de iniciar outra.',
+      );
       return;
     }
     setMenu(false);
@@ -148,7 +170,10 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
       setNotice('Use os controles da sessão para pausar ou encerrar e voltar ao seu universo.');
       return;
     }
-    if(next==='settings' && authenticated){location.assign('/settings');return;}
+    if (next === 'settings' && authenticated) {
+      location.assign('/settings');
+      return;
+    }
     setNotice('');
     if (['focus', 'story', 'character'].includes(next) && !character) {
       setView('creator');
@@ -172,6 +197,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
           };
       setCharacter(saved);
       setView('story');
+      if (immersive) setGamePanel('birth');
     } finally {
       setBusy(false);
     }
@@ -190,6 +216,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
         : { ...character, birth_read: true, first_memory: memory };
       setCharacter(saved);
       setView('home');
+      if (immersive) setGamePanel('care');
       setNotice('A primeira memória foi guardada. Que tal dois minutinhos de foco?');
     } finally {
       setBusy(false);
@@ -208,7 +235,10 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
     [initial],
   );
   const changeTheme = () => {
-    if(authenticated){go('settings');return;}
+    if (authenticated) {
+      go('settings');
+      return;
+    }
     const value = theme === 'dark' ? 'light' : 'dark';
     setTheme(value);
     document.documentElement.dataset.theme = value;
@@ -218,16 +248,166 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
   };
   async function logout() {
     if (authenticated) {
-      if(document.documentElement.dataset.focusActive==='true'){setNotice('Use os controles do foco antes de sair.');return;}
+      if (document.documentElement.dataset.focusActive === 'true') {
+        setNotice('Use os controles do foco antes de sair.');
+        return;
+      }
       setBusy(true);
-      try{
-        const response=await fetch('/api/account',{method:'POST',headers:{'Content-Type':'application/json','X-Pomins-Account':initial!.userId},body:JSON.stringify({action:'logout'})});
-        const data=await response.json();if(!response.ok)throw Error(data.error??'Não foi possível sair.');
-        await browserClient().auth.signOut({scope:'local'});
-        location.assign(new URL('/auth',location.origin).href);
-      }catch(e){setNotice(e instanceof Error?e.message:'Não foi possível sair.');}
-      finally{setBusy(false);}
+      try {
+        const response = await fetch('/api/account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Pomins-Account': initial!.userId },
+          body: JSON.stringify({ action: 'logout' }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw Error(data.error ?? 'Não foi possível sair.');
+        await browserClient().auth.signOut({ scope: 'local' });
+        location.assign(new URL('/auth', location.origin).href);
+      } catch (e) {
+        setNotice(e instanceof Error ? e.message : 'Não foi possível sair.');
+      } finally {
+        setBusy(false);
+      }
     }
+  }
+  if (immersive) {
+    if (!character)
+      return (
+        <GameScreen
+          name="Uma nova história"
+          stage="Nascimento"
+          generation={generation}
+          world={<Nursery />}
+          panels={[
+            {
+              id: 'birth',
+              label: 'Criar Pomin',
+              content: (
+                <Creator
+                  onSave={saveCharacter}
+                  onBack={() => location.assign('/saves')}
+                  busy={busy}
+                />
+              ),
+            },
+          ]}
+        />
+      );
+    const foreignFocus = !!pending && pending.character_id !== character.id;
+    return (
+      <BabyCare
+        character={character}
+        authenticated={authenticated}
+        accountId={initial?.userId}
+        saveId={initial?.saveId}
+        onFocus={() => {
+          if (pending && pending.character_id !== character.id)
+            setNotice('Retome o foco no morador de origem.');
+          else setFocusMounted(true);
+        }}
+        render={({ world, controls, progress, balance }) => (
+          <GameScreen
+            name={character.name}
+            stage="Bebê"
+            generation={generation}
+            world={world}
+            message={notice}
+            panelId={gamePanel}
+            onPanelChange={setGamePanel}
+            focus={
+              <>
+                {focusMounted && !foreignFocus ? (
+                  <Focus
+                    compact
+                    character={character}
+                    authenticated={authenticated}
+                    saveId={initial?.saveId}
+                    recovered={pending}
+                    onCompleted={finish}
+                    exitLabel="Preparar novo foco"
+                    onExit={(settled) => {
+                      setFocusMounted(false);
+                      if (settled && ['completed', 'cancelled'].includes(settled.status))
+                        setSessions((prev) => [
+                          settled,
+                          ...prev.filter((s) => s.id !== settled.id),
+                        ]);
+                    }}
+                  />
+                ) : (
+                  <div className="game-focus-intro">
+                    <strong>{balance} min</strong>
+                    <Button disabled={foreignFocus} onClick={() => setFocusMounted(true)}>
+                      {pending ? 'Retomar sessão anterior' : 'Encontrar meu foco'}
+                    </Button>
+                  </div>
+                )}
+                {focusMounted && (
+                  <span className="game-focus-balance">
+                    {balance} min disponíveis · saldo da conta
+                  </span>
+                )}
+                {foreignFocus && (
+                  <p className="small-note">
+                    Há uma sessão de outro morador. Abra Moradores para voltar à origem.
+                  </p>
+                )}
+              </>
+            }
+            panels={[
+              {
+                id: 'care',
+                label: 'Cuidados',
+                content: (
+                  <>
+                    <h2>Cuidados de {character.name}</h2>
+                    {controls}
+                  </>
+                ),
+              },
+              {
+                id: 'growth',
+                label: 'Progresso',
+                content: (
+                  <>
+                    <h2>Pequenos começos</h2>
+                    {progress}
+                    <p>XP de vida: {xp}</p>
+                  </>
+                ),
+              },
+              {
+                id: 'birth',
+                label: 'História',
+                content: character.birth_read ? (
+                  <>
+                    <h2>A primeira memória</h2>
+                    <p>
+                      {character.first_memory === 'sky'
+                        ? 'A luz na janela.'
+                        : 'Uma voz acolhedora.'}
+                    </p>
+                    <p>A memória e os cuidados seguem nesta partida.</p>
+                  </>
+                ) : (
+                  <Birth
+                    character={character}
+                    onComplete={saveBirth}
+                    onClose={() => setGamePanel('care')}
+                    busy={busy}
+                  />
+                ),
+              },
+              {
+                id: 'residents',
+                label: 'Moradores',
+                content: residents ?? <p>{character.name}</p>,
+              },
+            ]}
+          />
+        )}
+      />
+    );
   }
   const sidebar = (
     <>
@@ -260,8 +440,25 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
         <span>Um momento de cada vez.</span>
       </div>
       <div className="sidebar-bottom">
-        {authenticated && <PortalLink href="/menu" className="nav-item">Menu principal</PortalLink>}
-        {authenticated && <Link className="nav-item" href="/saves" onClick={e=>{if(document.documentElement.dataset.focusActive==='true'){e.preventDefault();setNotice('Use os controles da sessão antes de abrir suas partidas.');}}}>Minhas partidas</Link>}
+        {authenticated && (
+          <PortalLink href="/menu" className="nav-item">
+            Menu principal
+          </PortalLink>
+        )}
+        {authenticated && (
+          <Link
+            className="nav-item"
+            href="/saves"
+            onClick={(e) => {
+              if (document.documentElement.dataset.focusActive === 'true') {
+                e.preventDefault();
+                setNotice('Use os controles da sessão antes de abrir suas partidas.');
+              }
+            }}
+          >
+            Minhas partidas
+          </Link>
+        )}
         <Link className="nav-item" href={roomHref}>
           Meu quarto · Etapa 1
         </Link>
@@ -273,7 +470,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
         </button>
         <div className="sidebar-profile">
           <div className="profile-avatar">
-            {authenticated ? <PixelAvatar kind={accountPreferences.preferences.avatar}/> : 'P'}
+            {authenticated ? <PixelAvatar kind={accountPreferences.preferences.avatar} /> : 'P'}
           </div>
           <div>
             <strong>{authenticated ? initial!.nickname : 'Seu espaço de calma'}</strong>
@@ -322,7 +519,13 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
             </span>
             <button
               className="icon-button"
-              aria-label={authenticated?'Configurações de aparência':theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+              aria-label={
+                authenticated
+                  ? 'Configurações de aparência'
+                  : theme === 'dark'
+                    ? 'Ativar tema claro'
+                    : 'Ativar tema escuro'
+              }
               onClick={changeTheme}
             >
               {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
@@ -733,11 +936,17 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
                 <div>
                   <h2>Um visual para cada momento</h2>
                   <p className="muted">
-                    {authenticated?'Tema, ritmo e avatar ficam nas configurações da conta.':`Tema ${theme === 'dark' ? 'escuro' : 'claro'}. Salvo neste dispositivo.`}
+                    {authenticated
+                      ? 'Tema, ritmo e avatar ficam nas configurações da conta.'
+                      : `Tema ${theme === 'dark' ? 'escuro' : 'claro'}. Salvo neste dispositivo.`}
                   </p>
                 </div>
                 <Button variant="secondary" onClick={changeTheme}>
-                  {authenticated?'Abrir configurações':<>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />} Mudar tema</>}
+                  {authenticated ? (
+                    'Abrir configurações'
+                  ) : (
+                    <>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />} Mudar tema</>
+                  )}
                 </Button>
               </div>
               <div className="panel setting-row">

@@ -11,7 +11,8 @@ import { defaultAppearance } from '../character-creator/model';
 import { AdultEditor } from './adult-editor';
 import { RoomCanvas } from './room-canvas';
 import { SpritePreview } from './sprite-preview';
-import {PortalLink} from '../portal/navigation';
+import { GameScreen } from '../game-screen/game-screen';
+import { PortalLink } from '../portal/navigation';
 import {
   activities,
   allocationLineSchema,
@@ -43,15 +44,21 @@ export function RoomApp({
   error: loadError,
   accountId,
   preferredResidentId,
-  universeHref='/',
+  universeHref = '/',
+  immersive = false,
+  residents,
+  generation = 1,
 }: {
   initial: RoomState | null;
   authenticated: boolean;
   pending: FocusSession | null;
   error?: string;
-  accountId?:string;
-  preferredResidentId?:string;
-  universeHref?:string;
+  accountId?: string;
+  preferredResidentId?: string;
+  universeHref?: string;
+  immersive?: boolean;
+  residents?: React.ReactNode;
+  generation?: number;
 }) {
   const [state, setState] = useState<RoomState | null>(initial);
   const accept = useCallback((next: RoomState) => {
@@ -63,6 +70,7 @@ export function RoomApp({
     );
   }, []);
   const [selected, setSelected] = useState(preferredResidentId ?? initial?.residents[0]?.id ?? '');
+  const [gamePanel, setGamePanel] = useState('activities');
   const [view, setView] = useState<'room' | 'editor' | 'focus'>('room');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -78,13 +86,17 @@ export function RoomApp({
   const resident = state?.residents.find((c) => c.id === selected) ?? state?.residents[0] ?? null;
   const balance = state ? totals(state) : { available: 0, distributed: 0, historical: 0 };
   const legacyPendingKey = `pomins-pending-allocation-${state?.household.id ?? 'local-household'}`;
-  const pendingKey = accountId && state?.save_id ? saveStorageKey(accountId,state.save_id,'allocation') : legacyPendingKey;
+  const pendingKey =
+    accountId && state?.save_id
+      ? saveStorageKey(accountId, state.save_id, 'allocation')
+      : legacyPendingKey;
   // localStorage/sessionStorage are browser-only external state, restored after SSR.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       const theme = localStorage.getItem('pomins-theme');
-      if (!authenticated && (theme === 'dark' || theme === 'light')) document.documentElement.dataset.theme = theme;
+      if (!authenticated && (theme === 'dark' || theme === 'light'))
+        document.documentElement.dataset.theme = theme;
       if (!authenticated) {
         const local = loadLocalRoom();
         setState(local);
@@ -101,15 +113,22 @@ export function RoomApp({
       const value = sessionStorage.getItem(pendingKey) ?? sessionStorage.getItem(legacyPendingKey);
       if (value) {
         const cmd = JSON.parse(value);
-        if (cmd.action === 'allocate' && cmd.payload?.requestId && (!cmd.saveId || cmd.saveId===state?.save_id)) {
+        if (
+          cmd.action === 'allocate' &&
+          cmd.payload?.requestId &&
+          (!cmd.saveId || cmd.saveId === state?.save_id)
+        ) {
           setPendingAllocation(cmd);
-          if(pendingKey!==legacyPendingKey){sessionStorage.setItem(pendingKey,value);sessionStorage.removeItem(legacyPendingKey);}
+          if (pendingKey !== legacyPendingKey) {
+            sessionStorage.setItem(pendingKey, value);
+            sessionStorage.removeItem(legacyPendingKey);
+          }
         }
       }
     } catch {
       setMessage('Não foi possível recuperar o último pedido de distribuição.');
     }
-  }, [pendingKey,legacyPendingKey,state?.save_id]);
+  }, [pendingKey, legacyPendingKey, state?.save_id]);
   /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => {
     const restore = () => {
@@ -249,6 +268,328 @@ export function RoomApp({
   function patchLine(index: number, patch: Partial<AllocationLine>) {
     setLines((prev) => prev.map((line, i) => (i === index ? { ...line, ...patch } : line)));
   }
+  const editor = state && (
+    <AdultEditor
+      initial={resident?.appearance}
+      name={resident?.name}
+      busy={busy}
+      onClose={() => {
+        if (immersive) setGamePanel('activities');
+        else if (resident) setView('room');
+        else location.assign('/');
+      }}
+      onSave={async (name, appearance) => {
+        setBusy(true);
+        try {
+          const next = await run(
+            resident
+              ? {
+                  action: 'appearance',
+                  payload: { characterId: resident.id, appearance },
+                }
+              : { action: 'create', payload: { name, appearance } },
+          );
+          setSelected(next.residents[0]?.id ?? '');
+          setView('room');
+          if (immersive) setGamePanel('activities');
+        } finally {
+          setBusy(false);
+        }
+      }}
+    />
+  );
+  const focus = state && focusResident && (
+    <Focus
+      compact={immersive}
+      character={{
+        id: focusResident.id,
+        name: focusResident.name,
+        appearance: defaultAppearance,
+        born_at: new Date().toISOString(),
+        birth_read: true,
+        life_xp: 0,
+        first_memory: null,
+      }}
+      authenticated={authenticated}
+      saveId={state.save_id}
+      residentId={focusResident.id}
+      recovered={recovered}
+      portrait={<SpritePreview appearance={focusResident.appearance} label={focusResident.name} />}
+      distributeMinutes
+      exitLabel={immersive ? 'Preparar novo foco' : 'Voltar ao quarto'}
+      onCompleted={completed}
+      onExit={(settled) => {
+        setView('room');
+        if (immersive) {
+          setFocusResident(null);
+          if (settled && ['completed', 'cancelled'].includes(settled.status)) setRecovered(null);
+        }
+        if (authenticated)
+          refreshRoom(state?.save_id)
+            .then(accept)
+            .catch(() => setMessage('Recarregue para conferir o estado salvo.'));
+      }}
+    />
+  );
+  const ledger = state && resident && (
+    <>
+      {' '}
+      <section className="time-bank">
+        <div>
+          <span>Foco histórico {authenticated ? 'confirmado' : 'local'}</span>
+          <strong>{balance.historical} min</strong>
+        </div>
+        <div>
+          <span>Disponível para distribuir</span>
+          <strong>{balance.available} min</strong>
+        </div>
+        <div>
+          <span>Minutos distribuídos</span>
+          <strong>{balance.distributed} min</strong>
+        </div>
+        <Button
+          variant="secondary"
+          disabled={busy || balance.available < 1 || !!pendingAllocation}
+          onClick={openAllocation}
+        >
+          Distribuir minutos
+        </Button>
+      </section>
+      {pendingAllocation && (
+        <section className="panel pending-allocation">
+          <h2>Uma distribuição aguarda confirmação.</h2>
+          <p>
+            O mesmo pedido será consultado novamente. Os minutos não serão aplicados duas vezes.
+          </p>
+          <Button disabled={busy} onClick={() => distribute(pendingAllocation)}>
+            Conferir distribuição pendente
+          </Button>
+        </section>
+      )}
+      {allocation && !pendingAllocation && (
+        <section className="panel allocation-panel">
+          <div className="section-heading">
+            <h2>Onde seu tempo vai florescer?</h2>
+            <button className="text-button" disabled={busy} onClick={() => setAllocation(false)}>
+              Fechar
+            </button>
+          </div>
+          {lines.map((line, index) => (
+            <div className="allocation-line" key={index}>
+              <label>
+                Sessão
+                <select
+                  value={line.sessionId}
+                  onChange={(e) => patchLine(index, { sessionId: e.target.value })}
+                >
+                  {state.credits
+                    .filter((c) => c.eligible_minutes > c.allocated_minutes)
+                    .map((c, i) => (
+                      <option key={c.session_id} value={c.session_id}>
+                        Sessão {i + 1} · {c.eligible_minutes - c.allocated_minutes} min livres
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Personagem
+                <select
+                  value={line.characterId}
+                  onChange={(e) => patchLine(index, { characterId: e.target.value })}
+                >
+                  {state.residents.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Atividade
+                <select
+                  value={line.activity}
+                  onChange={(e) =>
+                    patchLine(index, {
+                      activity: e.target.value as AllocationLine['activity'],
+                    })
+                  }
+                >
+                  {Object.values(activities)
+                    .filter((a) =>
+                      a.stages.includes(
+                        state.residents.find((c) => c.id === line.characterId)?.life_stage ??
+                          'adult',
+                      ),
+                    )
+                    .map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.label}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Minutos
+                <input
+                  type="number"
+                  min="1"
+                  max="120"
+                  value={line.minutes}
+                  onChange={(e) => patchLine(index, { minutes: Number(e.target.value) })}
+                />
+              </label>
+              {lines.length > 1 && (
+                <button
+                  aria-label={`Remover distribuição ${index + 1}`}
+                  className="text-button"
+                  onClick={() => setLines((prev) => prev.filter((_, i) => i !== index))}
+                >
+                  Remover
+                </button>
+              )}
+            </div>
+          ))}
+          <div className="allocation-actions">
+            <button
+              className="text-button"
+              disabled={lines.length >= 20 || busy}
+              onClick={() => setLines((prev) => [...prev, { ...prev[0], minutes: 1 }])}
+            >
+              Adicionar outra distribuição
+            </button>
+            <Button disabled={busy} onClick={() => distribute()}>
+              {busy ? 'Confirmando…' : 'Confirmar distribuição'}
+            </Button>
+          </div>
+        </section>
+      )}
+      <section className="allocation-history">
+        <h2>Pequenos passos guardados.</h2>
+        {state.allocations.length ? (
+          <ul className="session-list">
+            {state.allocations.slice(0, 10).map((a) => (
+              <li key={a.id}>
+                <div>
+                  <strong>
+                    {state.residents.find((c) => c.id === a.character_id)?.name ?? 'Pomin'} ·{' '}
+                    {a.activity_id in careLabels
+                      ? careLabels[a.activity_id as CareId]
+                      : activities[a.activity_id as keyof typeof activities].label}
+                  </strong>
+                  <span>{new Date(a.created_at).toLocaleDateString('pt-BR')}</span>
+                </div>
+                <strong>{a.minutes} min</strong>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Quando você distribuir seus minutos, as primeiras conquistas vão aparecer aqui.</p>
+        )}
+      </section>
+    </>
+  );
+  if (immersive && state && resident) {
+    const foreignFocus = !!recovered && recovered.character_id !== resident.id;
+    return (
+      <GameScreen
+        name={resident.name}
+        stage="Adulto"
+        generation={generation}
+        message={message}
+        panelId={gamePanel}
+        onPanelChange={setGamePanel}
+        world={
+          <RoomCanvas
+            key={`${state.save_id}:${resident.id}`}
+            resident={resident}
+            onArrive={arrival}
+          />
+        }
+        focus={
+          <>
+            {focus ?? (
+              <div className="game-focus-intro">
+                <strong>{balance.available} min</strong>
+                <Button disabled={foreignFocus} onClick={() => setFocusResident(resident)}>
+                  {recovered ? 'Retomar sessão anterior' : 'Começar meu foco'}
+                </Button>
+              </div>
+            )}
+            {focus && (
+              <span className="game-focus-balance">
+                {balance.available} min disponíveis · saldo da conta
+              </span>
+            )}
+            {foreignFocus && (
+              <p className="small-note">
+                Há uma sessão de outro morador. Abra Moradores para voltar à origem.
+              </p>
+            )}
+          </>
+        }
+        panels={[
+          {
+            id: 'activities',
+            label: 'Atividades',
+            content: (
+              <>
+                <h2>{stateLabels[resident.animation_state]}</h2>
+                <div className="activity-menu">
+                  {Object.values(activities).map((a) => (
+                    <button
+                      key={a.id}
+                      disabled={busy || !a.stages.includes(resident.life_stage)}
+                      aria-pressed={resident.current_activity === a.id}
+                      onClick={() => changeActivity(a.id)}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="small-note">
+                  {resident.current_activity
+                    ? activities[resident.current_activity].description
+                    : 'Escolha o próximo passo.'}{' '}
+                  Atividades não gastam minutos sozinhas.
+                </p>
+              </>
+            ),
+          },
+          {
+            id: 'progress',
+            label: 'Progresso',
+            content: (
+              <>
+                <h2>O tempo que floresceu</h2>
+                <div className="resident-progress">
+                  <dl>
+                    {(
+                      [
+                        ['Conhecimento', resident.skills.knowledge],
+                        ['Criatividade', resident.skills.creativity],
+                        ['Sociabilidade', resident.skills.sociability],
+                        ['Autonomia', resident.skills.autonomy],
+                        ['Bem-estar', resident.skills.wellbeing],
+                        ['Energia', resident.needs.energy],
+                      ] as const
+                    ).map(([label, value]) => (
+                      <div key={label}>
+                        <dt>{label}</dt>
+                        <dd>{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                {ledger}
+              </>
+            ),
+          },
+          { id: 'appearance', label: 'Aparência', content: editor },
+          { id: 'residents', label: 'Moradores', content: residents ?? <p>{resident.name}</p> },
+        ]}
+      />
+    );
+  }
   return (
     <div className="play-shell">
       <header className="play-header">
@@ -257,7 +598,19 @@ export function RoomApp({
         </Link>
         <Link href={universeHref}>Meu universo</Link>
         {authenticated && <PortalLink href="/menu">Menu principal</PortalLink>}
-        {authenticated && <Link href="/saves" onClick={e=>{if(document.documentElement.dataset.focusActive==='true'){e.preventDefault();setMessage('Use os controles da sessão antes de abrir suas partidas.');}}}>Minhas partidas</Link>}
+        {authenticated && (
+          <Link
+            href="/saves"
+            onClick={(e) => {
+              if (document.documentElement.dataset.focusActive === 'true') {
+                e.preventDefault();
+                setMessage('Use os controles da sessão antes de abrir suas partidas.');
+              }
+            }}
+          >
+            Minhas partidas
+          </Link>
+        )}
         <span>{authenticated ? 'Progresso na sua conta' : 'Exploração local'}</span>
         {!authenticated && <Link href="/auth">Entrar</Link>}
       </header>
@@ -287,58 +640,9 @@ export function RoomApp({
               </p>
             )}
             {view === 'editor' || !resident ? (
-              <AdultEditor
-                initial={resident?.appearance}
-                name={resident?.name}
-                busy={busy}
-                onClose={() => (resident ? setView('room') : location.assign('/'))}
-                onSave={async (name, appearance) => {
-                  setBusy(true);
-                  try {
-                    const next = await run(
-                      resident
-                        ? {
-                            action: 'appearance',
-                            payload: { characterId: resident.id, appearance },
-                          }
-                        : { action: 'create', payload: { name, appearance } },
-                    );
-                    setSelected(next.residents[0]?.id ?? '');
-                    setView('room');
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
-              />
+              editor
             ) : view === 'focus' && focusResident ? (
-              <Focus
-                character={{
-                  id: focusResident.id,
-                  name: focusResident.name,
-                  appearance: defaultAppearance,
-                  born_at: new Date().toISOString(),
-                  birth_read: true,
-                  life_xp: 0,
-                  first_memory: null,
-                }}
-                authenticated={authenticated}
-                saveId={state.save_id}
-                residentId={focusResident.id}
-                recovered={recovered}
-                portrait={
-                  <SpritePreview appearance={focusResident.appearance} label={focusResident.name} />
-                }
-                distributeMinutes
-                exitLabel="Voltar ao quarto"
-                onCompleted={completed}
-                onExit={() => {
-                  setView('room');
-                  if (authenticated)
-                    refreshRoom(state?.save_id)
-                      .then(accept)
-                      .catch(() => setMessage('Recarregue para conferir o estado salvo.'));
-                }}
-              />
+              focus
             ) : (
               <>
                 <div className="room-section-heading">
@@ -368,7 +672,11 @@ export function RoomApp({
                       </label>
                       <span>{stateLabels[resident.animation_state]}</span>
                     </div>
-                    <RoomCanvas key={`${state.save_id ?? 'local'}:${resident.id}`} resident={resident} onArrive={arrival} />
+                    <RoomCanvas
+                      key={`${state.save_id ?? 'local'}:${resident.id}`}
+                      resident={resident}
+                      onArrive={arrival}
+                    />
                     <p className="scene-note">
                       {resident.current_activity
                         ? activities[resident.current_activity].description
@@ -459,169 +767,7 @@ export function RoomApp({
                     </section>
                   </aside>
                 </div>
-                <section className="time-bank">
-                  <div>
-                    <span>Foco histórico {authenticated ? 'confirmado' : 'local'}</span>
-                    <strong>{balance.historical} min</strong>
-                  </div>
-                  <div>
-                    <span>Disponível para distribuir</span>
-                    <strong>{balance.available} min</strong>
-                  </div>
-                  <div>
-                    <span>Minutos distribuídos</span>
-                    <strong>{balance.distributed} min</strong>
-                  </div>
-                  <Button
-                    variant="secondary"
-                    disabled={busy || balance.available < 1 || !!pendingAllocation}
-                    onClick={openAllocation}
-                  >
-                    Distribuir minutos
-                  </Button>
-                </section>
-                {pendingAllocation && (
-                  <section className="panel pending-allocation">
-                    <h2>Uma distribuição aguarda confirmação.</h2>
-                    <p>
-                      O mesmo pedido será consultado novamente. Os minutos não serão aplicados duas
-                      vezes.
-                    </p>
-                    <Button disabled={busy} onClick={() => distribute(pendingAllocation)}>
-                      Conferir distribuição pendente
-                    </Button>
-                  </section>
-                )}
-                {allocation && !pendingAllocation && (
-                  <section className="panel allocation-panel">
-                    <div className="section-heading">
-                      <h2>Onde seu tempo vai florescer?</h2>
-                      <button
-                        className="text-button"
-                        disabled={busy}
-                        onClick={() => setAllocation(false)}
-                      >
-                        Fechar
-                      </button>
-                    </div>
-                    {lines.map((line, index) => (
-                      <div className="allocation-line" key={index}>
-                        <label>
-                          Sessão
-                          <select
-                            value={line.sessionId}
-                            onChange={(e) => patchLine(index, { sessionId: e.target.value })}
-                          >
-                            {state.credits
-                              .filter((c) => c.eligible_minutes > c.allocated_minutes)
-                              .map((c, i) => (
-                                <option key={c.session_id} value={c.session_id}>
-                                  Sessão {i + 1} · {c.eligible_minutes - c.allocated_minutes} min
-                                  livres
-                                </option>
-                              ))}
-                          </select>
-                        </label>
-                        <label>
-                          Personagem
-                          <select
-                            value={line.characterId}
-                            onChange={(e) => patchLine(index, { characterId: e.target.value })}
-                          >
-                            {state.residents.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label>
-                          Atividade
-                          <select
-                            value={line.activity}
-                            onChange={(e) =>
-                              patchLine(index, {
-                                activity: e.target.value as AllocationLine['activity'],
-                              })
-                            }
-                          >
-                            {Object.values(activities)
-                              .filter((a) =>
-                                a.stages.includes(
-                                  state.residents.find((c) => c.id === line.characterId)
-                                    ?.life_stage ?? 'adult',
-                                ),
-                              )
-                              .map((a) => (
-                                <option key={a.id} value={a.id}>
-                                  {a.label}
-                                </option>
-                              ))}
-                          </select>
-                        </label>
-                        <label>
-                          Minutos
-                          <input
-                            type="number"
-                            min="1"
-                            max="120"
-                            value={line.minutes}
-                            onChange={(e) => patchLine(index, { minutes: Number(e.target.value) })}
-                          />
-                        </label>
-                        {lines.length > 1 && (
-                          <button
-                            aria-label={`Remover distribuição ${index + 1}`}
-                            className="text-button"
-                            onClick={() => setLines((prev) => prev.filter((_, i) => i !== index))}
-                          >
-                            Remover
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <div className="allocation-actions">
-                      <button
-                        className="text-button"
-                        disabled={lines.length >= 20 || busy}
-                        onClick={() => setLines((prev) => [...prev, { ...prev[0], minutes: 1 }])}
-                      >
-                        Adicionar outra distribuição
-                      </button>
-                      <Button disabled={busy} onClick={() => distribute()}>
-                        {busy ? 'Confirmando…' : 'Confirmar distribuição'}
-                      </Button>
-                    </div>
-                  </section>
-                )}
-                <section className="allocation-history">
-                  <h2>Pequenos passos guardados.</h2>
-                  {state.allocations.length ? (
-                    <ul className="session-list">
-                      {state.allocations.slice(0, 10).map((a) => (
-                        <li key={a.id}>
-                          <div>
-                            <strong>
-                              {state.residents.find((c) => c.id === a.character_id)?.name ??
-                                'Pomin'}{' '}
-                              ·{' '}
-                              {a.activity_id in careLabels
-                                ? careLabels[a.activity_id as CareId]
-                                : activities[a.activity_id as keyof typeof activities].label}
-                            </strong>
-                            <span>{new Date(a.created_at).toLocaleDateString('pt-BR')}</span>
-                          </div>
-                          <strong>{a.minutes} min</strong>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>
-                      Quando você distribuir seus minutos, as primeiras conquistas vão aparecer
-                      aqui.
-                    </p>
-                  )}
-                </section>
+                {ledger}
               </>
             )}
           </>

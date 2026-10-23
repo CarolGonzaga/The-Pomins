@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Pomin } from '@/components/characters/pomin';
 import type { Character } from '@/features/character-creator/model';
 import { gameApi } from '@/lib/api';
-import {usePreferences} from '@/features/preferences/provider';
+import { usePreferences } from '@/features/preferences/provider';
 import {
   DURATIONS,
   formatTime,
@@ -27,21 +27,23 @@ export function Focus({
   portrait,
   residentId,
   saveId,
+  compact = false,
   distributeMinutes = false,
   exitLabel = 'Voltar ao meu universo',
 }: {
   character: Character;
   authenticated: boolean;
   recovered: FocusSession | null;
-  onExit: () => void;
+  onExit: (settled?: FocusSession | null) => void;
   onCompleted: (s: FocusSession) => void;
   portrait?: React.ReactNode;
   residentId?: string;
   saveId?: string;
+  compact?: boolean;
   distributeMinutes?: boolean;
   exitLabel?: string;
 }) {
-  const {preferences}=usePreferences();
+  const { preferences } = usePreferences();
   const [minutes, setMinutes] = useState(preferences.focus_minutes);
   const [task, setTask] = useState('');
   const [step, setStep] = useState('');
@@ -407,8 +409,8 @@ export function Focus({
   const target = (session?.planned_seconds ?? minutes * 60) * 1000;
   const progress = Math.min(100, (display / target) * 100);
   return (
-    <section className="focus-page">
-      <button className="back-link" disabled={running || busy} onClick={onExit}>
+    <section className={compact ? 'focus-page compact-focus' : 'focus-page'}>
+      <button className="back-link" disabled={running || busy} onClick={() => onExit(session)}>
         <ArrowLeft size={17} /> {exitLabel}
       </button>
       <header className="focus-heading">
@@ -496,10 +498,10 @@ export function Focus({
                       ? 'Seu progresso foi guardado. As histórias esperam por você.'
                       : 'Sessão local concluída, sem XP. Entre para validar foco e desenvolver seu Pomin.'}
                 </p>
-                <Button onClick={onExit}>{exitLabel}</Button>
+                <Button onClick={() => onExit(session)}>{exitLabel}</Button>
               </div>
             ) : (
-              <Button onClick={onExit}>{exitLabel}</Button>
+              <Button onClick={() => onExit(session)}>{exitLabel}</Button>
             )}
           </div>
           {message && (
@@ -524,70 +526,77 @@ export function Focus({
             </p>
           )}
         </div>
-        <aside className="focus-options">
-          <div className="panel">
-            <span className="eyebrow">UM TEMPO PARA VOCÊ</span>
-            <h2>Quanto cabe agora?</h2>
-            <div className="duration-grid">
-              {DURATIONS.map((n) => (
-                <button
+        <details
+          className="focus-configuration"
+          style={compact ? undefined : { display: 'contents' }}
+          open={compact ? undefined : true}
+        >
+          <summary hidden={!compact}>Duração e intenção do foco</summary>
+          <aside className="focus-options">
+            <div className="panel">
+              <span className="eyebrow">UM TEMPO PARA VOCÊ</span>
+              <h2>Quanto cabe agora?</h2>
+              <div className="duration-grid">
+                {DURATIONS.map((n) => (
+                  <button
+                    disabled={status !== 'idle'}
+                    key={n}
+                    className={minutes === n ? 'selected' : ''}
+                    aria-pressed={minutes === n}
+                    onClick={() => setMinutes(n)}
+                  >
+                    {n}
+                    <span>min</span>
+                    {n === 2 && <small>Só começar</small>}
+                  </button>
+                ))}
+              </div>
+              <label>
+                Ou escolha seu tempo (2 a 120 min)
+                <input
+                  type="number"
+                  min="2"
+                  max="120"
                   disabled={status !== 'idle'}
-                  key={n}
-                  className={minutes === n ? 'selected' : ''}
-                  aria-pressed={minutes === n}
-                  onClick={() => setMinutes(n)}
-                >
-                  {n}
-                  <span>min</span>
-                  {n === 2 && <small>Só começar</small>}
-                </button>
-              ))}
+                  value={minutes}
+                  onChange={(e) =>
+                    setMinutes(Math.min(120, Math.max(2, Number(e.target.value) || 2)))
+                  }
+                />
+              </label>
             </div>
-            <label>
-              Ou escolha seu tempo (2 a 120 min)
-              <input
-                type="number"
-                min="2"
-                max="120"
-                disabled={status !== 'idle'}
-                value={minutes}
-                onChange={(e) =>
-                  setMinutes(Math.min(120, Math.max(2, Number(e.target.value) || 2)))
-                }
-              />
-            </label>
-          </div>
-          <div className="panel">
-            <h2>Um pequeno primeiro passo.</h2>
-            <label>
-              O que você quer fazer?
-              <input
-                disabled={status !== 'idle'}
-                maxLength={160}
-                value={task}
-                onChange={(e) => setTask(e.target.value)}
-                placeholder="Ex.: preparar a apresentação"
-              />
-            </label>
-            <label>
-              Por onde você pode começar?
-              <input
-                disabled={status !== 'idle'}
-                maxLength={160}
-                value={step}
-                onChange={(e) => setStep(e.target.value)}
-                placeholder="Ex.: abrir o arquivo"
-              />
-            </label>
-            <small className="muted">Só você vê suas atividades.</small>
-          </div>
-          <div className="cozy-note">
-            <p>
-              Mantenha o Pomins aberto e a tela ligada. Ao trocar de aplicativo ou perder a conexão,
-              o foco pausa. Nenhuma história vai interromper você.
-            </p>
-          </div>
-        </aside>
+            <div className="panel">
+              <h2>Um pequeno primeiro passo.</h2>
+              <label>
+                O que você quer fazer?
+                <input
+                  disabled={status !== 'idle'}
+                  maxLength={160}
+                  value={task}
+                  onChange={(e) => setTask(e.target.value)}
+                  placeholder="Ex.: preparar a apresentação"
+                />
+              </label>
+              <label>
+                Por onde você pode começar?
+                <input
+                  disabled={status !== 'idle'}
+                  maxLength={160}
+                  value={step}
+                  onChange={(e) => setStep(e.target.value)}
+                  placeholder="Ex.: abrir o arquivo"
+                />
+              </label>
+              <small className="muted">Só você vê suas atividades.</small>
+            </div>
+            <div className="cozy-note">
+              <p>
+                Mantenha o Pomins aberto e a tela ligada. Ao trocar de aplicativo ou perder a
+                conexão, o foco pausa. Nenhuma história vai interromper você.
+              </p>
+            </div>
+          </aside>
+        </details>
       </div>
     </section>
   );

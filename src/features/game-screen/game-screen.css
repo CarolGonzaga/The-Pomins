@@ -1,0 +1,597 @@
+@font-face {
+  font-family: PominsPixel;
+  src: url('/fonts/pixelify-sans/PixelifySans.ttf') format('truetype');
+  font-display: swap;
+  font-weight: 400 700;
+}
+.game-screen {
+  --game-border: var(--purple);
+  max-width: 820px;
+  height: 100dvh;
+  min-height: 560px;
+  margin: auto;
+  padding: env(safe-area-inset-top) max(10px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--ink);
+  background: var(--bg);
+  isolation: isolate;
+}
+.game-screen * {
+  min-width: 0;
+}
+.game-screen [hidden] {
+  display: none !important;
+}
+.game-screen-header {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 70px;
+  align-items: center;
+  gap: 8px;
+  min-height: 62px;
+  position: relative;
+  z-index: 2;
+}
+.game-screen-back > a,
+.game-screen-menu > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--purple);
+  cursor: pointer;
+}
+.game-screen-header h1 {
+  font:
+    500 clamp(24px, 6vw, 32px)/1.1 PominsPixel,
+    monospace;
+  text-align: center;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.game-screen-header p {
+  font-size: 11px;
+  text-align: center;
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+.game-screen-menu nav {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: min(250px, 80vw);
+  border: 2px solid var(--game-border);
+  background: var(--surface);
+  box-shadow: 4px 4px 0 var(--purple-soft);
+  padding: 8px;
+  display: grid;
+  gap: 4px;
+}
+.game-screen-menu nav a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 8px;
+  font-size: 14px;
+}
+.game-screen-world {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 210px;
+  border: 2px solid var(--game-border);
+  background: var(--purple-soft);
+  box-shadow: 3px 3px 0 var(--border);
+  overflow: hidden;
+}
+.game-screen-world .room-canvas {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  min-height: 0;
+  margin: 0;
+}
+.game-screen-world .room-canvas canvas {
+  image-rendering: pixelated;
+}
+.game-screen-world .baby-care-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: stretch;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 10px;
+  background: linear-gradient(0deg, var(--purple-soft) 0 26%, var(--surface) 26% 100%);
+}
+.game-screen-world .baby-care-portrait {
+  width: auto;
+  height: min(70%, 280px);
+  max-width: 220px;
+  flex-shrink: 1;
+  margin: auto;
+  aspect-ratio: 130/150;
+}
+.game-screen-world .baby-care-portrait > svg:first-child {
+  width: 100%;
+  height: 100%;
+}
+.game-screen-world .baby-reaction-copy {
+  margin: 6px 0;
+  min-height: 24px;
+  font-size: 13px;
+}
+.game-screen-world .baby-care-stage > small {
+  font-size: 10px;
+}
+.game-screen-deck {
+  flex: 0 0 auto;
+  border: 2px solid var(--game-border);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--border);
+}
+.game-screen-focus {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.game-focus-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.game-focus-intro strong {
+  font:
+    500 21px PominsPixel,
+    monospace;
+  white-space: nowrap;
+}
+.game-screen-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 3px;
+  padding: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.game-screen-tabs button {
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
+  line-height: 1.3;
+  min-height: 44px;
+  padding: 8px 6px;
+  font:
+    500 16px / 1.3 PominsPixel,
+    monospace;
+  color: var(--ink);
+  border: 2px solid transparent;
+}
+.game-screen-tabs button[aria-expanded='true'] {
+  border-color: var(--purple);
+  background: var(--purple-soft);
+}
+@media (max-width: 600px) {
+  .game-screen-tabs button {
+    font-size: 12px;
+    padding-inline: 2px;
+  }
+}
+@media (max-width: 350px) {
+  .game-screen-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .game-screen-tabs button {
+    font-size: 14px;
+  }
+}
+.game-screen-panel {
+  padding: 12px;
+  max-height: 22dvh;
+  min-height: 100px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scroll-padding: 12px;
+}
+.game-screen-panel h2 {
+  font:
+    500 23px PominsPixel,
+    monospace;
+  margin: 0 0 10px;
+}
+.game-screen-panel p,
+.game-screen-panel label {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.game-screen-panel button,
+.game-screen-panel a,
+.game-screen-panel summary {
+  min-height: 44px;
+}
+.game-screen-panel input,
+.game-screen-panel select {
+  font-size: 16px;
+  min-height: 44px;
+  max-width: 100%;
+}
+.game-screen-panel details > summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--purple);
+}
+.game-screen-panel nav {
+  display: grid;
+  gap: 6px;
+}
+.game-screen-panel nav a {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+.game-screen-panel nav a[aria-current='page'] {
+  background: var(--purple-soft);
+  border-color: var(--purple);
+}
+.game-screen-notice {
+  padding: 8px 12px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.game-screen :focus-visible {
+  outline: 3px solid var(--purple);
+  outline-offset: 2px;
+}
+.game-screen .activity-menu {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  display: grid;
+}
+.game-screen .activity-menu button {
+  padding: 10px 5px;
+  min-height: 52px;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.game-screen .activity-menu button[aria-pressed='true'] {
+  border-color: var(--purple);
+  background: var(--purple-soft);
+}
+.game-screen .resident-progress dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.game-screen .resident-progress dl > div {
+  padding: 8px;
+  background: var(--purple-soft);
+}
+.game-screen .resident-progress dd {
+  margin: 0;
+  font-weight: 600;
+}
+.game-screen .time-bank {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  border: 0;
+  margin: 12px 0;
+  gap: 12px;
+  background: none;
+}
+.game-screen .time-bank > div {
+  flex: 1;
+  min-width: 110px;
+}
+.game-screen .time-bank strong {
+  font-size: 20px;
+}
+.game-screen .allocation-line {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.game-screen .allocation-panel,
+.game-screen .pending-allocation {
+  padding: 12px;
+  margin: 12px 0;
+}
+.game-screen .baby-care-controls {
+  display: flex;
+  flex-direction: column;
+}
+.game-screen .baby-care-actions {
+  order: -1;
+  margin-bottom: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.game-screen .baby-care-actions button {
+  font-size: 13px;
+  border-radius: 0;
+  padding: 8px 4px;
+}
+.game-screen .baby-needs {
+  margin: 0;
+}
+.game-screen .baby-care-record {
+  gap: 10px;
+  margin-top: 12px;
+}
+.game-screen .baby-growth {
+  margin: 0 0 12px;
+  padding: 0;
+}
+.game-screen .baby-care-history {
+  margin: 0;
+}
+.game-screen .baby-care-history ol {
+  max-height: none;
+}
+.game-screen .adult-editor {
+  padding: 0;
+}
+.game-screen .editor-layout {
+  grid-template-columns: 1fr;
+}
+.game-screen .creator-section,
+.game-screen .birth-section {
+  padding: 0;
+}
+/* Only presentation changes: Focus retains the same effects, commands and timers. */
+.compact-focus .back-link,
+.compact-focus .focus-heading,
+.compact-focus .timer-orbit > svg,
+.compact-focus .timer-orbit > .lpc-preview,
+.compact-focus .timer-caption,
+.compact-focus .focus-footnotes {
+  display: none;
+}
+.compact-focus .focus-grid {
+  display: block;
+  gap: 0;
+}
+.compact-focus .timer-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  align-items: center;
+}
+.compact-focus .focus-status {
+  grid-column: 1/-1;
+  margin: 0;
+  font-size: 11px;
+  justify-content: flex-start;
+}
+.compact-focus .timer-orbit {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: auto;
+  display: block;
+  margin: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+.compact-focus .timer-orbit:before,
+.compact-focus .timer-orbit:after {
+  display: none;
+}
+.compact-focus .timer-number {
+  position: static;
+  transform: none;
+  font:
+    500 32px/1.1 PominsPixel,
+    monospace;
+  margin: 0;
+}
+.compact-focus .timer-controls {
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.compact-focus .timer-controls button {
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 12px;
+  gap: 5px;
+}
+.compact-focus .timer-controls svg {
+  display: none;
+}
+.compact-focus .focus-message,
+.compact-focus .small-note {
+  grid-column: 1/-1;
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0;
+  max-width: none;
+}
+.compact-focus .completion {
+  font-size: 12px;
+}
+.compact-focus .completion > svg,
+.compact-focus .completion p {
+  display: none;
+}
+.compact-focus .focus-configuration {
+  margin-top: 8px;
+}
+.compact-focus .focus-configuration > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--purple);
+  font-size: 13px;
+  cursor: pointer;
+}
+.compact-focus .focus-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-height: 25dvh;
+  overflow: auto;
+}
+.compact-focus .focus-options .panel {
+  padding: 12px;
+  margin: 0;
+}
+.compact-focus .focus-options h2 {
+  font-size: 21px;
+  margin: 0 0 8px;
+}
+.compact-focus .focus-options .eyebrow,
+.compact-focus .focus-options .cozy-note {
+  display: none;
+}
+.compact-focus .focus-options label {
+  font-size: 13px;
+}
+.compact-focus .focus-options input {
+  min-height: 44px;
+  font-size: 16px;
+}
+.compact-focus .duration-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+.compact-focus .duration-grid button {
+  padding: 6px;
+  min-height: 44px;
+}
+.compact-focus .duration-grid small {
+  display: none;
+}
+.game-focus-balance {
+  display: block;
+  font-size: 12px;
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+@media (min-width: 850px) {
+  .game-screen {
+    padding-top: 16px;
+    padding-bottom: 20px;
+  }
+  .game-screen-world {
+    height: clamp(320px, 48dvh, 510px);
+  }
+  .game-screen-panel {
+    max-height: 24dvh;
+  }
+}
+@media (max-height: 650px) {
+  .game-screen-header {
+    min-height: 52px;
+  }
+  .game-screen-world {
+    height: 210px;
+    min-height: 210px;
+  }
+  .game-screen-panel {
+    max-height: 230px;
+  }
+  .game-screen {
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-screen .baby-care-portrait {
+    animation: none;
+  }
+}
+[data-reduce-motion='true'] .game-screen .baby-care-portrait {
+  animation: none;
+}
+
+.game-protagonist-choices {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.game-screen-world > .nursery {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+}
+.game-screen-panel .birth-page > .nursery {
+  display: none;
+}
+.game-screen-panel .birth-page .story-paper {
+  padding: 12px;
+}
+.game-screen-panel .birth-page h1 {
+  font-size: 24px;
+}
+.game-screen-panel .birth-page .story-choices {
+  grid-template-columns: 1fr;
+}
+
+.game-screen .adult-editor-grid {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.game-screen .adult-editor .adult-preview {
+  position: relative;
+  top: 0;
+  padding: 12px;
+}
+.game-screen .adult-editor .adult-preview > .lpc-preview {
+  width: 112px;
+  height: 112px;
+}
+.game-screen .adult-editor .panel {
+  padding: 12px;
+}
+.game-screen .adult-editor .swatches {
+  gap: 8px;
+}
+.game-screen .adult-editor .swatches button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.game-screen .birth-page .story-choices button {
+  padding: 12px;
+}
+.compact-focus {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.compact-focus .timer-controls {
+  min-height: 44px;
+}
+
+.game-screen-back [role='status'] {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--purple);
+  font-size: 12px;
+  z-index: 3;
+}

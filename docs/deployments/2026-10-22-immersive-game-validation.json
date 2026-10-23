@@ -1,0 +1,79 @@
+{
+  "checked_at": "2026-10-23T01:18:59.313Z",
+  "base_commit": "777e381c7d437cb8cc167b130e076b8325b82b20",
+  "tests": {
+    "unit_integration": 177,
+    "native_postgres": 11,
+    "browser": 56,
+    "total_distinct": 244,
+    "lint": "passed",
+    "typescript": "passed",
+    "isolated_build": "passed",
+    "root_build": "passed",
+    "focus_ui_responses": "simulated in disposable browser tests",
+    "final_layout_smoke": {
+      "passed": 8,
+      "seconds": 24.9,
+      "included_in_browser_total": true
+    }
+  },
+  "remote_checks": {
+    "checked_at": "2026-10-23T01:18:03.688Z",
+    "environment": "real-supabase-development-auth",
+    "passed": [
+      "login real A/B e cookies SSR",
+      "preferências persistidas lidas novamente sem gravações",
+      "carregamento de residência, moradores e histórico isolados",
+      "adultos e bebê existentes restaurados sem criação",
+      "acesso e seleção de outra conta recusados sem efeitos",
+      "páginas e endpoint SSR por save; / e /play preservados",
+      "menu, regras, configurações e gerenciador validados por SSR autenticado",
+      "endpoint alheio e URL de morador incompatível bloqueados",
+      "sessões, saldo, revisão e protagonistas inalterados"
+    ],
+    "protagonist_chosen": false,
+    "focus_commands": 0,
+    "minutes_spent": 0,
+    "characters_created": 0,
+    "browser_sessions_untouched": true
+  },
+  "server": {
+    "url": "http://localhost:3000",
+    "build_id": "N6p00OGMgVVu427S_H4S9",
+    "persisted_state": {
+      "checked_at": "2026-10-23T01:16:55.423Z",
+      "sessions": [
+        {
+          "status": "paused",
+          "count": 1
+        }
+      ],
+      "critical_tables": 12,
+      "unchanged_since_before": true,
+      "active_focus": 0
+    }
+  },
+  "migrations_added": 0,
+  "migrations_executed": 0,
+  "physical_iphone_tested": false,
+  "commit_created": false,
+  "push_performed": false,
+  "consolidation": {
+    "checked_at": "2026-10-23T02:41:22.685Z",
+    "files": 19,
+    "unit_integration": 177,
+    "native_postgres": 11,
+    "browser": 56,
+    "total_distinct": 244,
+    "lint": "passed",
+    "typescript": "passed",
+    "isolated_build": "passed",
+    "remote_access": "read-only state comparison",
+    "critical_tables_unchanged": 12,
+    "paused_focus": 1,
+    "active_focus": 0,
+    "server_restarted": false,
+    "migrations_executed": 0,
+    "push_performed": false
+  }
+}

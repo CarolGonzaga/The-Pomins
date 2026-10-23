@@ -6,15 +6,15 @@ async function signIn(context:BrowserContext,session:unknown){
   await context.addCookies([{name:'sb-127-auth-token',value:'base64-'+Buffer.from(JSON.stringify(session)).toString('base64url'),domain:'localhost',path:'/'}]);
 }
 async function birth(page:Page,name:string,sky:boolean){
-  await page.getByRole('button',{name:'Criar meu primeiro Pomin',exact:true}).click();
   await page.getByRole('textbox',{name:'Nome do seu Pomin',exact:true}).fill(name);
   await page.getByRole('button',{name:'Dar boas-vindas ao mundo',exact:true}).click();
+  await page.getByRole('button',{name:'História',exact:true}).click();
   await expect(page.getByRole('heading',{name:new RegExp('O mundo ganhou')})).toContainText(name);
   await page.getByRole('button',{name:'Continuar',exact:true}).click();
   await page.getByRole('button',{name:'Continuar',exact:true}).click();
   await page.getByRole('button',{name:sky?/A luz dançando na janela/:/A voz que diz/}).click();
   await page.getByRole('button',{name:'Guardar essa primeira memória',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Cuidar do meu bebê',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Cuidados',exact:true})).toBeVisible();
 }
 
 test('manages two new stories, resumes creation, birth, archive, restore and login without focus effects',async({page,context,request},testInfo)=>{
@@ -57,8 +57,9 @@ test('manages two new stories, resumes creation, birth, archive, restore and log
   await context.clearCookies();await page.goto('/saves');await expect(page).toHaveURL(/\/auth\?next=/);
   await signIn(context,info.session);await page.goto('/saves');
   await page.getByRole('article',{name:prefix+' A',exact:true}).getByRole('link',{name:'Continuar',exact:true}).click();
+  await page.getByRole('button',{name:'Moradores',exact:true}).click();
   await expect(page.getByRole('navigation',{name:'Moradores da partida'})).toContainText('Lua · Protagonista');
-  await page.reload();await page.getByRole('button',{name:'Cuidar do meu bebê',exact:true}).click();await expect(page.locator('.baby-care')).toBeVisible();
+  await page.reload();await page.getByRole('button',{name:'Cuidados',exact:true}).click();await expect(page.locator('.baby-care-stage')).toBeVisible();
   await page.goto('/saves');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:testInfo.outputPath('saves.png'),fullPage:true});
   const audit=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze();expect(audit.violations).toEqual([]);

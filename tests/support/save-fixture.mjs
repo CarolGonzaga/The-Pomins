@@ -1,6 +1,6 @@
 import { PGlite } from '@electric-sql/pglite';
 import { readFileSync } from 'node:fs';
-export async function createSaveFixture() {
+export async function createSaveFixture({immersive:withImmersive=false}={}) {
   const db = new PGlite();
   await db.exec(
     `create role anon nologin;create role authenticated nologin;create schema auth;create table auth.users(id uuid primary key,raw_user_meta_data jsonb not null default '{}');create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`,
@@ -61,9 +61,9 @@ export async function createSaveFixture() {
     clothing: 'longsleeve',
     clothingColor: '#8975aa',
   };
-  const create = async (s, name) =>
+  const create = async (s, name, uid=a) =>
     (
-      await rpc(a, 'room_command_for_save', {
+      await rpc(uid, 'room_command_for_save', {
         p_save: s,
         p_action: 'create',
         p_payload: { name, appearance },
@@ -101,5 +101,18 @@ export async function createSaveFixture() {
     "insert into public.focus_sessions(id,user_id,character_id,client_id,planned_seconds,status,validated_ms) values($1,$2,$3,$4,120,'completed',120000),($5,$2,$3,$4,120,'paused',60000)",
     [credit, a, adultOne, client, paused],
   );
-  return { db, rpc, ids: { a, b, one, two, foreign, adultOne, adultTwo, baby, credit, paused } };
+  // Independent disposable worlds for UI tests; never shared with A/B regressions.
+  const immersive={};
+  for(const [project,uid] of (withImmersive?[['chromium','10000000-0000-4000-8000-000000000003'],['iphone','10000000-0000-4000-8000-000000000004']]:[])){
+    await db.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)',[uid,JSON.stringify({nickname:'immersive_'+project})]);
+    const adultSave=(await rpc(uid,'get_game_context')).save.id;
+    const adult=await create(adultSave,'Íris',uid);
+    const babySave=(await rpc(uid,'create_game_save',{p_request:crypto.randomUUID(),p_name:'Pequenos começos'})).id;
+    const babyAppearance=(await db.query('select appearance from public.characters where id=$1',[baby])).rows[0].appearance;
+    const babyId=(await rpc(uid,'create_character_for_save',{p_save:babySave,p_name:'Lumi',p_appearance:babyAppearance})).id;
+    await rpc(uid,'read_birth_for_save',{p_save:babySave,p_character:babyId,p_memory:'sky'});
+    await db.query("insert into public.focus_sessions(id,user_id,character_id,client_id,planned_seconds,status,validated_ms) values($1,$2,$3,$4,120,'completed',120000)",[crypto.randomUUID(),uid,adult,crypto.randomUUID()]);
+    immersive[project]={userId:uid,adultSave,babySave,adult,baby:babyId};
+  }
+  return { db, rpc, ids: { immersive, a, b, one, two, foreign, adultOne, adultTwo, baby, credit, paused } };
 }

@@ -46,6 +46,7 @@ test('persists account preferences, themes, avatar and motion without changing a
     const character={name:'Tutorial',appearance:{species:'human',skin:'#d8a17d',hair:'tuft',hairColor:'#49352e',eyes:'round',eyeColor:'#544532',outfit:'#b7b0d4',accessory:'none',antennas:true,marks:false}};
     const created=await page.request.post('/api/game',{headers:{origin:new URL(page.url()).origin},data:{kind:'character',saveId:info.foreign,character}});expect(created.status()).toBe(200);
     await page.goto('/game/'+info.foreign);await page.getByRole('button',{name:'Encontrar meu foco',exact:true}).click();
+    await page.getByText('Duração e intenção do foco',{exact:true}).click();
     await expect(page.getByRole('spinbutton',{name:'Ou escolha seu tempo (2 a 120 min)',exact:true})).toHaveValue('37');
   }
   const calls=await(await request.get(fixture+'/__test/info')).json();expect(calls.commands).not.toContain('focus_command');
