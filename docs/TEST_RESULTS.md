@@ -1,12 +1,20 @@
 # Resultados de validação · Entrega 1
 
+## Entrega 5G — controle giratório, 23/10/2026
+
+**267 distintos aprovados:** 190 unidade/integração (13 novos de geometria), 11 PostgreSQL nativo executados nesta mesma rodada de trabalho (SQL preservado) e 66 navegador (10 novos; rodada final 1,9 min). Lint, TypeScript e builds de produção isolado/raiz aprovados. Novos testes cobrem giro nos dois sentidos, extremos, cruzamento angular, cancelamento, teclado, preferências, entrada inteira, toque por Pointer Events/CDP, centro, início sem duplicação, pausa/retomada, bloqueio, confirmação de conclusão, saldo, layout e preservação de Phaser/foco.
+
+Auth e SQL descartáveis nos testes locais; respostas de foco novas explicitamente simuladas, sem afirmar conclusão remota real. Conferência remota somente de leitura preservou as 12 tabelas críticas, saldo e uma sessão pausada; nenhuma ativa. Sem migração ou comandos de foco reais. Captura mobile e WCAG A/AA conferidos; Safari/iPhone físico continua pendente. [Relatório 5G](FOCUS_DURATION_DIAL.md).
+
+**Consolidação 5F:** commit `68969fd752354dd3898ef2fe3dabbf7c1312906d`, 19 arquivos revisados, 244 testes repetidos, lint/TypeScript/build aprovados, varredura sem segredos, árvore limpa após o commit. A porta nativa inicial estava ocupada; somente a execução completa dos 11 em outra porta foi contada. Sem push.
+
 ## Entrega 5F — interface imersiva
 
 **244 distintos aprovados**: 177 unidade/integração, 11 de concorrência PostgreSQL nativo nesta mesma rodada de trabalho (SQL preservado), 56 Playwright em produção isolada (2,1 min), desktop Chromium e viewport/toque iPhone. Os oito cenários novos são repetidos após o ajuste tipográfico final, sem duplicar a contagem. Lint, TypeScript, build isolado e build final da raiz aprovados. Capturas conferidas, controles sem transbordamento e auditorias WCAG A/AA aprovadas.
 
 Fixtures/SQL descartáveis validam cuidados persistidos, saldo e restauração. Respostas de foco ativo/pausado nos testes novos são simuladas explicitamente; não representam uma nova sessão remota concluída. Nove conferências reais autenticadas em 3000 e comparação de 12 tabelas preservaram saldo, protagonista, preferências e a sessão pausada. Nenhum comando de foco, minuto gasto, personagem escolhido ou migração remota nesta entrega. Safari/iPhone físico e PWA instalado continuam pendentes. [Relatório 5F](IMMERSIVE_GAME.md).
 
-**Consolidação 5E:** commit `777e381c7d437cb8cc167b130e076b8325b82b20`, 47 arquivos revisados, 233 testes repetidos, lint/TypeScript/build aprovados, sem segredos e árvore limpa ao concluir o commit. As alterações 5F posteriores permanecem sem commit.
+**Consolidação 5E:** commit `777e381c7d437cb8cc167b130e076b8325b82b20`, 47 arquivos revisados, 233 testes repetidos, lint/TypeScript/build aprovados, sem segredos e árvore limpa ao concluir o commit. A 5F foi consolidada posteriormente em `68969fd`; a 5G foi consolidada posteriormente, sem push.
 
 ## Entrega 5E — validação nova, 22/10/2026
 

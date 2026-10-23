@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowLeft, Check, Pause, Play, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FocusDurationDial } from './focus-duration-dial';
+import { clampMinutes } from './dial-math';
 import { Pomin } from '@/components/characters/pomin';
 import type { Character } from '@/features/character-creator/model';
 import { gameApi } from '@/lib/api';
@@ -408,6 +410,7 @@ export function Focus({
   const running = ['active', 'paused', 'interrupted', 'completing'].includes(status);
   const target = (session?.planned_seconds ?? minutes * 60) * 1000;
   const progress = Math.min(100, (display / target) * 100);
+  const selectedMinutes = compact && session ? session.planned_seconds / 60 : minutes;
   return (
     <section className={compact ? 'focus-page compact-focus' : 'focus-page'}>
       <button className="back-link" disabled={running || busy} onClick={() => onExit(session)}>
@@ -436,6 +439,23 @@ export function Focus({
                     ? 'Sessão encerrada'
                     : 'Sem pressa. Só começar.'}
           </div>
+          {compact && (
+            <FocusDurationDial
+              minutes={selectedMinutes}
+              status={status}
+              busy={busy}
+              onChange={setMinutes}
+              onAction={
+                status === 'idle'
+                  ? start
+                  : status === 'active'
+                    ? () => pause.current('Pausa feita. Retome quando estiver pronto.')
+                    : status === 'paused' || status === 'interrupted'
+                      ? resume
+                      : undefined
+              }
+            />
+          )}
           <div
             className="timer-orbit"
             style={{ '--progress': `${progress}%` } as React.CSSProperties}
@@ -450,10 +470,16 @@ export function Focus({
           </div>
           <div className="timer-controls">
             {status === 'idle' || status === 'starting' ? (
-              <Button disabled={busy} onClick={start}>
-                <Play size={18} />
-                {busy ? 'Preparando…' : 'Começar meu foco'}
-              </Button>
+              compact ? (
+                <p className="dial-ready-hint">
+                  Gire a borda para ajustar. Toque no centro para começar.
+                </p>
+              ) : (
+                <Button disabled={busy} onClick={start}>
+                  <Play size={18} />
+                  {busy ? 'Preparando…' : 'Começar meu foco'}
+                </Button>
+              )
             ) : status === 'active' ? (
               <>
                 <Button
@@ -541,8 +567,8 @@ export function Focus({
                   <button
                     disabled={status !== 'idle'}
                     key={n}
-                    className={minutes === n ? 'selected' : ''}
-                    aria-pressed={minutes === n}
+                    className={selectedMinutes === n ? 'selected' : ''}
+                    aria-pressed={selectedMinutes === n}
                     onClick={() => setMinutes(n)}
                   >
                     {n}
@@ -558,9 +584,13 @@ export function Focus({
                   min="2"
                   max="120"
                   disabled={status !== 'idle'}
-                  value={minutes}
+                  value={selectedMinutes}
                   onChange={(e) =>
-                    setMinutes(Math.min(120, Math.max(2, Number(e.target.value) || 2)))
+                    setMinutes(
+                      compact
+                        ? clampMinutes(Number(e.target.value))
+                        : Math.min(120, Math.max(2, Number(e.target.value) || 2)),
+                    )
                   }
                 />
               </label>

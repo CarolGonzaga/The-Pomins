@@ -103,8 +103,14 @@ export async function createSaveFixture({immersive:withImmersive=false}={}) {
   );
   // Independent disposable worlds for UI tests; never shared with A/B regressions.
   const immersive={};
-  for(const [project,uid] of (withImmersive?[['chromium','10000000-0000-4000-8000-000000000003'],['iphone','10000000-0000-4000-8000-000000000004']]:[])){
-    await db.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)',[uid,JSON.stringify({nickname:'immersive_'+project})]);
+  // Separate dial and room suites: files can run concurrently within one project.
+  for(const [project,uid] of (withImmersive?[
+    ['chromium','10000000-0000-4000-8000-000000000003'],
+    ['iphone','10000000-0000-4000-8000-000000000004'],
+    ['dial-chromium','10000000-0000-4000-8000-000000000005'],
+    ['dial-iphone','10000000-0000-4000-8000-000000000006'],
+  ]:[])){
+    await db.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)',[uid,JSON.stringify({nickname:'immersive_'+project.replaceAll('-','_')})]);
     const adultSave=(await rpc(uid,'get_game_context')).save.id;
     const adult=await create(adultSave,'Íris',uid);
     const babySave=(await rpc(uid,'create_game_save',{p_request:crypto.randomUUID(),p_name:'Pequenos começos'})).id;

@@ -1,0 +1,192 @@
+.focus-duration-dial {
+  width: 132px;
+  max-width: 100%;
+  color: var(--purple);
+  grid-column: 1;
+  grid-row: 2 / span 2;
+}
+.dial-face {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.dial-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  outline-offset: 2px;
+}
+.dial-ring[data-dragging='true'] {
+  cursor: grabbing;
+}
+.dial-ring[aria-disabled='true'] {
+  cursor: default;
+}
+.dial-ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.dial-shadow {
+  fill: var(--purple);
+  opacity: 0.28;
+}
+.dial-rim {
+  fill: var(--surface);
+  stroke: var(--purple);
+  stroke-width: 3;
+}
+.dial-body {
+  fill: var(--purple-soft);
+  stroke: var(--border);
+  stroke-width: 4;
+}
+.dial-tick,
+.dial-needle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: square;
+}
+.dial-needle {
+  stroke-width: 6;
+  transform-origin: 80px 80px;
+  transition: transform 100ms ease-out;
+}
+[data-dragging='true'] .dial-needle {
+  transition: none;
+}
+.dial-ring text {
+  fill: var(--ink);
+  font:
+    13px PominsPixel,
+    monospace;
+}
+.dial-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--surface);
+  border: 2px solid var(--purple);
+  box-shadow: 0 3px 0 var(--purple);
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.dial-center:active:not(:disabled) {
+  box-shadow: 0 1px 0 var(--purple);
+  margin-top: 2px;
+}
+.dial-center strong {
+  font:
+    500 21px/1 PominsPixel,
+    monospace;
+}
+.dial-center small {
+  font:
+    11px 'Segoe UI',
+    sans-serif;
+}
+.dial-center span {
+  font-size: 10px;
+}
+.dial-center:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.dial-stepper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1px;
+}
+.dial-stepper button {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  background: var(--surface);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+  font-size: 22px;
+  cursor: pointer;
+}
+.dial-stepper button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.dial-help {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.focus-duration-dial[data-state='active'] .dial-body {
+  fill: var(--sage);
+}
+.focus-duration-dial[data-state='paused'] .dial-rim,
+.focus-duration-dial[data-state='interrupted'] .dial-rim {
+  stroke-dasharray: 5 3;
+}
+.focus-duration-dial[data-state='completed'] .dial-body {
+  fill: var(--sage);
+}
+.compact-focus .timer-card:has(.focus-duration-dial) {
+  grid-template-columns: 132px minmax(0, 1fr);
+}
+.compact-focus .timer-card:has(.focus-duration-dial) .timer-orbit {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+}
+.compact-focus .timer-card:has(.focus-duration-dial) .timer-controls {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: start;
+  justify-content: flex-start;
+}
+.dial-ready-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+.game-screen:has(.focus-duration-dial) .game-screen-panel {
+  max-height: 16dvh;
+  min-height: 80px;
+}
+@media (max-width: 420px), (max-height: 650px) {
+  .focus-duration-dial {
+    width: 116px;
+  }
+  .compact-focus .timer-card:has(.focus-duration-dial) {
+    grid-template-columns: 116px minmax(0, 1fr);
+  }
+  .dial-center {
+    width: 60px;
+    height: 60px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .focus-duration-dial .dial-needle {
+    transition: none !important;
+  }
+}
+[data-reduce-motion='true'] .focus-duration-dial .dial-needle {
+  transition: none !important;
+}

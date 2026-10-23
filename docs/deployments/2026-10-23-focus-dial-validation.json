@@ -1,0 +1,59 @@
+{
+  "checked_at": "2026-10-23T03:09:06.640Z",
+  "baseline_commit": "68969fd752354dd3898ef2fe3dabbf7c1312906d",
+  "delivery_5f_consolidation": {
+    "files": 19,
+    "tests_passed": 244,
+    "tree_clean_after_commit": true,
+    "push_performed": false
+  },
+  "delivery_5g": {
+    "tests": {
+      "unit_integration": 190,
+      "native_postgres": 11,
+      "browser": 66,
+      "total_distinct": 267,
+      "lint": "passed",
+      "typescript": "passed",
+      "isolated_build": "passed",
+      "root_build": "passed",
+      "focus_ui_responses": "explicitly simulated; no remote focus or credits"
+    },
+    "server": {
+      "url": "http://localhost:3000",
+      "build_id": "RTcna3bdZrGJY5-cyzyTQ",
+      "persisted_state": {
+        "checked_at": "2026-10-23T03:05:21.942Z",
+        "sessions": [
+          {
+            "status": "paused",
+            "count": 1
+          }
+        ],
+        "critical_tables": 12,
+        "unchanged_since_before": true,
+        "active_focus": 0
+      }
+    },
+    "migrations_added": 0,
+    "migrations_executed": 0,
+    "remote_focus_commands": 0,
+    "remote_preferences_written": 0,
+    "minutes_spent_remotely": 0,
+    "physical_iphone_tested": false,
+    "commit_created": true
+  },
+  "push_performed": false,
+  "consolidation": {
+    "checked_at": "2026-10-23T03:50:36.208Z",
+    "files_reviewed": 11,
+    "tests_passed": 267,
+    "lint": "passed",
+    "typescript": "passed",
+    "isolated_build": "passed",
+    "browser": "66 passed after separating disposable dial accounts from care suite",
+    "secrets_found": 0,
+    "commit_message": "feat: add rotary focus duration control",
+    "push_performed": false
+  }
+}
