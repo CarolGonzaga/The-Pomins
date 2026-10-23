@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   if (code) {
     const db = await serverClient();
     const { error } = await db.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(recovery ? '/auth?mode=update' : '/', origin));
+    if (!error) return NextResponse.redirect(new URL(recovery ? '/auth?mode=update' : '/menu', origin));
   }
   return NextResponse.redirect(new URL('/auth?error=callback', origin));
 }

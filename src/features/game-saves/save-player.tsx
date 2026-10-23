@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { RoomApp } from '../room/room-app';
 import { characterSchema, type Character } from '../character-creator/model';
 import { eligibleProtagonist, focusSessions, type LoadedSave } from './loading';
+import {PortalLink} from '../portal/navigation';
 export function SavePlayer({
   initial,
   userId,
@@ -48,6 +49,7 @@ export function SavePlayer({
     return (
       <main className="simple-page">
         <a href="/saves">Minhas partidas</a>
+        <PortalLink href="/menu">Menu principal</PortalLink>
         <h1>Quem protagoniza esta história?</h1>
         <p>Os outros moradores continuam nesta partida.</p>
         {choices.map((c) => (

@@ -11,6 +11,7 @@ export default function Credits() {
         Quem deu forma
         <br />a este <em>pequeno mundo.</em>
       </h1>
+      <p>Menu: fonte Pixelify Sans, dos Pixelify Sans Project Authors, sob SIL Open Font License 1.1. <a href="/fonts/pixelify-sans/OFL.txt">Licença da fonte</a>. Paisagem e avatares do menu são desenhos originais por código.</p>
       <p>
         Personagens usam camadas do Universal LPC. A composição e as recolorações preservam os
         créditos de cada artista.

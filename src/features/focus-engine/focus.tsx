@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Pomin } from '@/components/characters/pomin';
 import type { Character } from '@/features/character-creator/model';
 import { gameApi } from '@/lib/api';
+import {usePreferences} from '@/features/preferences/provider';
 import {
   DURATIONS,
   formatTime,
@@ -40,7 +41,8 @@ export function Focus({
   distributeMinutes?: boolean;
   exitLabel?: string;
 }) {
-  const [minutes, setMinutes] = useState(2);
+  const {preferences}=usePreferences();
+  const [minutes, setMinutes] = useState(preferences.focus_minutes);
   const [task, setTask] = useState('');
   const [step, setStep] = useState('');
   const [status, setStatus] = useState<FocusStatus>('idle');

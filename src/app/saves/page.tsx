@@ -14,7 +14,7 @@ export default async function SavesPage({searchParams}:{searchParams:Promise<{ar
     error=e instanceof SaveContextError?e.message:'Não foi possível carregar suas partidas. Confira a configuração e tente novamente.';
   }
   return <main id="main" className={styles.page}>
-    <Link href="/" className="brand">pomins.</Link>
+    <Link href="/menu" className="brand" aria-label="Menu principal">pomins.</Link>
     <header className={styles.header}><div><span className="eyebrow">CRIE. VIVA. CONTINUE.</span><h1>Suas partidas</h1><p>Cada história tem seu próprio mundo. Seu foco acompanha você.</p></div><Link href="/saves/new">Nova partida</Link></header>
     <nav className={styles.tabs} aria-label="Lista de partidas"><Link href="/saves" aria-current={!archived?'page':undefined}>Em andamento</Link><Link href="/saves?archived=true" aria-current={archived?'page':undefined}>Arquivadas</Link></nav>
     {error?<div role="alert" className={styles.alert}>{error} <Link href={archived?'/saves?archived=true':'/saves'}>Tentar novamente</Link></div>:result && <SaveManager key={`${result.userId}:${archived}`} entries={result.entries} archived={archived}/>}

@@ -1,0 +1,85 @@
+{
+  "checked_at": "2026-10-23T00:21:55.234Z",
+  "baseline_commit": "49ce61e8e47f2ce77e771af43ecd528e5fce2604",
+  "delivery_5d_consolidation": {
+    "commit_message": "feat: add multi-save management",
+    "local_tests_passed": 211,
+    "tree_clean_after_commit": true,
+    "remote_migration_reapplied": false
+  },
+  "delivery_5e": {
+    "tests": {
+      "unit_integration": 174,
+      "native_postgres": 11,
+      "browser": 48,
+      "total_distinct": 233,
+      "lint": "passed",
+      "typescript": "passed",
+      "root_build": "passed"
+    },
+    "auth_validation": {
+      "checked_at": "2026-10-23T00:13:30.827Z",
+      "environment": "real-supabase-development-auth",
+      "passed": [
+        "login real A/B e cookies SSR",
+        "menu, regras, configurações, saves e rotas legadas com identidade real",
+        "preferências negadas sem login ou com contexto antigo de outra conta",
+        "preferências e avatar persistidos no Auth real e renderizados pelo SSR",
+        "novo login restaura preferências de B sem alterar preferências de A",
+        "metadados originais da conta de teste restaurados integralmente",
+        "personagens, protagonistas, histórico, saldo e sessões preservados"
+      ],
+      "preferences_restored": true,
+      "focus_commands": 0,
+      "minutes_spent": 0,
+      "email_or_password_changed": false,
+      "recovery_emails_sent": 0,
+      "migrations_executed": 0,
+      "browser_sessions_untouched": true
+    },
+    "server": {
+      "url": "http://localhost:3000/menu",
+      "build_id": "CyEmWE___uf81LtSId4sj",
+      "controlled_restart": true,
+      "persisted_state": {
+        "checked_at": "2026-10-23T00:20:54.455Z",
+        "sessions": [
+          {
+            "status": "paused",
+            "count": 1
+          }
+        ],
+        "critical_tables": 12,
+        "unchanged_since_before": true,
+        "active_focus": 0
+      }
+    },
+    "font": {
+      "name": "Pixelify Sans",
+      "license": "SIL OFL 1.1",
+      "sha256": "9ba86cd010a4de309d263ceff8e8044092c9db7efda869620cb9ff1c4389e8a5"
+    },
+    "migrations_added": 0,
+    "email_confirmation_tested_remotely": false,
+    "physical_iphone_tested": false,
+    "commit_created": false
+  },
+  "push_performed": false,
+  "consolidation": {
+    "checked_at": "2026-10-23T00:46:47.846Z",
+    "reviewed_files": 47,
+    "unit_integration": 174,
+    "native_postgres": 11,
+    "browser": 48,
+    "total_distinct": 233,
+    "lint": "passed",
+    "typescript": "passed",
+    "isolated_production_build": "passed",
+    "remote_validation": "authenticated reads only; preferences re-read; 12 critical tables unchanged except last_used_at",
+    "paused_focus": 1,
+    "active_focus": 0,
+    "server_restarted": false,
+    "migrations_executed": 0,
+    "push_performed": false
+  }
+}

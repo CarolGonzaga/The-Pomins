@@ -39,7 +39,7 @@ test('loads independent saves, chooses protagonist and restores SQL state and Ph
   await expect(page.getByTestId('room-canvas').locator('canvas')).toBeVisible();
   await context.clearCookies();
   await page.goto('/game/' + info.two);
-  await expect(page.locator('main [role="alert"]')).toContainText('Entre');
+  await expect(page).toHaveURL(/\/auth\?next=/);
   await context.addCookies([cookie()]);
   await page.goto('/game/' + info.two);
   await expect(page.getByRole('navigation', { name: 'Moradores da partida' })).toContainText(

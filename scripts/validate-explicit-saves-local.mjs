@@ -45,6 +45,7 @@ try {
     CI: '1',
     NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:3181',
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'fixture-public-key',
+    NEXT_PUBLIC_APP_URL: 'http://localhost:3182',
     POMINS_SAVE_FIXTURE_ORIGIN: 'http://127.0.0.1:3181',
     POMINS_TEST_PORT: '3182',
     POMINS_TEST_SERVER_MODE: 'production',

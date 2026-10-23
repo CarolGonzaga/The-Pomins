@@ -1,5 +1,13 @@
 # Resultados de validação · Entrega 1
 
+## Entrega 5E — validação nova, 22/10/2026
+
+**233 testes distintos aprovados:** 174 unidade/integração, 11 PostgreSQL descartável (835ms) e 48 Playwright em produção isolada (rodada final aproximadamente 1,5 minuto, dois workers, Chromium desktop e viewport/toque de iPhone). Lint sem avisos, TypeScript explícito e build da raiz aprovados. Os 11 nativos ignorados em `npm test` foram executados separadamente. Menu/configurações conferidos em capturas; auditoria WCAG A/AA sem violações nas telas novas testadas; largura e botões mobile verificados.
+
+Cobertura: autenticação e destinos internos, seis etapas e pular tutorial, menu/saves, persistência de preferências, temas/sistema/movimento, avatar, valor inicial de novas sessões, acesso ao painel antigo de privacidade, reautenticação/MFA verificados para e-mail, recuperação existente, logout/login e preservação do foco. As primeiras tentativas corrigiram rotulagem de rádio e a simulação Auth (callback, assinatura JWT fictícia e recuperação anônima); tentativas incompletas não contam como aprovação.
+
+**Supabase real separado:** sete grupos aprovaram login A/B, SSR, conta/contexto verificados, salvar preferências/avatar, novo login, restauração integral dos metadados originais e comparação dos mundos/foco. Nenhum e-mail, senha ou protagonista alterado; zero links enviados e zero migrações executadas. Em 3000, oito verificações reais adicionais preservaram as rotas de saves/jogo/legadas. Comparação de 12 tabelas após atualização do servidor preservou a sessão pausada e todos os dados, exceto o timestamp permitido de última utilização. Confirmação real de e-mail/recuperação e Safari físico exigem validação humana. 5D commitada em `49ce61e`, 5E consolidada localmente, sem push. [Relatório](MAIN_MENU.md).
+
 ## Entrega 5D — validação local nova, 22/10/2026
 
 **Consolidação Git 5D:** rodada repetida antes do commit `feat: add multi-save management`: 160 unidade/integração, 11 PostgreSQL nativo descartável e 40 Playwright (2,1 min), **211 distintos**, lint, TypeScript e build isolado aprovados. Criação/continuação/arquivamento/restauração exercitados no navegador. Conferência remota somente por leitura: SQL e três funções idênticos, tabela privada com colunas/FKs/RLS/grants esperados. Nenhuma migração reaplicada nem alteração nas sessões/dados remotos. Os grupos reais da implantação abaixo não foram repetidos como mutações nesta consolidação.

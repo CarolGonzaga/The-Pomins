@@ -1,5 +1,11 @@
 # Estado de implementação
 
+## Entrega 5E — menu, regras e configurações
+
+Base `49ce61e8e47f2ce77e771af43ecd528e5fce2604`, commit 5D `feat: add multi-save management`, criado após nova rodada de 211 testes e árvore limpa. 5E local sem commit: menu autenticado, tutorial curto, preferências globais no Auth, avatar, tema/sistema, redução de movimento e duração inicial para novas sessões. Troca de e-mail exige senha atual e confirmação, senha usa a recuperação existente e logout respeita foco ativo. Painel legado de privacidade/dados preservado por link. Nenhuma migração ou dependência nova.
+
+233 testes locais aprovados (174 + 11 PostgreSQL + 48 navegador), lint, TypeScript e build aprovados. Sete grupos reais validaram metadados/SSR/novo login, restaurando integralmente as preferências de teste; nenhuma mudança de e-mail/senha ou envio de links. Build 5E em 3000, com 12 tabelas e sessão pausada preservadas após atualização controlada. Confirmação de e-mails e Safari físico continuam pendentes. [Arquivos, decisões e limites](MAIN_MENU.md).
+
 ## Entrega 5D — gerenciador de partidas local
 
 Base `c2bb553`. Lista de saves por conta, criação transacional/idempotente, residência independente, retomada do nascimento existente e arquivamento/restauração com revisão implementados. Protagonista pendente continua explícito e o foco continua global. Uma partida com foco pendente não é arquivada. 211 testes locais aprovados (160 + 11 PostgreSQL + 40 navegador), lint, TypeScript e build aprovados. Migração `20261022202113_save_manager.sql` **aplicada ao desenvolvimento após autorização específica**, backup/restauração de 44 tabelas e preflight. Oito grupos de Auth/SSR/RLS reais aprovaram duas histórias, nascimento/memórias e arquivamento/restauração; ambas as histórias de teste ficaram arquivadas. Servidor 3000 atualizado com build 5D após reinício controlado; comparação de 12 tabelas preservou sessão pausada e dados persistidos. Sem commit/push. [Relatório, arquivos e plano](SAVE_MANAGER.md).

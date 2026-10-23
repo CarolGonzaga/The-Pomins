@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {redirect} from 'next/navigation';
 import { serverClient } from '@/lib/supabase/server';
 import { loadGameSave } from '@/features/game-saves/loading';
 import { SavePlayer } from '@/features/game-saves/save-player';
@@ -16,6 +17,7 @@ export default async function GamePage({
   try {
     loaded = await loadGameSave(await serverClient(), saveId);
   } catch (e) {
+    if(e instanceof SaveContextError && e.status===401)redirect('/auth?next=/saves');
     return (
       <main className="simple-page">
         <h1>Partida indisponível</h1>

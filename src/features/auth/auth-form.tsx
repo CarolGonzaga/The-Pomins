@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { browserClient, isConfigured } from '@/lib/supabase/browser';
 import { Nursery } from '@/components/characters/nursery';
 import { authErrorMessage } from './error-message';
+import {loginDestination} from '../preferences/model';
 const schema = z.object({
   email: z.email('Digite um e-mail válido.'),
   password: z.string(),
@@ -81,7 +82,7 @@ export function AuthForm() {
         setMessage(authErrorMessage(mode, error));
       } else if (mode === 'login' || mode === 'update') {
         const next=params.get('next');
-        location.assign(mode==='login' && (next==='/saves' || next==='/saves/new') ? next : '/');
+        location.assign(loginDestination(mode==='login'?next:null));
       }
       else
         setMessage(

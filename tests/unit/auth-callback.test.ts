@@ -21,9 +21,9 @@ it('returns errors to the configured browser origin instead of the bind address'
 });
 
 it.each([
-  ['', '/'],
+  ['', '/menu'],
   ['&next=%2Fauth%3Fmode%3Dupdate', '/auth?mode=update'],
-  ['&next=https%3A%2F%2Fexample.invalid', '/'],
+  ['&next=https%3A%2F%2Fexample.invalid', '/menu'],
 ])('keeps the allowed destination after a successful exchange: %s', async (query, path) => {
   vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://pomins.example');
   exchangeCodeForSession.mockResolvedValue({ error: null });

@@ -11,6 +11,7 @@ import { defaultAppearance } from '../character-creator/model';
 import { AdultEditor } from './adult-editor';
 import { RoomCanvas } from './room-canvas';
 import { SpritePreview } from './sprite-preview';
+import {PortalLink} from '../portal/navigation';
 import {
   activities,
   allocationLineSchema,
@@ -83,7 +84,7 @@ export function RoomApp({
   useEffect(() => {
     try {
       const theme = localStorage.getItem('pomins-theme');
-      if (theme === 'dark' || theme === 'light') document.documentElement.dataset.theme = theme;
+      if (!authenticated && (theme === 'dark' || theme === 'light')) document.documentElement.dataset.theme = theme;
       if (!authenticated) {
         const local = loadLocalRoom();
         setState(local);
@@ -255,6 +256,7 @@ export function RoomApp({
           pomins<span>.</span>
         </Link>
         <Link href={universeHref}>Meu universo</Link>
+        {authenticated && <PortalLink href="/menu">Menu principal</PortalLink>}
         {authenticated && <Link href="/saves" onClick={e=>{if(document.documentElement.dataset.focusActive==='true'){e.preventDefault();setMessage('Use os controles da sessão antes de abrir suas partidas.');}}}>Minhas partidas</Link>}
         <span>{authenticated ? 'Progresso na sua conta' : 'Exploração local'}</span>
         {!authenticated && <Link href="/auth">Entrar</Link>}

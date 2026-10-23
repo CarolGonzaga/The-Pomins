@@ -1,5 +1,11 @@
 # Publicação na Vercel e Supabase
 
+## Entrega 5E — sem migração adicional
+
+Preferências usam a API Auth autenticada em `user_metadata.pomins_preferences`; não usar esse campo em autorização. Nenhuma migração antiga alterada/reaplicada. Manter `NEXT_PUBLIC_APP_URL` no endereço canônico e os dois callbacks Auth já aprovados; não houve modificação de configuração de segurança. Menu/regras/configurações estão protegidos por `getUser`; `/` e `/play` preservados. Fonte Pixelify Sans local com SIL OFL incluída.
+
+Build 5E em `http://localhost:3000/menu`, atualizado de forma controlada após ausência de foco ativo e cópia local do build anterior. Doze tabelas críticas comparadas, sessão pausada preservada; nenhum comando de foco. 233 testes locais, lint, TypeScript e build aprovados; sete grupos reais de preferências/SSR passaram e restauraram os metadados anteriores. Não foram enviados e-mails de teste reais nem alteradas credenciais. 5D consolidada em `49ce61e`, 5E sem commit/push. [Relatório e pendências](MAIN_MENU.md).
+
 ## Entrega 5D — desenvolvimento atualizado após autorização
 
 Nova migração `20261022202113_save_manager.sql`, posterior à 5C, acrescenta somente tabela privada de recibos com RLS e três RPCs autenticadas para listar/criar/arquivar/restaurar saves. Não substituir migrações anteriores. Validada em bancos descartáveis, com 211 testes locais, lint, TypeScript e build aprovados. **Aplicada ao desenvolvimento após autorização específica**, backup cifrado/restauração de 44 tabelas e preflight. SQL/histórico atômicos, dados anteriores preservados, três RPCs e permissões conferidas. Não reaplicar. Oito grupos reais passaram com duas histórias de teste, posteriormente arquivadas. Build da raiz 5D disponível em 3000 após reinício controlado; 12 tabelas e a sessão pausada preservadas. [Plano, recibo e limitações](SAVE_MANAGER.md). Sem commit/push.

@@ -31,6 +31,9 @@ import { gameApi } from '@/lib/api';
 import { browserClient } from '@/lib/supabase/browser';
 import { BabyCare } from '@/features/baby-care/baby-care';
 import { localSessionCompleted } from '@/features/room/persistence';
+import {PortalLink} from '@/features/portal/navigation';
+import {PixelAvatar} from '@/features/preferences/avatar';
+import {usePreferences} from '@/features/preferences/provider';
 type Initial = {
   userId: string;
   saveId?: string;
@@ -53,6 +56,7 @@ const nav = [
 ] as const;
 const STORAGE = 'pomins-explore-v1';
 export function Game({ initial, configured, returnHref='/', roomHref='/play' }: { initial: Initial | null; configured: boolean; returnHref?:string; roomHref?:string }) {
+  const accountPreferences=usePreferences();
   const [view, setView] = useState<View>('home');
   const [character, setCharacter] = useState<Character | null>(initial?.character ?? null);
   const [sessions, setSessions] = useState<FocusSession[]>(initial?.sessions ?? []);
@@ -76,13 +80,14 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
     try {
       const savedTheme = localStorage.getItem('pomins-theme') ?? 'light';
       setTheme(savedTheme);
-      document.documentElement.dataset.theme = savedTheme;
+      if(!initial)document.documentElement.dataset.theme = savedTheme;
       if (!initial) {
         const saved = JSON.parse(localStorage.getItem(STORAGE) ?? 'null');
         if (saved && characterSchema.safeParse(saved).success && typeof saved.id === 'string') {
           setCharacter({ ...saved, life_xp: 0 });
         }
       }
+      if(initial && new URLSearchParams(location.search).get('panel')==='preferences')setView('settings');
     } catch {}
     setReady(true);
   }, [initial]);
@@ -143,6 +148,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
       setNotice('Use os controles da sessão para pausar ou encerrar e voltar ao seu universo.');
       return;
     }
+    if(next==='settings' && authenticated){location.assign('/settings');return;}
     setNotice('');
     if (['focus', 'story', 'character'].includes(next) && !character) {
       setView('creator');
@@ -202,6 +208,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
     [initial],
   );
   const changeTheme = () => {
+    if(authenticated){go('settings');return;}
     const value = theme === 'dark' ? 'light' : 'dark';
     setTheme(value);
     document.documentElement.dataset.theme = value;
@@ -211,8 +218,15 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
   };
   async function logout() {
     if (authenticated) {
-      await browserClient().auth.signOut();
-      location.assign('/');
+      if(document.documentElement.dataset.focusActive==='true'){setNotice('Use os controles do foco antes de sair.');return;}
+      setBusy(true);
+      try{
+        const response=await fetch('/api/account',{method:'POST',headers:{'Content-Type':'application/json','X-Pomins-Account':initial!.userId},body:JSON.stringify({action:'logout'})});
+        const data=await response.json();if(!response.ok)throw Error(data.error??'Não foi possível sair.');
+        await browserClient().auth.signOut({scope:'local'});
+        location.assign(new URL('/auth',location.origin).href);
+      }catch(e){setNotice(e instanceof Error?e.message:'Não foi possível sair.');}
+      finally{setBusy(false);}
     }
   }
   const sidebar = (
@@ -246,6 +260,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
         <span>Um momento de cada vez.</span>
       </div>
       <div className="sidebar-bottom">
+        {authenticated && <PortalLink href="/menu" className="nav-item">Menu principal</PortalLink>}
         {authenticated && <Link className="nav-item" href="/saves" onClick={e=>{if(document.documentElement.dataset.focusActive==='true'){e.preventDefault();setNotice('Use os controles da sessão antes de abrir suas partidas.');}}}>Minhas partidas</Link>}
         <Link className="nav-item" href={roomHref}>
           Meu quarto · Etapa 1
@@ -258,7 +273,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
         </button>
         <div className="sidebar-profile">
           <div className="profile-avatar">
-            {authenticated ? initial!.nickname[0].toUpperCase() : 'P'}
+            {authenticated ? <PixelAvatar kind={accountPreferences.preferences.avatar}/> : 'P'}
           </div>
           <div>
             <strong>{authenticated ? initial!.nickname : 'Seu espaço de calma'}</strong>
@@ -307,7 +322,7 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
             </span>
             <button
               className="icon-button"
-              aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+              aria-label={authenticated?'Configurações de aparência':theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
               onClick={changeTheme}
             >
               {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
@@ -718,11 +733,11 @@ export function Game({ initial, configured, returnHref='/', roomHref='/play' }: 
                 <div>
                   <h2>Um visual para cada momento</h2>
                   <p className="muted">
-                    Tema {theme === 'dark' ? 'escuro' : 'claro'}. Salvo neste dispositivo.
+                    {authenticated?'Tema, ritmo e avatar ficam nas configurações da conta.':`Tema ${theme === 'dark' ? 'escuro' : 'claro'}. Salvo neste dispositivo.`}
                   </p>
                 </div>
                 <Button variant="secondary" onClick={changeTheme}>
-                  {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />} Mudar tema
+                  {authenticated?'Abrir configurações':<>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />} Mudar tema</>}
                 </Button>
               </div>
               <div className="panel setting-row">
