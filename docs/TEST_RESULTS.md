@@ -1,5 +1,21 @@
 # Resultados de validação · Entrega 1
 
+## Consolidação 6A — 24/10/2026
+
+Os 17 arquivos foram revisados sem repetir a implementação. Nova rodada: **289 aprovados** (193 unidade/integração, 11 PostgreSQL nativo e 85 navegador; um caso desktop/toque omitido, executado no projeto mobile). Lint, TypeScript e build de produção isolado aprovados. Limpeza dos listeners do Phaser confirmada pelos três testes unitários e navegação repetida no navegador. Auth/SQL dos cenários de navegador são simulados; não houve novo foco real.
+
+Comparação remota somente de leitura: 12 tabelas críticas idênticas durante a consolidação, uma sessão pausada e nenhuma ativa. Nenhum comando de foco, gravação de preferências, migração, instalação ou reinício do servidor. Build da raiz preservado; a repetição do build ocorreu em cópia descartável. Varredura dos arquivos preparados para o commit sem credenciais ou backups; backup cifrado, chave DPAPI e manifesto locais preservados. Commit local autorizado com mensagem `fix: stabilize mobile game experience`, sem push. A 6B nesta etapa é somente proposta técnica; nenhuma publicação HTTPS ou configuração remota foi efetuada.
+
+## Entrega 6A — auditoria mobile, 23/10/2026
+
+Rodada completa: **289 testes distintos aprovados** — 193 unidade/integração (três novos do ciclo de vida Phaser), 11 PostgreSQL nativo com conexões independentes e 85 navegador (19 novos da auditoria). Uma combinação desktop/toque foi omitida deliberadamente: o teste CDP de toque executa no projeto `iphone`; não contar omissão como aprovação. No `npm test`, os mesmos 11 PostgreSQL aparecem omitidos por exigir o banco nativo e foram executados separadamente. Lint, TypeScript e build isolado aprovados. Build final da raiz e estado do servidor constam do recibo 6A.
+
+Cobertura nova: seis resoluções de telefone/paisagem/desktop, alturas reduzidas, formulários, anúncio de erro, tutorial, safe layout, bebê/adulto/painéis, mouse/teclado/cancelamento de toque, centro do dial, canvas estável, limpeza de listeners após navegação, retorno ao nascimento e memória após recarga, eventos de interrupção do foco, ausência de progresso SQL nos cenários simulados, worker/ícones/manifest/cache e fallback offline. Capturas e Axe WCAG A/AA nos estados auditados. Os defeitos foram reproduzidos antes das correções; rodadas com falha não contam como aprovação. Uma medição de contraste durante transição foi corrigida no teste para aguardar o estado estável.
+
+Auth e respostas do foco nos testes de navegador são simulados; SQL local é descartável. Não houve validação física Safari/WebKit/iPhone, FPS/bateria no hardware ou publicação HTTPS. Não foi executado um foco real nem gasto saldo no Supabase para testar a UX. Backups privados preservados e fora do Git; Auth, RLS, economia e migrações sem alterações. [Relatório e arquivos](MOBILE_UX_AUDIT.md) · [Validação física necessária](IOS_TEST_CHECKLIST.md).
+
+**Consolidação 5G:** commit `ac834e30af0d5f450c16154fbf9a63cafc55efad`, 267 testes repetidos, lint/TypeScript/build, sem segredos e árvore limpa ao concluir o commit. Foram incluídos os dez arquivos previstos e a fixture: uma interferência de saldo entre arquivos paralelos foi resolvida com contas descartáveis separadas para o dial. A 6A posterior permanece sem commit; nenhum push.
+
 ## Entrega 5G — controle giratório, 23/10/2026
 
 **267 distintos aprovados:** 190 unidade/integração (13 novos de geometria), 11 PostgreSQL nativo executados nesta mesma rodada de trabalho (SQL preservado) e 66 navegador (10 novos; rodada final 1,9 min). Lint, TypeScript e builds de produção isolado/raiz aprovados. Novos testes cobrem giro nos dois sentidos, extremos, cruzamento angular, cancelamento, teclado, preferências, entrada inteira, toque por Pointer Events/CDP, centro, início sem duplicação, pausa/retomada, bloqueio, confirmação de conclusão, saldo, layout e preservação de Phaser/foco.

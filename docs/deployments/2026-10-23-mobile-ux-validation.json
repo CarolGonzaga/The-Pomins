@@ -1,0 +1,93 @@
+{
+  "checked_at": "2026-10-23 15:04:43 UTC",
+  "baseline_commit": "ac834e30af0d5f450c16154fbf9a63cafc55efad",
+  "delivery": "6A",
+  "commit_created": true,
+  "push_performed": false,
+  "tests": {
+    "unit_integration_passed": 193,
+    "native_postgres_passed": 11,
+    "browser_passed": 85,
+    "browser_skipped": 1,
+    "total_distinct_passed": 289,
+    "lint": "passed",
+    "typescript": "passed",
+    "isolated_production_build": "passed",
+    "root_production_build": "passed",
+    "browser_engine": "Chromium (desktop and touch viewport)",
+    "physical_safari_iphone_tested": false,
+    "webkit_tested": false,
+    "focus_browser_responses": "explicitly simulated; no real focus or credits"
+  },
+  "server": {
+    "url": "http://localhost:3000",
+    "build_id": "YgoE_vGZcO1bmtFA_oWfU",
+    "running": true,
+    "previous_build_preserved": ".cache/production-before-6a-20261023",
+    "routes_checked": [
+      "/",
+      "/play",
+      "/auth",
+      "/menu",
+      "/rules",
+      "/settings",
+      "/saves",
+      "/saves/new",
+      "/game/[saveId]",
+      "/manifest.webmanifest",
+      "/sw.js"
+    ],
+    "protected_routes": "guest browser redirects verified; authenticated scenarios use isolated fixtures",
+    "persisted_state": {
+      "checked_at": "2026-10-23T15:02:25.972Z",
+      "critical_tables": 12,
+      "unchanged_since_before_restart": true,
+      "paused_focus": 1,
+      "active_focus_at_preflight": 0
+    }
+  },
+  "remote": {
+    "migrations_added": 0,
+    "migrations_executed": 0,
+    "focus_commands": 0,
+    "preferences_written": 0,
+    "minutes_spent": 0
+  },
+  "git": {
+    "expected_changed_files": 17,
+    "staged_files": 17,
+    "credentials_found": 0,
+    "private_backup_hash_preserved": true,
+    "private_backup_key_and_manifest_preserved": true
+  },
+  "pending": [
+    "Physical Safari/iPhone, VoiceOver, keyboard and zoom",
+    "HTTPS development deployment and authorized exact Auth callbacks",
+    "Hardware FPS, heap and battery measurements",
+    "Human usability review of short viewport vertical scrolling"
+  ],
+  "evidence": "20 audit screenshots preserved locally under ignored .cache/mobile-ux-6a/evidence",
+  "consolidation": {
+    "checked_at": "2026-10-24T14:13:02.217Z",
+    "client_date": "2026-10-24",
+    "files_reviewed": 17,
+    "unit_integration": 193,
+    "native_postgres": 11,
+    "browser_passed": 85,
+    "browser_skipped": 1,
+    "total_distinct_passed": 289,
+    "lint": "passed",
+    "typescript": "passed",
+    "production_build": "passed in isolated copy; root build preserved",
+    "phaser_listener_cleanup": "passed unit and browser regressions",
+    "critical_tables_unchanged": 12,
+    "paused_focus_preserved": 1,
+    "active_focus": 0,
+    "credentials_found": 0,
+    "private_backup_preserved": true,
+    "server_restarted": false,
+    "remote_mutations": 0,
+    "commit_message": "fix: stabilize mobile game experience",
+    "push_performed": false
+  }
+}

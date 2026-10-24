@@ -134,10 +134,11 @@ export function AuthForm() {
             {mode !== 'update' && (
               <label>
                 E-mail
-                <input autoComplete="email" type="email" {...register('email')} />
+                <input autoComplete="email" type="email" aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'auth-email-error' : undefined} {...register('email')} />
               </label>
             )}
-            {errors.email && <p className="field-error">{errors.email.message}</p>}
+            {errors.email && <p id="auth-email-error" className="field-error" role="alert">{errors.email.message}</p>}
             {mode === 'signup' && (
               <label>
                 Apelido público

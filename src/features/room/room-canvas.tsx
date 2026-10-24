@@ -4,6 +4,7 @@ import type { Resident, AnimationState } from './domain';
 import type { RoomScene } from './scene';
 import { composeAtlas } from './sprites';
 import { visualSupport } from '../character-visuals/model';
+import { createManagedGame } from './managed-game';
 export function RoomCanvas({
   resident,
   onArrive,
@@ -45,7 +46,7 @@ export function RoomCanvas({
           onError: (message) => live && setError(message),
         });
         scene.current = s;
-        game = new Phaser.Game({
+        game = createManagedGame(Phaser, {
           type: Phaser.CANVAS,
           parent: parent.current,
           width: 384,
@@ -77,6 +78,8 @@ export function RoomCanvas({
       live = false;
       document.removeEventListener('visibilitychange', visibility);
       game?.destroy(true);
+      // Destruction runs on Phaser's next frame, including after a hidden-tab sleep.
+      game?.loop.wake();
       scene.current = null;
     };
   }, []);

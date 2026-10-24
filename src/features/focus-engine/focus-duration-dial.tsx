@@ -38,7 +38,8 @@ export function FocusDurationDial({
   const help = useId(),
     ring = useRef<HTMLDivElement>(null),
     gesture = useRef<Gesture | null>(null),
-    acting = useRef(false);
+    acting = useRef(false),
+    centerGesture = useRef<{ id: number; x: number; y: number; cancelled: boolean } | null>(null);
   const locked = status !== 'idle' || busy;
   const action =
     status === 'idle'
@@ -213,7 +214,29 @@ export function FocusDurationDial({
           className="dial-center"
           aria-label={action}
           disabled={busy || !onAction}
-          onClick={() => void act()}
+          onPointerDown={(e) => {
+            if (!e.isPrimary || e.button !== 0) {
+              if (centerGesture.current) centerGesture.current.cancelled = true;
+              return;
+            }
+            centerGesture.current = { id: e.pointerId, x: e.clientX, y: e.clientY, cancelled: false };
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerMove={(e) => {
+            const g = centerGesture.current;
+            if (g?.id === e.pointerId && Math.hypot(e.clientX - g.x, e.clientY - g.y) >= 6)
+              g.cancelled = true;
+          }}
+          onPointerCancel={() => {
+            if (centerGesture.current) centerGesture.current.cancelled = true;
+          }}
+          onClick={(e) => {
+            const cancelled = centerGesture.current?.cancelled;
+            centerGesture.current = null;
+            // Keyboard/assistive activation has no pointer gesture (detail === 0).
+            if (e.detail !== 0 && cancelled) return;
+            void act();
+          }}
         >
           <strong>
             {minutes}

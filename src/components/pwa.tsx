@@ -33,7 +33,7 @@ export function Pwa() {
     <>
       {offline && (
         <div className="connection-banner" role="status">
-          Você está offline. Seu foco foi pausado; o progresso confirmado está seguro.
+          Você está offline. Apenas o tempo confirmado permanece salvo. Reconecte-se para retomar.
         </div>
       )}
       {worker && (

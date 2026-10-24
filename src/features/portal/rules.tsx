@@ -16,7 +16,7 @@ export function Rules(){
   const [step,setStep]=useState(0),heading=useRef<HTMLHeadingElement>(null),item=ruleSteps[step];
   function change(next:number){setStep(next);requestAnimationFrame(()=>heading.current?.focus());}
   return <>
-    <div className={styles.steps} aria-label={`Etapa ${step+1} de ${ruleSteps.length}`}>{ruleSteps.map((_,i)=><span key={i} data-current={i===step}/>)}</div>
+    <div className={styles.steps} role="progressbar" aria-label="Progresso do tutorial" aria-valuemin={1} aria-valuemax={ruleSteps.length} aria-valuenow={step+1} aria-valuetext={`Etapa ${step+1} de ${ruleSteps.length}`}>{ruleSteps.map((_,i)=><span key={i} data-current={i===step}/>)}</div>
     <section key={step} className={`${styles.panel} ${styles.tutorial}`} aria-labelledby={`rule-${step}`}>
       <div className={styles.illustration} aria-hidden="true">{item.art==='baby'?<Pomin/>:<span>{item.art}</span>}</div>
       <h2 ref={heading} tabIndex={-1} id={`rule-${step}`}>{item.title}</h2><p>{item.copy}</p>

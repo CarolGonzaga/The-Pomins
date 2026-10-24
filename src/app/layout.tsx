@@ -27,8 +27,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="skip-link">
           Pular para o conteúdo
         </a>
-        <PreferencesProvider key={account?.id??'guest'} userId={account?.id??null} initial={preferences}>{children}</PreferencesProvider>
         <Pwa />
+        <PreferencesProvider key={account?.id??'guest'} userId={account?.id??null} initial={preferences}>{children}</PreferencesProvider>
       </body>
     </html>
   );

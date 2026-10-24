@@ -1277,7 +1277,7 @@ dd {
   align-items: center;
   gap: 12px;
   font-family: Georgia, serif;
-  color: #b6a285;
+  color: var(--muted);
   font-size: 12px;
 }
 .chapter-marker span {
@@ -1489,7 +1489,8 @@ dd {
 }
 .auth-page {
   max-width: 1150px;
-  padding: 30px;
+  padding: max(30px, env(safe-area-inset-top)) max(30px, env(safe-area-inset-right))
+    max(30px, env(safe-area-inset-bottom)) max(30px, env(safe-area-inset-left));
   margin: 0 auto;
 }
 .auth-grid {
@@ -2475,6 +2476,29 @@ dd {
   }
   .stat-card strong {
     font-size: 23px;
+  }
+}
+/* In the immersive game, notices occupy space instead of covering care controls. */
+body:has(.game-screen) > .connection-banner,
+body:has(.game-screen) > .update-banner {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: calc(100% - 20px);
+  max-width: 820px;
+  margin: max(10px, env(safe-area-inset-top)) auto 10px;
+}
+/* Keep form text legible on narrow screens without disabling browser zoom. */
+@media (max-width: 600px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  .auth-page {
+    padding: max(17px, env(safe-area-inset-top)) max(23px, env(safe-area-inset-right))
+      max(24px, env(safe-area-inset-bottom)) max(23px, env(safe-area-inset-left));
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -109,6 +109,8 @@ export async function createSaveFixture({immersive:withImmersive=false}={}) {
     ['iphone','10000000-0000-4000-8000-000000000004'],
     ['dial-chromium','10000000-0000-4000-8000-000000000005'],
     ['dial-iphone','10000000-0000-4000-8000-000000000006'],
+    ['audit-chromium','10000000-0000-4000-8000-000000000007'],
+    ['audit-iphone','10000000-0000-4000-8000-000000000008'],
   ]:[])){
     await db.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)',[uid,JSON.stringify({nickname:'immersive_'+project.replaceAll('-','_')})]);
     const adultSave=(await rpc(uid,'get_game_context')).save.id;
