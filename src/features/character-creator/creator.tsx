@@ -78,10 +78,11 @@ export function Creator({
       </div>
       <div className="creator-grid">
         <div className="character-preview">
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-
-          <Pomin appearance={a} label={`Prévia de ${name || 'seu bebê'}`} />
+          <div className="character-preview-scene">
+            <div className="orbit orbit-one" aria-hidden="true" />
+            <div className="orbit orbit-two" aria-hidden="true" />
+            <Pomin appearance={a} label={`Prévia de ${name || 'seu bebê'}`} />
+          </div>
           <div className="preview-plaque">
             <span className="eyebrow">OLÁ, MUNDO.</span>
             <h2>{name || 'Seu pequeno Pomin'}</h2>

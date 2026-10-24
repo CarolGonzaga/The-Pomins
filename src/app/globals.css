@@ -822,12 +822,22 @@ input[type='checkbox'] {
   text-align: center;
   padding: 35px 20px 25px;
 }
-.character-preview > svg:not(.preview-sparkle) {
+.character-preview > svg:not(.preview-sparkle),
+.character-preview-scene > svg {
   width: 260px;
   height: 300px;
   max-width: 95%;
   position: relative;
   z-index: 1;
+}
+.character-preview-scene {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.character-preview-scene > .orbit {
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 .orbit {
   position: absolute;
@@ -2120,7 +2130,8 @@ dd {
     min-height: 330px;
     padding: 10px 18px 20px;
   }
-  .character-preview > svg:not(.preview-sparkle) {
+  .character-preview > svg:not(.preview-sparkle),
+  .character-preview-scene > svg {
     width: 190px;
     height: 215px;
   }
