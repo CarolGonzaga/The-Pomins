@@ -33,7 +33,10 @@ async function layout(page: Page) {
   expect(await page.locator('meta[name=viewport]').getAttribute('content')).toContain(
     'viewport-fit=cover',
   );
-  for (const button of await page.locator('.game-screen-tabs button').filter({ visible: true }).all())
+  for (const button of await page
+    .locator('.game-screen-tabs button')
+    .filter({ visible: true })
+    .all())
     expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 }
 
@@ -62,8 +65,7 @@ test('keeps a recovered pause through panels and clears only acknowledged termin
   });
   await openFocus(page);
   await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toBeVisible();
-  for (const name of ['Progresso', 'Moradores', 'Atividades'])
-    await openGamePanel(page, name);
+  for (const name of ['Progresso', 'Moradores', 'Atividades']) await openGamePanel(page, name);
   expect(calls).toEqual(['recover']);
   await page.getByRole('button', { name: 'Encerrar sessão', exact: true }).click();
   await page.getByRole('button', { name: 'Preparar novo foco', exact: true }).click();
@@ -147,19 +149,22 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   await expect(page.getByRole('meter', { name: 'Saciedade', exact: true })).toBeVisible();
   await layout(page);
   const before = await (await page.request.get('/api/game-saves/' + info.babySave)).json();
-  const need = await page.getByRole('meter', { name: 'Saciedade', exact: true }).getAttribute('value');
+  const need = await page
+    .getByRole('meter', { name: 'Saciedade', exact: true })
+    .getAttribute('value');
   await page.getByRole('button', { name: 'Dar carinho', exact: true }).click();
   await expect(page.locator('.baby-care-stage')).toHaveAttribute(
     'data-care-reaction',
     'baby_cuddle',
   );
-  expect(await page.getByRole('meter', { name: 'Saciedade', exact: true }).getAttribute('value')).toBe(
-    need,
-  );
-  await page.getByRole('button', { name: 'Registrar cuidado com minutos', exact: true }).click();
-  await expect(page.getByText('1 min disponíveis', { exact: true })).toBeVisible();
+  expect(
+    await page.getByRole('meter', { name: 'Saciedade', exact: true }).getAttribute('value'),
+  ).toBe(need);
+  await page.getByRole('button', { name: 'Dar carinho · 2 min', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar Dar carinho · 2 min', exact: true }).click();
+  await expect(page.getByText('0 min disponíveis', { exact: true })).toBeVisible();
   await openGamePanel(page, 'Progresso');
-  await expect(page.getByText(/1\/30 min de cuidados/)).toBeVisible();
+  await expect(page.getByText(/2\/30 min de cuidados/)).toBeVisible();
   await page.getByRole('button', { name: 'Cuidados', exact: true }).click();
   await page
     .getByRole('region', { name: 'Cuidados', exact: true })
@@ -169,7 +174,7 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
     (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()).violations,
   ).toEqual([]);
   await page.reload();
-  await expect(page.getByText('1 min disponíveis', { exact: true })).toBeVisible();
+  await expect(page.getByText('0 min disponíveis', { exact: true })).toBeVisible();
   expect(
     await page.locator('.baby-care-portrait').evaluate((el) => getComputedStyle(el).animationName),
   ).toBe('none');
@@ -179,15 +184,17 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   await login(context, info.session);
   await page.goto('/game/' + info.babySave);
   await openGamePanel(page, 'Progresso');
-  await expect(page.getByText(/1\/30 min de cuidados/)).toBeVisible();
+  await expect(page.getByText(/2\/30 min de cuidados/)).toBeVisible();
   const after = await (await page.request.get('/api/game-saves/' + info.babySave)).json();
   expect(after.data.sessions).toEqual(before.data.sessions);
   expect(after.data.room.credits[0].allocated_minutes).toBe(
-    before.data.room.credits[0].allocated_minutes + 1,
+    before.data.room.credits[0].allocated_minutes + 2,
   );
   await page.goto('/game/' + info.adultSave);
   await expect(
-    page.getByRole('region', { name: 'Seu foco e saldo' }).getByText('1 min disponíveis · saldo da conta', { exact: true }),
+    page
+      .getByRole('region', { name: 'Seu foco e saldo' })
+      .getByText('0 min disponíveis · saldo da conta', { exact: true }),
   ).toBeVisible();
 });
 

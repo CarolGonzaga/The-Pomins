@@ -36,7 +36,7 @@ export const foundationSchema = z.object({
       activity_id: z.string().startsWith('baby_'),
       version: z.number().int().positive(),
       price_minutes: z.number().int().nonnegative(),
-      enabled: z.literal(false),
+      enabled: z.boolean(),
     }),
   ),
 });

@@ -1,16 +1,21 @@
 // Disposable PostgreSQL restore check. Never accepts Supabase/production endpoints.
 import pg from 'pg';
 import { createHash } from 'node:crypto';
-const source = process.env.POMINS_FOUNDATION_TEST_DATABASE_URL;
-const restored = process.env.POMINS_FOUNDATION_RESTORE_DATABASE_URL;
+const paid = Boolean(process.env.POMINS_PAID_CARE_TEST_DATABASE_URL);
+const source = paid
+  ? process.env.POMINS_PAID_CARE_TEST_DATABASE_URL
+  : process.env.POMINS_FOUNDATION_TEST_DATABASE_URL;
+const restored = paid
+  ? process.env.POMINS_PAID_CARE_RESTORE_DATABASE_URL
+  : process.env.POMINS_FOUNDATION_RESTORE_DATABASE_URL;
 function validate(value, name) {
   if (!value) throw Error('A dedicated loopback test database is required.');
   const url = new URL(value);
   if (!['127.0.0.1', 'localhost'].includes(url.hostname) || url.pathname !== '/' + name)
     throw Error('Refusing a non-disposable restore target.');
 }
-validate(source, 'pomins_foundation_test');
-validate(restored, 'pomins_foundation_restore');
+validate(source, paid ? 'pomins_paid_care_test' : 'pomins_foundation_test');
+validate(restored, paid ? 'pomins_paid_care_restore' : 'pomins_foundation_restore');
 async function fingerprint(connectionString) {
   const db = new pg.Client({ connectionString });
   await db.connect();

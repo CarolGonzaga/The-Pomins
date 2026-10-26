@@ -1,7 +1,7 @@
 // Disposable local test server. No credentials or connection to Supabase.
 import http from 'node:http';
 import { createSaveFixture } from './save-fixture.mjs';
-const f = await createSaveFixture({immersive:true});
+const f = await createSaveFixture({immersive:true,paidCare:true});
 const commands = [];
 const metadata=new Map([[f.ids.a,{nickname:'fixture_a'}],[f.ids.b,{nickname:'fixture_b'}]]);
 const allowedUsers=[f.ids.a,f.ids.b,...Object.values(f.ids.immersive).map(x=>x.userId)];
@@ -28,6 +28,8 @@ const token = (id) =>
   ).toString('base64url') +
   '.'+Buffer.from('fixture-signature').toString('base64url');
 const rpcNames = new Set([
+  'baby_care_catalog',
+  'purchase_baby_care',
   'load_game_save',
   'get_game_context',
   'room_state_for_save',

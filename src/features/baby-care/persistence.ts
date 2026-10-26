@@ -4,21 +4,20 @@ import {
   applyCare,
   babyStateSchema,
   babyStatsSchema,
-  careCommandSchema,
+  careInputSchema,
   defaultCareRules,
   initialBabyStats,
+  localCarePricing,
   type BabyState,
-  type CareCommand,
+  type CareInput,
 } from './model';
-
 function statsFor(save: LocalSave, id: string) {
   return babyStatsSchema.parse(save.babyCare?.[id] ?? initialBabyStats());
 }
 export function loadLocalBaby(character: Character): BabyState {
-  const room = loadLocalRoom();
-  // Same save/ledger as /play. No second balance and no offline elapsed-time effects.
-  const raw = localStorage.getItem('pomins-room-local-v1');
-  const save = raw ? (JSON.parse(raw) as LocalSave) : null;
+  const room = loadLocalRoom(),
+    raw = localStorage.getItem('pomins-room-local-v1'),
+    save = raw ? (JSON.parse(raw) as LocalSave) : null;
   return babyStateSchema.parse({
     save_id: room.save_id,
     world_revision: room.world_revision,
@@ -29,49 +28,81 @@ export function loadLocalBaby(character: Character): BabyState {
     stats: save ? statsFor(save, character.id) : initialBabyStats(),
     rules: defaultCareRules,
     credits: room.credits,
+    care_pricing: localCarePricing,
   });
 }
-export async function localCare(character: Character, input: CareCommand) {
-  const command = careCommandSchema.parse(input);
+export async function localCare(character: Character, input: CareInput) {
+  const command = careInputSchema.parse(input);
   if (command.characterId !== character.id) throw Error('Bebê não encontrado.');
+  let receipt: BabyState['receipt'];
   await localTransaction((save) => {
     if (character.save_id && character.save_id !== save.state.save_id)
       throw Error('O bebê pertence a outra partida.');
-    const signature = JSON.stringify({ babyCare: command });
     const previous = save.requests[command.requestId];
+    if ('lines' in command) {
+      if (previous === JSON.stringify({ babyCare: command })) return;
+      throw Error('Pedido antigo não registrado. Use um cuidado de 2 minutos.');
+    }
     if (previous) {
-      if (previous !== signature) throw Error('Este pedido já foi utilizado.');
+      const saved = JSON.parse(previous);
+      if (JSON.stringify(saved.paidCare) !== JSON.stringify(command))
+        throw Error('Este pedido já foi utilizado.');
+      receipt = saved.receipt;
       return;
     }
-    let total = 0;
-    for (const [index, line] of command.lines.entries()) {
-      const credit = save.state.credits.find((c) => c.session_id === line.sessionId);
-      if (!credit || credit.eligible_minutes - credit.allocated_minutes < line.minutes)
-        throw Error('Não há minutos disponíveis para esse cuidado.');
-      credit.allocated_minutes += line.minutes;
-      total += line.minutes;
+    const balance = save.state.credits.reduce(
+      (sum, c) => sum + c.eligible_minutes - c.allocated_minutes,
+      0,
+    );
+    if (balance < 2) throw Error('Não há minutos disponíveis. São necessários 2 minutos.');
+    let left = 2;
+    const sources: NonNullable<BabyState['receipt']>['sources'] = [];
+    for (const credit of [...save.state.credits].sort(
+      (a, b) =>
+        a.created_at.localeCompare(b.created_at) || a.session_id.localeCompare(b.session_id),
+    )) {
+      const minutes = Math.min(left, credit.eligible_minutes - credit.allocated_minutes);
+      if (minutes <= 0) continue;
+      credit.allocated_minutes += minutes;
+      const id = `${command.requestId}-${sources.length}`;
       save.state.allocations.unshift({
         save_id: save.state.save_id,
-        id: `${command.requestId}-${index}`,
+        id,
         character_id: character.id,
-        session_id: line.sessionId,
+        session_id: credit.session_id,
         activity_id: command.activity,
-        minutes: line.minutes,
+        minutes,
         created_at: new Date().toISOString(),
       });
+      sources.push({ sessionId: credit.session_id, minutes, allocationId: id });
+      left -= minutes;
+      if (!left) break;
     }
-    const stats = applyCare(statsFor(save, character.id), command.activity, total);
+    if (left) throw Error('Não há minutos disponíveis.');
+    const stats = applyCare(statsFor(save, character.id), command.activity, 2);
     stats.history.unshift({
       id: command.requestId,
       activity: command.activity,
-      minutes: total,
+      minutes: 2,
       created_at: new Date().toISOString(),
       rules_version: defaultCareRules.version,
     });
     save.babyCare = { ...save.babyCare, [character.id]: stats };
-    save.requests[command.requestId] = signature;
+    receipt = {
+      purchaseId: crypto.randomUUID(),
+      requestId: command.requestId,
+      saveId: save.state.save_id!,
+      characterId: character.id,
+      activity: command.activity,
+      offerVersion: 2,
+      chargedMinutes: 2,
+      balanceAfter: balance - 2,
+      sources,
+      createdAt: new Date().toISOString(),
+    };
+    save.requests[command.requestId] = JSON.stringify({ paidCare: command, receipt });
   }, 'both');
-  return loadLocalBaby(character);
+  return babyStateSchema.parse({ ...loadLocalBaby(character), ...(receipt ? { receipt } : {}) });
 }
 export class CareRejected extends Error {
   constructor(
@@ -83,14 +114,14 @@ export class CareRejected extends Error {
 }
 export async function babyApi(
   characterId: string,
-  command?: CareCommand,
+  command?: CareInput,
   saveId?: string,
 ): Promise<BabyState> {
   const scope = saveId ? `&saveId=${encodeURIComponent(saveId)}` : '';
   const response = await fetch(`/api/baby?characterId=${encodeURIComponent(characterId)}${scope}`, {
     method: command ? 'POST' : 'GET',
     headers: command ? { 'Content-Type': 'application/json' } : undefined,
-    body: command ? JSON.stringify(careCommandSchema.parse(command)) : undefined,
+    body: command ? JSON.stringify(careInputSchema.parse(command)) : undefined,
     cache: 'no-store',
     signal: AbortSignal.timeout(12000),
   });

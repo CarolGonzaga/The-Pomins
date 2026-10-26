@@ -88,6 +88,49 @@ export const careCommandSchema = z.object({
     .max(20),
 });
 export type CareCommand = z.infer<typeof careCommandSchema>;
+export const careIntentSchema = z
+  .object({
+    requestId: z.uuid(),
+    characterId: z.uuid(),
+    activity: z.enum(careIds),
+  })
+  .strict();
+export type CareIntent = z.infer<typeof careIntentSchema>;
+// The old shape is accepted only to recover an already recorded historical request.
+export const careInputSchema = z.union([careIntentSchema, careCommandSchema.strict()]);
+export type CareInput = z.infer<typeof careInputSchema>;
+export const carePricingSchema = z.object({
+  ready: z.literal(true),
+  offers: z.array(
+    z.object({
+      activity: z.enum(careIds),
+      price_minutes: z.literal(2),
+      version: z.number().int().positive(),
+    }),
+  ),
+});
+export const localCarePricing = carePricingSchema.parse({
+  ready: true,
+  offers: careIds.map((activity) => ({ activity, price_minutes: 2, version: 2 })),
+});
+export const careReceiptSchema = z.object({
+  purchaseId: z.uuid(),
+  requestId: z.uuid(),
+  saveId: z.string(),
+  characterId: z.uuid(),
+  activity: z.enum(careIds),
+  offerVersion: z.number().int().positive(),
+  chargedMinutes: z.literal(2),
+  balanceAfter: z.number().int().nonnegative(),
+  createdAt: z.string(),
+  sources: z.array(
+    z.object({
+      sessionId: z.string(),
+      minutes: z.number().int().positive(),
+      allocationId: z.string(),
+    }),
+  ),
+});
 export const historySchema = z.object({
   id: z.string(),
   created_at: z.string(),
@@ -105,6 +148,8 @@ export const babyStatsSchema = z.object({
 });
 export type BabyStats = z.infer<typeof babyStatsSchema>;
 export const babyStateSchema = z.object({
+  care_pricing: carePricingSchema.nullable().optional(),
+  receipt: careReceiptSchema.optional(),
   ...saveContextFields,
   revision: counter,
   household_id: z.string(),

@@ -5,14 +5,13 @@ import { Pomin } from '@/components/characters/pomin';
 import { Button } from '@/components/ui/button';
 import {
   availableMinutes,
-  careCommandSchema,
+  careInputSchema,
   careIds,
   careLabels,
   careResponses,
   growthReadiness,
-  planCare,
   type BabyState,
-  type CareCommand,
+  type CareInput,
   type CareId,
 } from './model';
 import { babyApi, CareRejected, loadLocalBaby, localCare } from './persistence';
@@ -45,13 +44,24 @@ export function BabyCare({
   const [selected, setSelected] = useState<CareId>('baby_feed');
   const [reaction, setReaction] = useState<CareId | 'rest'>('rest');
   const [reactionId, setReactionId] = useState(0);
-  const [minutes, setMinutes] = useState(1);
+  const [costAccepted, setCostAccepted] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState<CareCommand | null>(null);
+  const [pending, setPending] = useState<CareInput | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const writing = useRef(false);
+  const costKey = `pomins-care-cost-v1:${accountId ?? 'explore'}`;
+  useEffect(() => {
+    try {
+      // External account-scoped preference, not a price or authorization source.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCostAccepted(localStorage.getItem(costKey) === 'acknowledged');
+    } catch {
+      /* The first-use confirmation remains available without storage. */
+    }
+  }, [costKey]);
   const legacyPendingKey = `pomins-baby-care-pending-${character.id}`;
   const pendingKey =
     accountId && saveId
@@ -98,7 +108,7 @@ export function BabyCare({
     try {
       const raw = sessionStorage.getItem(pendingKey) ?? sessionStorage.getItem(legacyPendingKey);
       if (raw) {
-        const saved = careCommandSchema.parse(JSON.parse(raw));
+        const saved = careInputSchema.parse(JSON.parse(raw));
         // Browser storage is an external source, restored after mount.
         if (saved.characterId === character.id) {
           // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -127,13 +137,17 @@ export function BabyCare({
     setReactionId((n) => n + 1);
     timer.current = setTimeout(() => setReaction('rest'), 3500);
   }
-  async function save(command?: CareCommand) {
+  async function save(command?: CareInput) {
     if (writing.current || !state) return;
     writing.current = true;
     setBusy(true);
     setError('');
     try {
-      const input = command ?? planCare(state, selected, minutes, crypto.randomUUID());
+      const input = command ?? {
+        requestId: crypto.randomUUID(),
+        characterId: character.id,
+        activity: selected,
+      };
       sessionStorage.setItem(pendingKey, JSON.stringify(input));
       setPending(input);
       const next = authenticated
@@ -143,15 +157,26 @@ export function BabyCare({
       sessionStorage.removeItem(pendingKey);
       setPending(null);
       react(input.activity);
+      setConfirming(false);
+      if (!('lines' in input)) {
+        setCostAccepted(true);
+        try {
+          localStorage.setItem(costKey, 'acknowledged');
+        } catch {
+          /* No effect on payment. */
+        }
+      }
       setMessage(
-        `${careLabels[input.activity]}: ${input.lines.reduce((sum, l) => sum + l.minutes, 0)} min registrados. Necessidades e progresso foram guardados.`,
+        next.receipt
+          ? `${careLabels[input.activity]}: ${next.receipt.chargedMinutes} min registrados. Cuidado guardado.`
+          : 'Pedido histórico conferido. Nenhum novo cuidado foi cobrado.',
       );
     } catch (e) {
       if (
         (e instanceof CareRejected && [400, 409].includes(e.status)) ||
         (!authenticated &&
           e instanceof Error &&
-          /Não há minutos|pedido já foi utilizado/.test(e.message))
+          /Não há minutos|pedido já foi utilizado|Pedido antigo não registrado/.test(e.message))
       ) {
         sessionStorage.removeItem(pendingKey);
         setPending(null);
@@ -168,6 +193,9 @@ export function BabyCare({
     }
   }
   const balance = state ? availableMinutes(state) : 0;
+  const price = state?.care_pricing?.offers.find(
+    (offer) => offer.activity === selected,
+  )?.price_minutes;
   const needs = state?.stats.needs;
   const ready = state ? growthReadiness(state.stats, state.character, state.rules) : false;
   const world = (
@@ -229,9 +257,7 @@ export function BabyCare({
             ] as const
           ).map(([label, value]) => (
             <div key={label}>
-              <dt>
-                {label}
-              </dt>
+              <dt>{label}</dt>
               <dd>
                 <meter aria-label={label} min={0} max={100} value={value} />
                 <span>{value}/100</span>
@@ -244,15 +270,18 @@ export function BabyCare({
         {careIds.map((id) => (
           <button
             key={id}
+            aria-label={careLabels[id]}
             aria-pressed={selected === id}
             onClick={() => {
               react(id);
+              setConfirming(false);
               setMessage(
-                'Prévia gratuita. Para guardar a evolução, escolha os minutos e registre o cuidado.',
+                'Prévia gratuita. Guardar este cuidado custa 2 minutos do saldo compartilhado.',
               );
             }}
           >
             {careLabels[id]}
+            <small style={{ display: 'block' }}>2 min</small>
           </button>
         ))}
       </div>
@@ -263,34 +292,36 @@ export function BabyCare({
             ? ' · mesmo saldo do quarto'
             : ' · exploração local, sem recompensa oficial'}
         </p>
-        <label>
-          Minutos para {careLabels[selected].toLocaleLowerCase('pt-BR')}
-          <input
-            aria-label="Minutos para o cuidado"
-            type="number"
-            min={1}
-            max={Math.max(1, Math.min(120, balance))}
-            value={minutes}
-            onChange={(e) => setMinutes(Number(e.target.value))}
-            disabled={!state || balance < 1 || busy || !!pending}
-          />
-        </label>
+        {!price && (
+          <p>Cuidados pagos aguardam a atualização do servidor. As reações continuam gratuitas.</p>
+        )}
+        {price && balance < price && (
+          <p>São necessários 2 minutos. Experimente a reação gratuita ou inicie seu foco.</p>
+        )}
+        {confirming && (
+          <p id={`care-confirm-${character.id}`}>
+            Este cuidado usa 2 minutos do saldo compartilhado e salva a evolução. As próximas ações
+            terão o preço no botão.
+          </p>
+        )}
         <Button
-          disabled={
-            !state ||
-            busy ||
-            !!pending ||
-            !Number.isInteger(minutes) ||
-            minutes < 1 ||
-            minutes > balance ||
-            minutes > 120
-          }
-          onClick={() => void save()}
+          disabled={!state || busy || !!pending || !price || balance < price}
+          aria-describedby={confirming ? `care-confirm-${character.id}` : undefined}
+          onClick={() => {
+            if (!costAccepted && !confirming) setConfirming(true);
+            else void save();
+          }}
         >
-          Registrar cuidado com minutos
+          {confirming ? 'Confirmar ' : ''}
+          {careLabels[selected]} · 2 min
         </Button>
-        <button className="text-button" onClick={onFocus} hidden={!!render}>
-          Abrir foco
+        {confirming && (
+          <button className="text-button" onClick={() => setConfirming(false)} disabled={busy}>
+            Agora não
+          </button>
+        )}
+        <button className="text-button" onClick={onFocus}>
+          {render ? 'Abrir painel de foco' : 'Abrir foco'}
         </button>
         {pending && (
           <div>

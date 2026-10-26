@@ -90,13 +90,17 @@ describe('baby care rules and the shared local ledger', () => {
   it('persists needs/history/identity and never deteriorates across a year offline', async () => {
     browserStorage();
     await localSessionCompleted(completed());
-    const input = planCare(loadLocalBaby(character), 'baby_cuddle', 1, randomUUID());
+    const input = {
+      characterId: character.id,
+      activity: 'baby_cuddle' as const,
+      requestId: randomUUID(),
+    };
     const saved = await localCare(character, input);
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2027-10-21T00:00:00Z'));
-    expect(loadLocalBaby(character)).toEqual(saved);
+    expect(loadLocalBaby(character)).toEqual({ ...saved, receipt: undefined });
     expect(saved.stats.history).toHaveLength(1);
-    expect(saved.stats.traits.secure_attachment).toBe(1);
+    expect(saved.stats.traits.secure_attachment).toBe(2);
     expect(saved.character.appearance).toEqual(character.appearance);
   });
   it('deduplicates care retries, shares adult spending and rolls back multi-line errors', async () => {
@@ -108,11 +112,17 @@ describe('baby care rules and the shared local ledger', () => {
     const session = completed();
     await localSessionCompleted(session);
     await localSessionCompleted(session);
-    const input = planCare(loadLocalBaby(character), 'baby_feed', 1, randomUUID());
+    const extra = completed();
+    await localSessionCompleted(extra);
+    const input = {
+      characterId: character.id,
+      activity: 'baby_feed' as const,
+      requestId: randomUUID(),
+    };
     await localCare(character, input);
     const replay = await localCare(character, input);
     expect(replay.stats.history).toHaveLength(1);
-    expect(availableMinutes(replay)).toBe(1);
+    expect(availableMinutes(replay)).toBe(2);
     await expect(localCare(character, { ...input, activity: 'baby_play' })).rejects.toThrow();
     const snapshot = localStorage.getItem('pomins-room-local-v1');
     await expect(
@@ -133,7 +143,8 @@ describe('baby care rules and the shared local ledger', () => {
         requestId: randomUUID(),
         lines: [
           {
-            sessionId: session.id,
+            sessionId: room.credits.find((c) => c.eligible_minutes > c.allocated_minutes)!
+              .session_id,
             characterId: room.residents[0].id,
             activity: 'study',
             minutes: 1,
@@ -141,7 +152,7 @@ describe('baby care rules and the shared local ledger', () => {
         ],
       },
     });
-    expect(availableMinutes(loadLocalBaby(character))).toBe(0);
+    expect(availableMinutes(loadLocalBaby(character))).toBe(1);
     expect(loadLocalRoom().allocations).toHaveLength(2);
     await expect(localCare(character, { ...input, requestId: randomUUID() })).rejects.toThrow();
   });

@@ -26,7 +26,8 @@ test('six free care reactions preserve the save and remain accessible on mobile'
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto('/');
-  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible())
+    await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   const panel = page.locator('.baby-care');
   await expect(panel.getByRole('meter', { name: 'Saciedade', exact: true })).toHaveAttribute(
     'value',
@@ -45,7 +46,7 @@ test('six free care reactions preserve the save and remain accessible on mobile'
     await expect(panel.locator('.baby-care-stage')).toHaveAttribute('data-care-reaction', id);
   }
   expect(await page.evaluate(() => localStorage.getItem('pomins-room-local-v1'))).toBe(before);
-  await expect(panel.getByRole('button', { name: 'Registrar cuidado com minutos' })).toBeDisabled();
+  await expect(panel.getByRole('button', { name: 'Colocar para dormir · 2 min' })).toBeDisabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const audit = await new AxeBuilder({ page })
     .include('.baby-care')
@@ -73,44 +74,48 @@ test('existing focus credits feed care, restore after reload and deduplicate a l
     .locator('.completion')
     .getByRole('button', { name: 'Voltar ao meu universo', exact: true })
     .click();
-  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible())
+    await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   await expect(page.getByText('2 min disponíveis', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Dar carinho', exact: true }).click();
-  await page.getByRole('button', { name: 'Registrar cuidado com minutos' }).click();
-  await expect(page.getByText(/Dar carinho: 1 min registrados/)).toBeVisible();
+  await page.getByRole('button', { name: 'Dar carinho · 2 min', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirmar Dar carinho · 2 min', exact: true }).click();
+  await expect(page.getByText(/Dar carinho: 2 min registrados/)).toBeVisible();
   await expect(page.getByRole('meter', { name: 'Afeto', exact: true })).toHaveAttribute(
     'value',
-    '87',
+    '99',
   );
   const saved = await page.evaluate(() => localStorage.getItem('pomins-room-local-v1'));
   await page.reload();
-  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible())
+    await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   await expect(page.getByRole('meter', { name: 'Afeto', exact: true })).toHaveAttribute(
     'value',
-    '87',
+    '99',
   );
-  await page.getByText('Cuidados guardados · 1 min', { exact: true }).click();
+  await page.getByText('Cuidados guardados · 2 min', { exact: true }).click();
   await expect(page.locator('.baby-care-history li')).toHaveCount(1);
   expect(await page.evaluate(() => localStorage.getItem('pomins-room-local-v1'))).toBe(saved);
   await page.evaluate(() => {
     const save = JSON.parse(localStorage.getItem('pomins-room-local-v1')!);
-    const payload = JSON.parse(Object.values(save.requests)[0] as string).babyCare;
+    const payload = JSON.parse(Object.values(save.requests)[0] as string).paidCare;
     sessionStorage.setItem(
       `pomins-baby-care-pending-${payload.characterId}`,
       JSON.stringify(payload),
     );
   });
   await page.reload();
-  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible())
+    await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   await page.getByRole('button', { name: 'Conferir cuidado pendente' }).click();
   await expect(page.getByRole('button', { name: 'Conferir cuidado pendente' })).toHaveCount(0);
-  await page.getByText('Cuidados guardados · 1 min', { exact: true }).click();
+  await page.getByText('Cuidados guardados · 2 min', { exact: true }).click();
   await expect(page.locator('.baby-care-history li')).toHaveCount(1);
-  await expect(page.getByText('1 min disponíveis', { exact: true })).toBeVisible();
+  await expect(page.getByText('0 min disponíveis', { exact: true })).toBeVisible();
   await page.clock.fastForward(86400000);
   await expect(page.getByRole('meter', { name: 'Afeto', exact: true })).toHaveAttribute(
     'value',
-    '87',
+    '99',
   );
   const state = await page.evaluate(() => JSON.parse(localStorage.getItem('pomins-explore-v1')!));
   expect(state.life_xp).toBe(0);
