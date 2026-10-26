@@ -31,7 +31,7 @@ test('loads independent saves, chooses protagonist and restores SQL state and Ph
     'Aurora',
   );
   await page.getByRole('button',{name:'Cuidados',exact:true}).click();
-  await expect(page.getByRole('meter',{name:'Fome',exact:true})).toBeVisible();
+  await expect(page.getByRole('meter',{name:'Saciedade',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Moradores',exact:true}).click();
   await page
     .getByRole('navigation', { name: 'Moradores da partida' })

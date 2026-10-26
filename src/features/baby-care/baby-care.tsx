@@ -221,7 +221,7 @@ export function BabyCare({
         <dl className="baby-needs" aria-label="Necessidades do bebê">
           {(
             [
-              ['Fome', 100 - needs.satiety],
+              ['Saciedade', needs.satiety],
               ['Higiene', needs.hygiene],
               ['Energia', needs.energy],
               ['Afeto', needs.affection],
@@ -231,7 +231,6 @@ export function BabyCare({
             <div key={label}>
               <dt>
                 {label}
-                {label === 'Fome' && <small> · menos é melhor</small>}
               </dt>
               <dd>
                 <meter aria-label={label} min={0} max={100} value={value} />
@@ -290,8 +289,8 @@ export function BabyCare({
         >
           Registrar cuidado com minutos
         </Button>
-        <button className="text-button" onClick={onFocus}>
-          Reservar um tempo de foco
+        <button className="text-button" onClick={onFocus} hidden={!!render}>
+          Abrir foco
         </button>
         {pending && (
           <div>

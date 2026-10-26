@@ -46,7 +46,7 @@ test('creator and focus stay within 320px with no serious accessibility violatio
   });
   await seed(page);
   await page.goto('/');
-  await page.getByRole('button', { name: 'Encontrar meu foco' }).click();
+  await page.getByRole('button', { name: 'Abrir foco' }).click();
   await expect(page.getByRole('heading', { name: /Seu foco abre/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -59,17 +59,17 @@ test('creator and focus stay within 320px with no serious accessibility violatio
 test('background and connectivity interrupt local focus without rewards', async ({ page }) => {
   await seed(page);
   await page.goto('/');
-  await page.getByRole('button', { name: 'Encontrar meu foco' }).click();
+  await page.getByRole('button', { name: 'Abrir foco' }).click();
   await page.context().setOffline(false);
   await page.bringToFront();
-  await page.getByRole('button', { name: 'Começar meu foco' }).click();
+  await page.getByRole('button', { name: 'Iniciar foco' }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
-  await expect(page.getByRole('button', { name: 'Retomar meu foco' })).toBeVisible();
-  await page.getByRole('button', { name: 'Retomar meu foco' }).click();
+  await expect(page.getByRole('button', { name: 'Retomar foco' })).toBeVisible();
+  await page.getByRole('button', { name: 'Retomar foco' }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new Event('offline')));
-  await expect(page.getByRole('button', { name: 'Retomar meu foco' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Retomar foco' })).toBeVisible();
   await expect(page.getByText('Exploração local · sem recompensas')).toBeVisible();
 });
 
@@ -77,8 +77,8 @@ test('a full two minute local session completes without granting XP', async ({ p
   await seed(page);
   await page.clock.install();
   await page.goto('/');
-  await page.getByRole('button', { name: 'Encontrar meu foco' }).click();
-  await page.getByRole('button', { name: 'Começar meu foco' }).click();
+  await page.getByRole('button', { name: 'Abrir foco' }).click();
+  await page.getByRole('button', { name: 'Iniciar foco' }).click();
   await page.clock.runFor(125_000);
   await expect(page.getByText('Você reservou um tempo para começar.')).toBeVisible();
   await expect(page.getByText(/Sessão local concluída, sem XP/)).toBeVisible();

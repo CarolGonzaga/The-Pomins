@@ -1,3 +1,4 @@
+import { openGamePanel, openFocus } from '../support/ui';
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const fixture = process.env.POMINS_SAVE_FIXTURE_ORIGIN;
@@ -19,7 +20,7 @@ async function layout(page: Page) {
   expect(
     await page.locator('.game-screen-tabs').evaluate((el) => el.scrollWidth <= el.clientWidth),
   ).toBe(true);
-  for (const tab of await page.locator('.game-screen-tabs button').all())
+  for (const tab of await page.locator('.game-screen-tabs button').filter({ visible: true }).all())
     expect(await tab.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
   const padding = await page.getByTestId('immersive-game').evaluate((el) => ({
     left: parseFloat(getComputedStyle(el).paddingLeft),
@@ -32,7 +33,7 @@ async function layout(page: Page) {
   expect(await page.locator('meta[name=viewport]').getAttribute('content')).toContain(
     'viewport-fit=cover',
   );
-  for (const button of await page.locator('.game-screen-tabs button').all())
+  for (const button of await page.locator('.game-screen-tabs button').filter({ visible: true }).all())
     expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 }
 
@@ -59,19 +60,19 @@ test('keeps a recovered pause through panels and clears only acknowledged termin
     };
     await route.fulfill({ json: { data: current } });
   });
-  await page.getByRole('button', { name: 'Retomar sessão anterior', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Retomar meu foco', exact: true })).toBeVisible();
+  await openFocus(page);
+  await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toBeVisible();
   for (const name of ['Progresso', 'Moradores', 'Atividades'])
-    await page.getByRole('button', { name, exact: true }).click();
+    await openGamePanel(page, name);
   expect(calls).toEqual(['recover']);
   await page.getByRole('button', { name: 'Encerrar sessão', exact: true }).click();
   await page.getByRole('button', { name: 'Preparar novo foco', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Começar meu foco', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Abrir foco', exact: true })).toBeVisible();
+  await openFocus(page);
   await expect(
-    page.locator('.compact-focus').getByRole('button', { name: 'Começar meu foco', exact: true }),
+    page.locator('.compact-focus').getByRole('button', { name: 'Iniciar foco', exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Retomar meu foco', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toHaveCount(0);
   expect(calls).toEqual(['recover', 'recover', 'cancel']);
   // The lifecycle above is simulated; persisted SQL focus must stay untouched.
   const after = await (await page.request.get('/api/game-saves/' + info.one)).json();
@@ -105,14 +106,14 @@ test('keeps one Phaser canvas across panels, movement, appearance and viewport c
   }
   await page.setViewportSize({ width: 390, height: 844 });
   for (const name of ['Progresso', 'Aparência', 'Moradores', 'Atividades']) {
-    await page.getByRole('button', { name, exact: true }).click();
+    await openGamePanel(page, name);
     await expect(canvas).toHaveAttribute('data-instance', 'original');
   }
   await page.getByRole('button', { name: 'Ler', exact: true }).click();
   await expect(page.getByTestId('room-canvas')).toHaveAttribute('data-state', 'reading', {
     timeout: 15000,
   });
-  await page.getByRole('button', { name: 'Aparência', exact: true }).click();
+  await openGamePanel(page, 'Aparência');
   await page
     .getByRole('button', { name: /^Cor do cabelo #/ })
     .nth(1)
@@ -143,21 +144,21 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   await page.goto('/game/' + info.babySave);
   await expect(page.getByRole('heading', { name: 'Lumi', exact: true })).toBeVisible();
   await expect(page.getByTestId('room-canvas')).toHaveCount(0);
-  await expect(page.getByRole('meter', { name: 'Fome', exact: true })).toBeVisible();
+  await expect(page.getByRole('meter', { name: 'Saciedade', exact: true })).toBeVisible();
   await layout(page);
   const before = await (await page.request.get('/api/game-saves/' + info.babySave)).json();
-  const need = await page.getByRole('meter', { name: 'Fome', exact: true }).getAttribute('value');
+  const need = await page.getByRole('meter', { name: 'Saciedade', exact: true }).getAttribute('value');
   await page.getByRole('button', { name: 'Dar carinho', exact: true }).click();
   await expect(page.locator('.baby-care-stage')).toHaveAttribute(
     'data-care-reaction',
     'baby_cuddle',
   );
-  expect(await page.getByRole('meter', { name: 'Fome', exact: true }).getAttribute('value')).toBe(
+  expect(await page.getByRole('meter', { name: 'Saciedade', exact: true }).getAttribute('value')).toBe(
     need,
   );
   await page.getByRole('button', { name: 'Registrar cuidado com minutos', exact: true }).click();
   await expect(page.getByText('1 min disponíveis', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Progresso', exact: true }).click();
+  await openGamePanel(page, 'Progresso');
   await expect(page.getByText(/1\/30 min de cuidados/)).toBeVisible();
   await page.getByRole('button', { name: 'Cuidados', exact: true }).click();
   await page
@@ -177,7 +178,7 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   await expect(page).toHaveURL(/\/auth/);
   await login(context, info.session);
   await page.goto('/game/' + info.babySave);
-  await page.getByRole('button', { name: 'Progresso', exact: true }).click();
+  await openGamePanel(page, 'Progresso');
   await expect(page.getByText(/1\/30 min de cuidados/)).toBeVisible();
   const after = await (await page.request.get('/api/game-saves/' + info.babySave)).json();
   expect(after.data.sessions).toEqual(before.data.sessions);
@@ -186,7 +187,7 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   );
   await page.goto('/game/' + info.adultSave);
   await expect(
-    page.getByRole('region', { name: 'Seu foco e saldo' }).getByText('1 min', { exact: true }),
+    page.getByRole('region', { name: 'Seu foco e saldo' }).getByText('1 min disponíveis · saldo da conta', { exact: true }),
   ).toBeVisible();
 });
 
@@ -236,14 +237,14 @@ test('retains the same mounted focus across local panels and guards navigation d
   const canvas = page.getByTestId('room-canvas').locator('canvas');
   await expect(canvas).toBeVisible();
   await canvas.evaluate((el) => el.setAttribute('data-instance', 'focus-world'));
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  await openFocus(page);
+  await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   const timer = page.getByRole('timer', { name: 'Tempo restante' });
   await timer.evaluate((el) => el.setAttribute('data-instance', 'same-timer'));
   await page.clock.runFor(1000);
   for (const name of ['Progresso', 'Aparência', 'Moradores', 'Atividades']) {
-    await page.getByRole('button', { name, exact: true }).click();
+    await openGamePanel(page, name);
     await expect(timer).toHaveAttribute('data-instance', 'same-timer');
     await expect(canvas).toHaveAttribute('data-instance', 'focus-world');
   }
@@ -254,10 +255,10 @@ test('retains the same mounted focus across local panels and guards navigation d
   await expect(page.locator('.game-screen-menu')).not.toHaveAttribute('open');
   expect(calls).toEqual(['start']);
   await page.getByRole('button', { name: 'Pausar', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Retomar meu foco', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Progresso', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toBeVisible();
+  await openGamePanel(page, 'Progresso');
   await expect(timer).toHaveAttribute('data-instance', 'same-timer');
-  await page.getByRole('button', { name: 'Retomar meu foco', exact: true }).click();
+  await page.getByRole('button', { name: 'Retomar foco', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Encerrar', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Preparar novo foco', exact: true })).toBeVisible();

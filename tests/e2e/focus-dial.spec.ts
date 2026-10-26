@@ -1,3 +1,4 @@
+import { openGamePanel, openFocus } from '../support/ui';
 import {
   test,
   expect,
@@ -25,9 +26,7 @@ async function enter(
     },
   ]);
   await page.goto('/game/' + (baby ? info.babySave : info.adultSave));
-  await page
-    .getByRole('button', { name: baby ? 'Encontrar meu foco' : 'Começar meu foco', exact: true })
-    .click();
+  await openFocus(page);
   await expect(page.getByRole('slider', { name: 'Duração do foco', exact: true })).toBeVisible();
   return info;
 }
@@ -62,7 +61,7 @@ test('uses saved defaults, conventional controls and keyboard without writing te
   await page.getByRole('button', { name: 'Salvar preferências', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('salvas');
   await page.goto('/game/' + account.adultSave);
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
   const dial = page.getByRole('slider', { name: 'Duração do foco', exact: true });
   await expect(dial).toHaveAttribute('aria-valuenow', '31');
   await page.getByRole('button', { name: 'Aumentar duração em um minuto' }).click();
@@ -150,7 +149,7 @@ test('rotates relatively in both directions, clamps the seam and rolls back canc
   await page.mouse.move(1, 1);
   await page.mouse.wheel(0, 200);
   await expect(dial).toHaveAttribute('aria-valuenow', '11');
-  await expect(page.getByRole('button', { name: 'Começar meu foco', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Iniciar foco', exact: true })).toBeVisible();
 });
 
 test('center reuses start pause resume with fixed duration and no duplicate focus or balance', async ({
@@ -206,7 +205,7 @@ test('center reuses start pause resume with fixed duration and no duplicate focu
   await page.keyboard.press('PageUp');
   await expect(dial).toHaveAttribute('aria-valuenow', '7');
   await page
-    .getByRole('button', { name: 'Começar meu foco', exact: true })
+    .getByRole('button', { name: 'Iniciar foco', exact: true })
     .evaluate((el: HTMLButtonElement) => {
       el.click();
       el.click();
@@ -223,7 +222,7 @@ test('center reuses start pause resume with fixed duration and no duplicate focu
   await expect(page.getByRole('button', { name: 'Aumentar duração em um minuto' })).toBeDisabled();
   await page.clock.runFor(1000);
   for (const name of ['Progresso', 'Aparência', 'Moradores', 'Atividades'])
-    await page.getByRole('button', { name, exact: true }).click();
+    await openGamePanel(page, name);
   await expect(canvas).toHaveAttribute('data-instance', 'dial-world');
   expect(calls).toEqual(['start']);
   await page.getByRole('button', { name: 'Pausar pelo seletor', exact: true }).click();
@@ -292,7 +291,7 @@ test('supports real touch pointers on the baby layout and reduced motion without
       210,
     );
     const box = (await page
-      .getByRole('button', { name: 'Começar meu foco', exact: true })
+      .getByRole('button', { name: 'Iniciar foco', exact: true })
       .boundingBox())!;
     expect(box.width).toBeGreaterThanOrEqual(44);
     expect(box.height).toBeGreaterThanOrEqual(44);
@@ -349,7 +348,7 @@ test('shows completion only after the existing engine receives confirmation', as
   await page.clock.install();
   const account = await enter(page, context, request, info.project.name);
   const before = await (await page.request.get('/api/game-saves/' + account.adultSave)).json();
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Pausar pelo seletor', exact: true }),
   ).toBeVisible();

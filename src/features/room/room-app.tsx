@@ -81,7 +81,13 @@ export function RoomApp({
     { action: 'allocate' }
   > | null>(null);
   const [ready, setReady] = useState(authenticated);
-  const [focusResident, setFocusResident] = useState<Resident | null>(null);
+  const [focusResident, setFocusResident] = useState<Resident | null>(() =>
+    immersive && !pending
+      ? (initial?.residents.find((c) => c.id === preferredResidentId) ??
+        initial?.residents[0] ??
+        null)
+      : null,
+  );
   const [recovered, setRecovered] = useState(pending);
   const resident = state?.residents.find((c) => c.id === selected) ?? state?.residents[0] ?? null;
   const balance = state ? totals(state) : { available: 0, distributed: 0, historical: 0 };
@@ -511,7 +517,7 @@ export function RoomApp({
               <div className="game-focus-intro">
                 <strong>{balance.available} min</strong>
                 <Button disabled={foreignFocus} onClick={() => setFocusResident(resident)}>
-                  {recovered ? 'Retomar sessão anterior' : 'Começar meu foco'}
+                  {recovered ? 'Continuar sessão' : 'Abrir foco'}
                 </Button>
               </div>
             )}
@@ -557,6 +563,7 @@ export function RoomApp({
           },
           {
             id: 'progress',
+            secondary: true,
             label: 'Progresso',
             content: (
               <>
@@ -584,7 +591,7 @@ export function RoomApp({
               </>
             ),
           },
-          { id: 'appearance', label: 'Aparência', content: editor },
+          { id: 'appearance', label: 'Aparência', secondary: true, content: editor },
           { id: 'residents', label: 'Moradores', content: residents ?? <p>{resident.name}</p> },
         ]}
       />
@@ -727,7 +734,7 @@ export function RoomApp({
                           setMessage('');
                         }}
                       >
-                        {recovered ? 'Retomar sessão anterior' : 'Começar meu foco'}
+                        {recovered ? 'Continuar sessão' : 'Iniciar foco'}
                       </Button>
                       {recovered &&
                         !state.residents.some((c) => c.id === recovered.character_id) && (

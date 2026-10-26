@@ -2521,3 +2521,27 @@ body:has(.game-screen) > .update-banner {
     scroll-behavior: auto !important;
   }
 }
+
+/* 6C: game identity uses Jersey; narrative and form fields retain reading fonts. */
+h1, h2, h3, .brand, .nav-item, .bottom-nav button, button, summary, .eyebrow {
+  font-family: var(--font-game), Arial, sans-serif;
+  font-weight: 400;
+}
+button, summary { font-size: 18px; }
+input, select, textarea { font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; }
+.narrator, .story-paper p { font-size: 16px; line-height: 1.75; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; }
+.creator-grid .character-preview { min-height: 0; padding: 16px 18px 20px; }
+.character-preview-scene { min-height: 0; }
+.creator-options .options-panel { max-height: none; overflow: visible; }
+.creator-page button { min-height: 44px; font-size: 18px; }
+.creator-page .section-intro { margin-bottom: 20px; }
+.creator-page .section-intro h1 { font-size: clamp(30px, 7vw, 44px); line-height: 1.15; }
+.creator-page .preview-plaque h2 { line-height: 1.2; }
+.creator-page .preview-plaque > span:last-child { font-size: 14px; }
+.creator-page .random-button { position: static; margin-top: 12px; font-size: 16px; }
+.baby-needs dt, .baby-needs dd { font-size: 14px; }
+
+h1, h2, h3, .journey-card h3, .chapter-card h3 { font-family: var(--font-game), Arial, sans-serif; letter-spacing: 0; }
+.brand { letter-spacing: -.02em; }
+.button, .creator-footer .button { font-family: var(--font-game), Arial, sans-serif; font-size: 20px; font-weight: 400; line-height: 1.3; min-height: 48px; }

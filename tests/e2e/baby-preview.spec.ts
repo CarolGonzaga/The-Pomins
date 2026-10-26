@@ -20,6 +20,7 @@ for (const size of [
         const svg = element.querySelector('svg')!;
         const rect = svg.getBoundingClientRect();
         const cardRect = element.getBoundingClientRect();
+        const scene = element.querySelector('.character-preview-scene')!.getBoundingClientRect();
         const plaque = element.querySelector('.preview-plaque')!.getBoundingClientRect();
         const bounds = svg.getBBox();
         const matrix = svg.getScreenCTM()!;
@@ -30,6 +31,7 @@ for (const size of [
         return {
           svgCenter: { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 },
           cardCenter: cardRect.x + cardRect.width / 2,
+          sceneCenterY: scene.y + scene.height / 2,
           orbits: Array.from(element.querySelectorAll('.orbit'), (orbit) => {
             const r = orbit.getBoundingClientRect();
             return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
@@ -49,10 +51,8 @@ for (const size of [
         };
       });
       expect(Math.abs(geometry.svgCenter.x - geometry.cardCenter)).toBeLessThan(1);
-      for (const orbit of geometry.orbits) {
-        expect(Math.abs(geometry.svgCenter.x - orbit.x)).toBeLessThan(1);
-        expect(Math.abs(geometry.svgCenter.y - orbit.y)).toBeLessThan(1);
-      }
+      expect(Math.abs(geometry.svgCenter.y - geometry.sceneCenterY)).toBeLessThan(1);
+      expect(geometry.orbits).toHaveLength(0);
       expect(Math.abs(geometry.visualX - geometry.cardCenter)).toBeLessThan(2);
       expect(geometry.contained).toBe(true);
       expect(geometry.overflow).toBe(false);

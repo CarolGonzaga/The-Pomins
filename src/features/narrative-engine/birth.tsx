@@ -15,11 +15,13 @@ export function Birth({
   onComplete,
   onClose,
   busy,
+  readOnly = false,
 }: {
   character: Character;
   onComplete: (memory: 'sky' | 'home') => Promise<void>;
   onClose: () => void;
   busy: boolean;
+  readOnly?: boolean;
 }) {
   const [index, setIndex] = useState(0);
   const [memory, setMemory] = useState<'sky' | 'home' | null>(null);
@@ -29,7 +31,7 @@ export function Birth({
       <div className="story-heading">
         <span className="eyebrow">PRÓLOGO · A PRIMEIRA MANHÃ</span>
         <button className="text-button" onClick={onClose}>
-          Ler depois
+          {readOnly ? 'Voltar aos cuidados' : 'Pular introdução'}
         </button>
       </div>
       <Nursery appearance={character.appearance} />
@@ -56,6 +58,16 @@ export function Birth({
           <Button variant="secondary" onClick={() => setIndex(index + 1)}>
             Continuar
           </Button>
+        ) : readOnly ? (
+          <>
+            <p className="narrator">
+              Primeira memória:{' '}
+              {character.first_memory === 'sky' ? 'A luz na janela.' : 'Uma voz acolhedora.'}
+            </p>
+            <Button variant="secondary" onClick={onClose}>
+              Voltar aos cuidados
+            </Button>
+          </>
         ) : (
           <>
             <p className="eyebrow">QUAL SERÁ A PRIMEIRA MEMÓRIA?</p>

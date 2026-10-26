@@ -74,9 +74,13 @@ export function Game({
   roomHref?: string;
 }) {
   const accountPreferences = usePreferences();
-  const [gamePanel, setGamePanel] = useState('care');
-  const [focusMounted, setFocusMounted] = useState(false);
-  const [view, setView] = useState<View>('home');
+  const [gamePanel, setGamePanel] = useState(
+    initial?.character && !initial.character.birth_read ? 'birth' : 'care',
+  );
+  const [focusMounted, setFocusMounted] = useState(
+    !initial?.sessions.some((s) => ['active', 'paused', 'interrupted'].includes(s.status)),
+  );
+  const [view, setView] = useState<View>(initial?.character ? 'character' : 'home');
   const [character, setCharacter] = useState<Character | null>(initial?.character ?? null);
   const [sessions, setSessions] = useState<FocusSession[]>(initial?.sessions ?? []);
   const [busy, setBusy] = useState(false);
@@ -104,6 +108,7 @@ export function Game({
         const saved = JSON.parse(localStorage.getItem(STORAGE) ?? 'null');
         if (saved && characterSchema.safeParse(saved).success && typeof saved.id === 'string') {
           setCharacter({ ...saved, life_xp: 0 });
+          setView('character');
         }
       }
       if (initial && new URLSearchParams(location.search).get('panel') === 'preferences')
@@ -215,7 +220,7 @@ export function Game({
           })
         : { ...character, birth_read: true, first_memory: memory };
       setCharacter(saved);
-      setView('home');
+      setView('character');
       if (immersive) setGamePanel('care');
       setNotice('A primeira memória foi guardada. Que tal dois minutinhos de foco?');
     } finally {
@@ -274,6 +279,7 @@ export function Game({
     if (!character)
       return (
         <GameScreen
+          mode="creation"
           name="Uma nova história"
           stage="Nascimento"
           generation={generation}
@@ -338,7 +344,7 @@ export function Game({
                   <div className="game-focus-intro">
                     <strong>{balance} min</strong>
                     <Button disabled={foreignFocus} onClick={() => setFocusMounted(true)}>
-                      {pending ? 'Retomar sessão anterior' : 'Encontrar meu foco'}
+                      {pending ? 'Continuar sessão' : 'Abrir foco'}
                     </Button>
                   </div>
                 )}
@@ -367,6 +373,7 @@ export function Game({
               },
               {
                 id: 'growth',
+                secondary: true,
                 label: 'Progresso',
                 content: (
                   <>
@@ -388,6 +395,16 @@ export function Game({
                         : 'Uma voz acolhedora.'}
                     </p>
                     <p>A memória e os cuidados seguem nesta partida.</p>
+                    <details>
+                      <summary>Reler capítulo inicial</summary>
+                      <Birth
+                        character={character}
+                        readOnly
+                        onComplete={saveBirth}
+                        onClose={() => setGamePanel('care')}
+                        busy={busy}
+                      />
+                    </details>
                   </>
                 ) : (
                   <Birth
@@ -600,7 +617,7 @@ export function Game({
                       : 'Em algum lugar de Vila Aurora, uma nova história está prestes a nascer. E o primeiro capítulo começa com você.'}
                   </p>
                   <Button onClick={() => go(character ? 'focus' : 'creator')}>
-                    {character ? 'Encontrar meu foco' : 'Criar meu primeiro Pomin'}
+                    {character ? 'Iniciar foco' : 'Criar meu primeiro Pomin'}
                   </Button>
                   <span className="welcome-footnote">
                     {character
@@ -719,7 +736,7 @@ export function Game({
             <Birth
               character={character}
               onComplete={saveBirth}
-              onClose={() => go('home')}
+              onClose={() => go('character')}
               busy={busy}
             />
           )}
@@ -746,6 +763,16 @@ export function Game({
                   {character.first_memory === 'sky' ? 'Curiosidade' : 'Acolhimento'}
                 </span>
               </div>
+              <details>
+                <summary>Reler capítulo inicial</summary>
+                <Birth
+                  character={character}
+                  readOnly
+                  onComplete={saveBirth}
+                  onClose={() => go('character')}
+                  busy={busy}
+                />
+              </details>
               <div className="next-chapter">
                 <div>
                   <h3>Outras páginas virão.</h3>
@@ -824,7 +851,7 @@ export function Game({
                         <dd>{new Date(character.born_at).toLocaleDateString('pt-BR')}</dd>
                       </div>
                     </dl>
-                    <Button onClick={() => go('focus')}>Reservar um tempo para crescer</Button>
+                    <Button onClick={() => go('focus')}>Iniciar foco</Button>
                   </div>
                 </div>
               </details>

@@ -432,7 +432,7 @@ export function Focus({
             {status === 'active'
               ? 'Seu momento de foco'
               : status === 'completed'
-                ? 'Um pequeno passo. Uma conquista.'
+                ? 'Foco concluído'
                 : status === 'interrupted' || status === 'paused'
                   ? 'Pausa acolhida'
                   : status === 'cancelled'
@@ -477,7 +477,7 @@ export function Focus({
               ) : (
                 <Button disabled={busy} onClick={start}>
                   <Play size={18} />
-                  {busy ? 'Preparando…' : 'Começar meu foco'}
+                  {busy ? 'Preparando…' : 'Iniciar foco'}
                 </Button>
               )
             ) : status === 'active' ? (
@@ -499,7 +499,7 @@ export function Focus({
               <>
                 <Button disabled={busy} onClick={resume}>
                   <Play size={17} />
-                  {busy ? 'Recuperando…' : 'Retomar meu foco'}
+                  {busy ? 'Recuperando…' : 'Retomar foco'}
                 </Button>
                 <Button variant="ghost" disabled={busy} onClick={cancel}>
                   Encerrar sessão

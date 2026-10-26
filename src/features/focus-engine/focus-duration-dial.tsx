@@ -43,7 +43,7 @@ export function FocusDurationDial({
   const locked = status !== 'idle' || busy;
   const action =
     status === 'idle'
-      ? 'Começar meu foco'
+      ? 'Iniciar foco'
       : status === 'active'
         ? 'Pausar pelo seletor'
         : status === 'paused' || status === 'interrupted'
@@ -55,7 +55,7 @@ export function FocusDurationDial({
               : 'Foco indisponível';
   const caption =
     status === 'idle'
-      ? 'Iniciar'
+      ? 'Iniciar foco'
       : status === 'active'
         ? 'Pausar'
         : status === 'paused' || status === 'interrupted'

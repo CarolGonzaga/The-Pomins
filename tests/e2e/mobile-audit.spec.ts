@@ -1,3 +1,4 @@
+import { openFocus, openGamePanel } from '../support/ui';
 import {
   test,
   expect,
@@ -117,8 +118,8 @@ test('dragging inside the center does not accidentally start focus', async ({
     await route.fulfill({ status: 503, json: { error: 'Deliberately blocked in audit fixture' } });
   });
   await page.goto('/game/' + account.babySave);
-  await page.getByRole('button', { name: 'Encontrar meu foco', exact: true }).click();
-  const center = page.getByRole('button', { name: 'Começar meu foco', exact: true });
+  await openFocus(page);
+  const center = page.getByRole('button', { name: 'Iniciar foco', exact: true });
   const box = (await center.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
@@ -134,7 +135,7 @@ test('offline notice leaves game controls unobscured', async ({ page, context, r
   const account = await login(context, request, info.project.name);
   await page.setViewportSize(sizes[2]);
   await page.goto('/game/' + account.babySave);
-  await page.getByRole('button', { name: 'Encontrar meu foco', exact: true }).click();
+  await openFocus(page);
   await context.setOffline(true);
   await expect(page.locator('.connection-banner')).toBeVisible();
   await expect(page.locator('.connection-banner')).not.toContainText('foi pausado');
@@ -151,7 +152,7 @@ test('offline notice leaves game controls unobscured', async ({ page, context, r
   }
   const tabs = page.locator('.game-screen-tabs');
   await tabs.scrollIntoViewIfNeeded();
-  for (const button of await tabs.locator('button').all())
+  for (const button of await tabs.locator('button').filter({ visible: true }).all())
     expect(
       await button.evaluate((el) => {
         const r = el.getBoundingClientRect();
@@ -182,15 +183,13 @@ test('adult and baby panels stay reachable through rotation and reduced viewport
       await expect(canvas).toBeVisible();
       await canvas.evaluate((el) => el.setAttribute('data-audit-instance', 'stable'));
     }
-    await page
-      .getByRole('button', { name: baby ? 'Encontrar meu foco' : 'Começar meu foco', exact: true })
-      .click();
+    await openFocus(page);
     const dial = page.getByRole('slider', { name: 'Duração do foco', exact: true });
     await dial.evaluate((el) => el.setAttribute('data-audit-instance', 'stable'));
     for (const size of [...sizes, { width: 390, height: 400 }]) {
       await page.setViewportSize(size);
       await noHorizontalOverflow(page);
-      for (const tab of await page.locator('.game-screen-tabs button').all()) {
+      for (const tab of await page.locator('.game-screen-tabs button').filter({ visible: true }).all()) {
         await tab.click();
         expect((await tab.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       }
@@ -198,7 +197,7 @@ test('adult and baby panels stay reachable through rotation and reduced viewport
       if (!baby) await expect(canvas).toHaveAttribute('data-audit-instance', 'stable');
     }
     await page.setViewportSize(sizes[2]);
-    await page.getByRole('button', { name: baby ? 'Cuidados' : 'Aparência', exact: true }).click();
+    await openGamePanel(page, baby ? 'Cuidados' : 'Aparência');
     if (!baby) {
       const hair = page.getByRole('button', { name: /^Cor do cabelo #/ }).first();
       await hair.scrollIntoViewIfNeeded();
@@ -260,8 +259,8 @@ test('focus pauses on lifecycle events and requires explicit resume without SQL 
   await page.clock.install();
   await page.goto('/game/' + account.adultSave);
   const before = await (await page.request.get('/api/game-saves/' + account.adultSave)).json();
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  await openFocus(page);
+  await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
   for (const type of ['blur', 'pagehide', 'offline', 'visibilitychange']) {
     await expect(page.getByRole('button', { name: 'Pausar pelo seletor' })).toBeVisible();
     const original = calls.length;
@@ -306,7 +305,7 @@ test('touch cancellation rolls back the ring and never activates the center', as
   );
   const account = await login(context, request, info.project.name);
   await page.goto('/game/' + account.babySave);
-  await page.getByRole('button', { name: 'Encontrar meu foco', exact: true }).click();
+  await openFocus(page);
   const dial = page.getByRole('slider', { name: 'Duração do foco', exact: true });
   const original = await dial.getAttribute('aria-valuenow');
   const cdp = await context.newCDPSession(page);
@@ -325,7 +324,7 @@ test('touch cancellation rolls back the ring and never activates the center', as
   await expect(dial).not.toHaveAttribute('aria-valuenow', original!);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
   await expect(dial).toHaveAttribute('aria-valuenow', original!);
-  await expect(page.getByRole('button', { name: 'Começar meu foco', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Iniciar foco', exact: true })).toBeEnabled();
   const calls: string[] = [];
   await page.route('**/api/game', async (route) => {
     if (route.request().postDataJSON().kind !== 'focus') return route.continue();
@@ -405,7 +404,7 @@ test('legacy birth stays readable and keyboard reachable on a narrow screen', as
   await page.getByRole('button', { name: /A luz dançando/ }).click();
   await page.getByRole('button', { name: 'Guardar essa primeira memória' }).click();
   await page.reload();
-  await expect(page.getByRole('heading', { name: /Pequena Aurora tem um mundo/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Olá, Pequena Aurora/ })).toBeVisible();
 });
 
 test('client navigation cleans Phaser and focus listeners between worlds', async ({
@@ -442,10 +441,10 @@ test('client navigation cleans Phaser and focus listeners between worlds', async
     );
   for (let cycle = 0; cycle < 3; cycle++) {
     await expect(page.getByTestId('room-canvas').locator('canvas')).toBeVisible();
-    await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+    await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
     const activeCounts = await counts();
     for (const label of ['Aparência', 'Progresso', 'Moradores', 'Atividades'])
-      await page.getByRole('button', { name: label, exact: true }).click();
+      await openGamePanel(page, label);
     expect(await counts()).toEqual(activeCounts);
     await page.getByRole('link', { name: 'Partidas', exact: true }).click();
     await expect(page).toHaveURL(/\/saves$/);

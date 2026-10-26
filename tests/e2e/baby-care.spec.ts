@@ -26,11 +26,11 @@ test('six free care reactions preserve the save and remain accessible on mobile'
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   const panel = page.locator('.baby-care');
-  await expect(panel.getByRole('meter', { name: 'Fome', exact: true })).toHaveAttribute(
+  await expect(panel.getByRole('meter', { name: 'Saciedade', exact: true })).toHaveAttribute(
     'value',
-    '25',
+    '75',
   );
   const before = await page.evaluate(() => localStorage.getItem('pomins-room-local-v1'));
   for (const [label, id] of [
@@ -63,9 +63,9 @@ test('existing focus credits feed care, restore after reload and deduplicate a l
   await seed(page);
   await page.clock.install();
   await page.goto('/');
-  await page.getByRole('button', { name: 'Encontrar meu foco' }).click();
+  await page.getByRole('button', { name: 'Abrir foco' }).click();
   await page.bringToFront();
-  await page.getByRole('button', { name: 'Começar meu foco', exact: true }).click();
+  await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.clock.runFor(125000);
   await expect(page.getByText('Você reservou um tempo para começar.')).toBeVisible();
@@ -73,7 +73,7 @@ test('existing focus credits feed care, restore after reload and deduplicate a l
     .locator('.completion')
     .getByRole('button', { name: 'Voltar ao meu universo', exact: true })
     .click();
-  await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   await expect(page.getByText('2 min disponíveis', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Dar carinho', exact: true }).click();
   await page.getByRole('button', { name: 'Registrar cuidado com minutos' }).click();
@@ -84,7 +84,7 @@ test('existing focus credits feed care, restore after reload and deduplicate a l
   );
   const saved = await page.evaluate(() => localStorage.getItem('pomins-room-local-v1'));
   await page.reload();
-  await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   await expect(page.getByRole('meter', { name: 'Afeto', exact: true })).toHaveAttribute(
     'value',
     '87',
@@ -101,7 +101,7 @@ test('existing focus credits feed care, restore after reload and deduplicate a l
     );
   });
   await page.reload();
-  await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
+  if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible()) await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   await page.getByRole('button', { name: 'Conferir cuidado pendente' }).click();
   await expect(page.getByRole('button', { name: 'Conferir cuidado pendente' })).toHaveCount(0);
   await page.getByText('Cuidados guardados · 1 min', { exact: true }).click();

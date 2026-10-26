@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { PortalLink } from '../portal/navigation';
 import './game-screen.css';
 
-export type GamePanel = { id: string; label: string; content: ReactNode };
+export type GamePanel = { id: string; label: string; content: ReactNode; secondary?: boolean };
 /** Presentation slots keep world and focus at stable positions across panel changes. */
 export function GameScreen({
   name,
@@ -17,6 +17,7 @@ export function GameScreen({
   generation = 1,
   panelId,
   onPanelChange,
+  mode = 'play',
 }: {
   name: string;
   stage: string;
@@ -27,12 +28,32 @@ export function GameScreen({
   generation?: number;
   panelId?: string;
   onPanelChange?: (id: string) => void;
+  mode?: 'play' | 'creation';
 }) {
   const [panel, setPanel] = useState(panels[0]?.id);
   const selectedPanel = panelId ?? panel;
   const menu = useRef<HTMLDetailsElement>(null);
+  const more = useRef<HTMLDetailsElement>(null);
+  const select = (id: string) => {
+    if (onPanelChange) onPanelChange(id);
+    else setPanel(id);
+    const wasOpen = more.current?.open;
+    more.current?.removeAttribute('open');
+    if (wasOpen) more.current?.querySelector('summary')?.focus();
+  };
+  const panelButton = (p: GamePanel) => (
+    <button
+      key={p.id}
+      type="button"
+      aria-expanded={selectedPanel === p.id}
+      aria-controls={`game-panel-${p.id}`}
+      onClick={() => select(p.id)}
+    >
+      {p.label}
+    </button>
+  );
   return (
-    <main id="main" className="game-screen" data-testid="immersive-game">
+    <main id="main" className={`game-screen game-screen-${mode}`} data-testid="immersive-game">
       <header className="game-screen-header">
         <div className="game-screen-back">
           <PortalLink href="/saves">Partidas</PortalLink>
@@ -65,7 +86,7 @@ export function GameScreen({
         {world}
       </section>
       <div className="game-screen-deck">
-        <section className="game-screen-focus" aria-label="Seu foco e saldo">
+        <section className="game-screen-focus" aria-label="Seu foco e saldo" hidden={!focus}>
           {focus}
         </section>
         {message && (
@@ -74,17 +95,22 @@ export function GameScreen({
           </div>
         )}
         <nav className="game-screen-tabs" aria-label="Controles do jogo">
-          {panels.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              aria-expanded={selectedPanel === p.id}
-              aria-controls={`game-panel-${p.id}`}
-              onClick={() => (onPanelChange ? onPanelChange(p.id) : setPanel(p.id))}
+          {panels.filter((p) => !p.secondary).map(panelButton)}
+          {panels.some((p) => p.secondary) && (
+            <details
+              className="game-screen-more"
+              ref={more}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  more.current?.removeAttribute('open');
+                  more.current?.querySelector('summary')?.focus();
+                }
+              }}
             >
-              {p.label}
-            </button>
-          ))}
+              <summary>Mais opções</summary>
+              <div>{panels.filter((p) => p.secondary).map(panelButton)}</div>
+            </details>
+          )}
         </nav>
         <div className="game-screen-panels">
           {panels.map((p) => (

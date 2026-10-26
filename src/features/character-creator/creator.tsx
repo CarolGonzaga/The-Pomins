@@ -70,7 +70,7 @@ export function Creator({
       <div className="section-intro">
         <span className="eyebrow">CRIE · CAPÍTULO ZERO</span>
         <h1>
-          Toda história começa
+          Toda história começa{' '}
           <br />
           com <em>alguém único.</em>
         </h1>
@@ -79,8 +79,6 @@ export function Creator({
       <div className="creator-grid">
         <div className="character-preview">
           <div className="character-preview-scene">
-            <div className="orbit orbit-one" aria-hidden="true" />
-            <div className="orbit orbit-two" aria-hidden="true" />
             <Pomin appearance={a} label={`Prévia de ${name || 'seu bebê'}`} />
           </div>
           <div className="preview-plaque">
