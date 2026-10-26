@@ -82,8 +82,8 @@ export function RoomApp({
   > | null>(null);
   const [ready, setReady] = useState(authenticated);
   const [focusResident, setFocusResident] = useState<Resident | null>(() =>
-    immersive && !pending
-      ? (initial?.residents.find((c) => c.id === preferredResidentId) ??
+    immersive && (!pending || initial?.residents.some((c) => c.id === pending.character_id))
+      ? (initial?.residents.find((c) => c.id === (pending?.character_id ?? preferredResidentId)) ??
         initial?.residents[0] ??
         null)
       : null,
@@ -605,19 +605,7 @@ export function RoomApp({
         </Link>
         <Link href={universeHref}>Meu universo</Link>
         {authenticated && <PortalLink href="/menu">Menu principal</PortalLink>}
-        {authenticated && (
-          <Link
-            href="/saves"
-            onClick={(e) => {
-              if (document.documentElement.dataset.focusActive === 'true') {
-                e.preventDefault();
-                setMessage('Use os controles da sessão antes de abrir suas partidas.');
-              }
-            }}
-          >
-            Minhas partidas
-          </Link>
-        )}
+        {authenticated && <Link href="/saves">Minhas partidas</Link>}
         <span>{authenticated ? 'Progresso na sua conta' : 'Exploração local'}</span>
         {!authenticated && <Link href="/auth">Entrar</Link>}
       </header>

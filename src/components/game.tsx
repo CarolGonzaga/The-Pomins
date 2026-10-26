@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   BookOpen,
   Check,
@@ -74,12 +75,11 @@ export function Game({
   roomHref?: string;
 }) {
   const accountPreferences = usePreferences();
+  const router = useRouter();
   const [gamePanel, setGamePanel] = useState(
     initial?.character && !initial.character.birth_read ? 'birth' : 'care',
   );
-  const [focusMounted, setFocusMounted] = useState(
-    !initial?.sessions.some((s) => ['active', 'paused', 'interrupted'].includes(s.status)),
-  );
+  const [focusMounted, setFocusMounted] = useState(true);
   const [view, setView] = useState<View>(initial?.character ? 'character' : 'home');
   const [character, setCharacter] = useState<Character | null>(initial?.character ?? null);
   const [sessions, setSessions] = useState<FocusSession[]>(initial?.sessions ?? []);
@@ -171,12 +171,8 @@ export function Game({
       return;
     }
     setMenu(false);
-    if (view === 'focus') {
-      setNotice('Use os controles da sessão para pausar ou encerrar e voltar ao seu universo.');
-      return;
-    }
     if (next === 'settings' && authenticated) {
-      location.assign('/settings');
+      router.push('/settings');
       return;
     }
     setNotice('');
@@ -289,11 +285,7 @@ export function Game({
               id: 'birth',
               label: 'Criar Pomin',
               content: (
-                <Creator
-                  onSave={saveCharacter}
-                  onBack={() => location.assign('/saves')}
-                  busy={busy}
-                />
+                <Creator onSave={saveCharacter} onBack={() => router.push('/saves')} busy={busy} />
               ),
             },
           ]}
@@ -315,6 +307,8 @@ export function Game({
           <GameScreen
             name={character.name}
             stage="Bebê"
+            scene="nursery"
+            balance={balance}
             generation={generation}
             world={world}
             message={notice}
@@ -325,6 +319,7 @@ export function Game({
                 {focusMounted && !foreignFocus ? (
                   <Focus
                     compact
+                    nursery
                     character={character}
                     authenticated={authenticated}
                     saveId={initial?.saveId}
@@ -463,16 +458,7 @@ export function Game({
           </PortalLink>
         )}
         {authenticated && (
-          <Link
-            className="nav-item"
-            href="/saves"
-            onClick={(e) => {
-              if (document.documentElement.dataset.focusActive === 'true') {
-                e.preventDefault();
-                setNotice('Use os controles da sessão antes de abrir suas partidas.');
-              }
-            }}
-          >
+          <Link className="nav-item" href="/saves">
             Minhas partidas
           </Link>
         )}

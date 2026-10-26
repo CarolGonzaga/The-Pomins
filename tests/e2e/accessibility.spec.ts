@@ -65,6 +65,8 @@ test('background and connectivity interrupt local focus without rewards', async 
   await page.getByRole('button', { name: 'Iniciar foco' }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
+  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
   await expect(page.getByRole('button', { name: 'Retomar foco' })).toBeVisible();
   await page.getByRole('button', { name: 'Retomar foco' }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();

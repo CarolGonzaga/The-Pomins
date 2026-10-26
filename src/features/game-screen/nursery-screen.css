@@ -1,0 +1,371 @@
+/* 6E nursery: a single cozy stage, not a stack of dashboard cards. */
+.game-screen-nursery {
+  --nursery-sky: #e2edf0;
+  --nursery-curtain: #d4c5dc;
+  --nursery-floor: #eaded2;
+  --nursery-rug: #e4d5b0;
+  max-width: 760px;
+  gap: 6px;
+  background: var(--bg);
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+.game-screen-nursery .game-screen-header {
+  min-height: 72px;
+}
+.game-screen-nursery .game-screen-header h1 {
+  font-size: 34px;
+}
+.game-screen-nursery .game-screen-header p {
+  font-size: 14px;
+}
+.game-screen-nursery .game-screen-world {
+  flex: none;
+  min-height: 250px;
+  border: 0;
+  border-radius: 28px 28px 60px 60px;
+  box-shadow: none;
+  background: var(--surface);
+}
+.game-screen-nursery .baby-care-stage {
+  min-height: 250px;
+  position: relative;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 34px,
+      color-mix(in srgb, var(--purple) 4%, transparent) 34px 36px
+    ),
+    linear-gradient(var(--surface) 0 76%, var(--nursery-floor) 76%);
+  padding: 12px 12px 20px;
+}
+.game-screen-nursery .baby-care-stage::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  right: 9%;
+  width: 76px;
+  height: 100px;
+  border: 6px solid var(--nursery-curtain);
+  border-radius: 32px 32px 4px 4px;
+  background:
+    linear-gradient(90deg, transparent 46%, var(--surface) 46% 54%, transparent 54%),
+    linear-gradient(transparent 49%, var(--surface) 49% 54%, transparent 54%),
+    radial-gradient(circle at 70% 25%, #fbdfa8 0 13px, transparent 14px), var(--nursery-sky);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--purple) 14%, transparent);
+}
+.game-screen-nursery .baby-care-stage::after {
+  content: '';
+  position: absolute;
+  bottom: 31px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(78%, 310px);
+  height: 54px;
+  border-radius: 50%;
+  background: var(--nursery-rug);
+  box-shadow: inset 0 0 0 5px color-mix(in srgb, var(--surface) 45%, transparent);
+}
+.game-screen-nursery .baby-care-portrait {
+  position: relative;
+  z-index: 1;
+  width: 190px;
+  max-width: 70%;
+  height: 196px;
+  flex-shrink: 0;
+  margin: 8px auto 0;
+}
+.game-screen-nursery .baby-care-portrait > svg:first-child {
+  width: 100%;
+  height: 100%;
+}
+.game-screen-nursery .baby-reaction-copy {
+  z-index: 1;
+  min-height: 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+.game-screen-nursery .baby-care-stage > small {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.nursery-balance {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  font-size: 12px;
+}
+.nursery-balance strong {
+  font:
+    24px/1 var(--font-game),
+    Arial,
+    sans-serif;
+  color: var(--purple);
+}
+.game-screen-nursery .game-screen-deck {
+  display: contents;
+}
+.game-screen-nursery .game-screen-focus {
+  order: 2;
+  border: 0;
+  padding: 0;
+}
+.game-screen-nursery .game-screen-notice {
+  order: 3;
+}
+.game-screen-nursery .game-screen-panels {
+  order: 4;
+  flex: initial;
+}
+.game-screen-nursery .game-screen-world {
+  order: 1;
+}
+.game-screen-nursery .game-screen-header {
+  order: 0;
+}
+.game-screen-nursery .game-screen-tabs {
+  order: 5;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(740px, calc(100% - 20px));
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px;
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  background: var(--surface);
+  padding: 5px 5px max(5px, env(safe-area-inset-bottom));
+  box-shadow: 0 -3px 16px color-mix(in srgb, var(--ink) 6%, transparent);
+}
+.game-screen-nursery .game-screen-tabs > button,
+.game-screen-nursery .game-screen-more summary {
+  min-height: 48px;
+  font-size: 19px;
+  padding: 6px 2px;
+  border-radius: 12px;
+  border-width: 1px;
+  white-space: nowrap;
+  font-size: 18px;
+}
+.game-screen-nursery .game-screen-more > div {
+  top: auto;
+  bottom: calc(100% + 10px);
+  right: 0;
+}
+.game-screen-nursery .game-screen-panel {
+  padding: 8px 8px 20px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.game-screen-nursery .game-screen-panel > h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.game-screen-nursery .baby-care-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.game-screen-nursery .baby-care-actions {
+  order: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.game-screen-nursery .baby-care-actions button {
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 0 var(--border);
+  background: var(--surface);
+  font-size: 20px;
+  line-height: 1.05;
+}
+.game-screen-nursery .baby-care-actions button[aria-pressed='true'] {
+  border-color: var(--purple);
+  background: var(--purple-soft);
+  box-shadow: 0 3px 0 var(--purple);
+}
+.care-icon {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  color: var(--purple);
+}
+.game-screen-nursery .baby-care-actions small {
+  font:
+    14px/1.2 'Segoe UI',
+    Arial,
+    sans-serif;
+  color: var(--muted);
+}
+.game-screen-nursery .baby-care-record {
+  order: 1;
+  margin-top: 6px;
+  gap: 10px;
+}
+.game-screen-nursery .baby-care-record > p:first-child {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.game-screen-nursery .baby-care-record > button:first-of-type {
+  border-radius: 18px;
+  min-height: 50px;
+}
+.game-screen-nursery .baby-needs {
+  order: 2;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--border);
+}
+.nursery-focus .timer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 4px 8px;
+  gap: 6px;
+}
+.nursery-focus .focus-status {
+  margin: 0;
+  font:
+    21px/1.2 var(--font-game),
+    Arial,
+    sans-serif;
+}
+.nursery-focus .focus-duration-dial {
+  width: 190px;
+  margin: auto;
+  grid-column: auto;
+  grid-row: auto;
+}
+.nursery-focus .dial-center {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: var(--purple-soft);
+  color: var(--ink);
+  box-shadow: 0 4px 0 var(--border);
+  border-color: var(--surface);
+}
+.nursery-focus .dial-center .timer-number {
+  position: static;
+  display: inline;
+  font:
+    40px/1 var(--font-game),
+    Arial,
+    sans-serif;
+  color: var(--ink);
+}
+.nursery-focus .dial-center > span {
+  font-size: 20px;
+  color: var(--purple);
+}
+.nursery-focus .dial-stepper {
+  gap: 18px;
+}
+.nursery-focus .dial-stepper button {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+}
+.nursery-focus .timer-controls {
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.nursery-focus .timer-controls button {
+  min-height: 44px;
+  min-width: 92px;
+  border-radius: 14px;
+}
+.nursery-focus .nursery-idle-controls {
+  display: none;
+}
+.nursery-focus .dial-ready-hint {
+  max-width: 280px;
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+}
+.nursery-focus .focus-configuration {
+  width: 100%;
+  margin: 0;
+}
+.nursery-focus .focus-configuration > summary {
+  justify-content: center;
+  min-height: 44px;
+  font-size: 14px;
+}
+.nursery-focus .focus-footnotes,
+.nursery-focus .small-note,
+.game-screen-nursery .game-focus-balance {
+  display: none;
+}
+.nursery-focus .focus-message {
+  margin: 0;
+  max-width: 320px;
+  text-align: center;
+}
+[data-theme='dark'] .game-screen-nursery {
+  --nursery-sky: #30394b;
+  --nursery-curtain: #65536f;
+  --nursery-floor: #3d3543;
+  --nursery-rug: #65543c;
+}
+@media (min-width: 650px) {
+  .game-screen-nursery .game-screen-world,
+  .game-screen-nursery .baby-care-stage {
+    min-height: 340px;
+  }
+  .game-screen-nursery .baby-care-portrait {
+    width: 240px;
+    height: 264px;
+  }
+  .game-screen-nursery .baby-care-actions {
+    max-width: 540px;
+    width: 100%;
+    margin: auto;
+  }
+}
+@media (max-width: 350px) {
+  .game-screen-nursery .game-screen-header h1 {
+    font-size: 29px;
+  }
+  .game-screen-nursery .baby-care-actions {
+    gap: 7px;
+  }
+  .game-screen-nursery .baby-care-actions button {
+    font-size: 18px;
+    min-height: 96px;
+  }
+  .game-screen-nursery .game-screen-tabs > button,
+  .game-screen-nursery .game-screen-more summary {
+    font-size: 17px;
+  }
+}

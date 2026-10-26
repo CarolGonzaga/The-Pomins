@@ -113,8 +113,10 @@ export async function createSaveFixture({immersive:withImmersive=false,paidCare=
     ['audit-iphone','10000000-0000-4000-8000-000000000008'],
     ['paid-chromium','10000000-0000-4000-8000-000000000009'],
     ['paid-iphone','10000000-0000-4000-8000-00000000000a'],
+    ['nursery-chromium','10000000-0000-4000-8000-00000000000b'],
+    ['nursery-iphone','10000000-0000-4000-8000-00000000000c'],
   ]:[])){
-    await db.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)',[uid,JSON.stringify({nickname:'immersive_'+project.replaceAll('-','_')})]);
+    await db.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)',[uid,JSON.stringify({nickname:'im_'+project.replaceAll('-','_')})]);
     const adultSave=(await rpc(uid,'get_game_context')).save.id;
     const adult=await create(adultSave,'Íris',uid);
     const babySave=(await rpc(uid,'create_game_save',{p_request:crypto.randomUUID(),p_name:'Pequenos começos'})).id;

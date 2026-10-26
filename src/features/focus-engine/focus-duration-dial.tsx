@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useId, useRef } from 'react';
+import { memo, useEffect, useId, useRef } from 'react';
 import type { PointerEvent } from 'react';
 import type { FocusStatus } from './model';
 import {
@@ -22,18 +22,20 @@ type Gesture = {
   y: number;
   moved: boolean;
 };
-export function FocusDurationDial({
+export const FocusDurationDial = memo(function FocusDurationDial({
   minutes,
   status,
   busy,
   onChange,
   onAction,
+  readout,
 }: {
   minutes: number;
   status: FocusStatus;
   busy: boolean;
   onChange: (minutes: number) => void;
   onAction?: () => void | Promise<void>;
+  readout?: React.ReactNode;
 }) {
   const help = useId(),
     ring = useRef<HTMLDivElement>(null),
@@ -219,7 +221,12 @@ export function FocusDurationDial({
               if (centerGesture.current) centerGesture.current.cancelled = true;
               return;
             }
-            centerGesture.current = { id: e.pointerId, x: e.clientX, y: e.clientY, cancelled: false };
+            centerGesture.current = {
+              id: e.pointerId,
+              x: e.clientX,
+              y: e.clientY,
+              cancelled: false,
+            };
             e.currentTarget.setPointerCapture(e.pointerId);
           }}
           onPointerMove={(e) => {
@@ -239,8 +246,12 @@ export function FocusDurationDial({
           }}
         >
           <strong>
-            {minutes}
-            <small> min</small>
+            {readout ?? (
+              <>
+                {minutes}
+                <small> min</small>
+              </>
+            )}
           </strong>
           <span>{caption}</span>
         </button>
@@ -269,4 +280,4 @@ export function FocusDurationDial({
       </p>
     </div>
   );
-}
+});

@@ -47,7 +47,6 @@ test('keeps a recovered pause through panels and clears only acknowledged termin
 }) => {
   const info = await (await request.get(fixture + '/__test/info')).json();
   await login(context, info.session);
-  await page.goto('/game/' + info.one);
   const before = await (await page.request.get('/api/game-saves/' + info.one)).json();
   let current = before.data.sessions.find((s: { id: string }) => s.id === info.paused);
   const calls: string[] = [];
@@ -63,6 +62,7 @@ test('keeps a recovered pause through panels and clears only acknowledged termin
     };
     await route.fulfill({ json: { data: current } });
   });
+  await page.goto('/game/' + info.one);
   await openFocus(page);
   await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toBeVisible();
   for (const name of ['Progresso', 'Moradores', 'Atividades']) await openGamePanel(page, name);
@@ -198,7 +198,7 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   ).toBeVisible();
 });
 
-test('retains the same mounted focus across local panels and guards navigation during active focus', async ({
+test('retains focus across panels and internal routes without pausing', async ({
   page,
   context,
   request,
@@ -257,9 +257,11 @@ test('retains the same mounted focus across local panels and guards navigation d
   }
   await page.locator('.game-screen-menu summary').click();
   await page.getByRole('link', { name: 'Menu principal', exact: true }).click();
-  await expect(page).toHaveURL(new RegExp('/game/' + info.adultSave + '$'));
-  await page.locator('.game-screen-menu summary').press('Escape');
-  await expect(page.locator('.game-screen-menu')).not.toHaveAttribute('open');
+  await expect(page).toHaveURL(/\/menu$/);
+  await page.getByRole('link', { name: 'Começar', exact: true }).click();
+  await page.locator('a[href="/game/' + info.adultSave + '"]').click();
+  await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
+  await timer.evaluate((el) => el.setAttribute('data-instance', 'same-timer'));
   expect(calls).toEqual(['start']);
   await page.getByRole('button', { name: 'Pausar', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toBeVisible();
@@ -270,6 +272,6 @@ test('retains the same mounted focus across local panels and guards navigation d
   await page.getByRole('button', { name: 'Encerrar', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Preparar novo foco', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Preparar novo foco', exact: true }).click();
-  await expect(canvas).toHaveAttribute('data-instance', 'focus-world');
+  await expect(canvas).toBeVisible();
   expect(calls).toEqual(['start', 'pause', 'recover', 'resume', 'recover', 'cancel']);
 });

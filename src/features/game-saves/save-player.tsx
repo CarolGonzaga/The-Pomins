@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Game } from '@/components/game';
 import { Button } from '@/components/ui/button';
 import { RoomApp } from '../room/room-app';
@@ -99,7 +100,7 @@ export function SavePlayer({
       <main className="simple-page">
         <h1>Morador indisponível</h1>
         <p role="alert">Este personagem não pode ser aberto nesta partida.</p>
-        <a href={path}>Voltar à partida</a>
+        <Link href={path}>Voltar à partida</Link>
       </main>
     );
   const sessions = focusSessions(initial),
@@ -112,30 +113,19 @@ export function SavePlayer({
   const residents = (
     <nav aria-label="Moradores da partida">
       {choices.map((c) => (
-        <a
+        <Link
           key={c.id}
           href={`${path}?character=${c.id}`}
           aria-current={selected.id === c.id ? 'page' : undefined}
-          onClick={(e) => {
-            if (document.documentElement.dataset.focusActive === 'true') {
-              e.preventDefault();
-              setError('Use os controles da sessão antes de trocar de morador.');
-            }
-          }}
         >
           {c.name}
           {s.protagonist_id === c.id ? ' · Protagonista' : ''}{' '}
-        </a>
+        </Link>
       ))}
       {pending && pending.origin_save_id && (
-        <a
-          href={`/game/${pending.origin_save_id}?character=${pending.character_id}`}
-          onClick={(e) => {
-            if (document.documentElement.dataset.focusActive === 'true') e.preventDefault();
-          }}
-        >
+        <Link href={`/game/${pending.origin_save_id}?character=${pending.character_id}`}>
           Sessão de foco existente
-        </a>
+        </Link>
       )}
     </nav>
   );

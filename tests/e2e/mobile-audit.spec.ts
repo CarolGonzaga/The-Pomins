@@ -189,7 +189,10 @@ test('adult and baby panels stay reachable through rotation and reduced viewport
     for (const size of [...sizes, { width: 390, height: 400 }]) {
       await page.setViewportSize(size);
       await noHorizontalOverflow(page);
-      for (const tab of await page.locator('.game-screen-tabs button').filter({ visible: true }).all()) {
+      for (const tab of await page
+        .locator('.game-screen-tabs button')
+        .filter({ visible: true })
+        .all()) {
         await tab.click();
         expect((await tab.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       }
@@ -261,7 +264,7 @@ test('focus pauses on lifecycle events and requires explicit resume without SQL 
   const before = await (await page.request.get('/api/game-saves/' + account.adultSave)).json();
   await openFocus(page);
   await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
-  for (const type of ['blur', 'pagehide', 'offline', 'visibilitychange']) {
+  for (const type of ['pagehide', 'offline', 'visibilitychange']) {
     await expect(page.getByRole('button', { name: 'Pausar pelo seletor' })).toBeVisible();
     const original = calls.length;
     await page.evaluate((type) => {

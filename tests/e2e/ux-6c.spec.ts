@@ -102,13 +102,17 @@ for (const width of [320, 375, 390, 430, 1280]) {
     ).toBe('visible');
     expect(
       await page
-        .locator('.game-screen-deck')
+        .locator('.game-screen')
         .evaluate(
           (el) =>
             el.getBoundingClientRect().bottom >=
             el.querySelector('.game-screen-panel:not([hidden])')!.getBoundingClientRect().bottom,
         ),
     ).toBe(true);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const needs = await page.getByRole('meter', { name: 'Diversão', exact: true }).boundingBox();
+    const navigation = await page.locator('.game-screen-tabs').boundingBox();
+    expect(needs!.y + needs!.height).toBeLessThanOrEqual(navigation!.y);
     expect(focusCalls).toEqual([]);
     expect(
       (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()).violations,

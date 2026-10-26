@@ -16,6 +16,7 @@ import {
 } from './model';
 import { babyApi, CareRejected, loadLocalBaby, localCare } from './persistence';
 import './baby-care.css';
+import { CareIcon } from './care-icon';
 import type { ReactNode } from 'react';
 export type BabyCareParts = {
   world: ReactNode;
@@ -280,7 +281,8 @@ export function BabyCare({
               );
             }}
           >
-            {careLabels[id]}
+            <CareIcon activity={id} />
+            <span>{careLabels[id]}</span>
             <small style={{ display: 'block' }}>2 min</small>
           </button>
         ))}

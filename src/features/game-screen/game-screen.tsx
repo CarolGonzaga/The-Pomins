@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PortalLink } from '../portal/navigation';
 import './game-screen.css';
+import './nursery-screen.css';
 
 export type GamePanel = { id: string; label: string; content: ReactNode; secondary?: boolean };
 /** Presentation slots keep world and focus at stable positions across panel changes. */
@@ -18,6 +19,8 @@ export function GameScreen({
   panelId,
   onPanelChange,
   mode = 'play',
+  scene,
+  balance,
 }: {
   name: string;
   stage: string;
@@ -29,6 +32,8 @@ export function GameScreen({
   panelId?: string;
   onPanelChange?: (id: string) => void;
   mode?: 'play' | 'creation';
+  scene?: 'nursery';
+  balance?: number;
 }) {
   const [panel, setPanel] = useState(panels[0]?.id);
   const selectedPanel = panelId ?? panel;
@@ -40,6 +45,13 @@ export function GameScreen({
     const wasOpen = more.current?.open;
     more.current?.removeAttribute('open');
     if (wasOpen) more.current?.querySelector('summary')?.focus();
+    // The nursery uses one document scroll; selecting a section must reveal its controls.
+    if (scene === 'nursery')
+      requestAnimationFrame(() => {
+        document
+          .getElementById(`game-panel-${id}`)
+          ?.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
   };
   const panelButton = (p: GamePanel) => (
     <button
@@ -53,7 +65,11 @@ export function GameScreen({
     </button>
   );
   return (
-    <main id="main" className={`game-screen game-screen-${mode}`} data-testid="immersive-game">
+    <main
+      id="main"
+      className={`game-screen game-screen-${mode}${scene ? ' game-screen-nursery' : ''}`}
+      data-testid="immersive-game"
+    >
       <header className="game-screen-header">
         <div className="game-screen-back">
           <PortalLink href="/saves">Partidas</PortalLink>
@@ -84,6 +100,14 @@ export function GameScreen({
       </header>
       <section className="game-screen-world" aria-label={`Mundo de ${name}`}>
         {world}
+        {scene === 'nursery' && (
+          <span
+            className="nursery-balance"
+            aria-label={`Saldo disponível: ${balance ?? 0} minutos`}
+          >
+            Seu saldo <strong>{balance ?? 0} min</strong>
+          </span>
+        )}
       </section>
       <div className="game-screen-deck">
         <section className="game-screen-focus" aria-label="Seu foco e saldo" hidden={!focus}>
