@@ -122,5 +122,8 @@ export async function createSaveFixture({immersive:withImmersive=false}={}) {
     await db.query("insert into public.focus_sessions(id,user_id,character_id,client_id,planned_seconds,status,validated_ms) values($1,$2,$3,$4,120,'completed',120000)",[crypto.randomUUID(),uid,adult,crypto.randomUUID()]);
     immersive[project]={userId:uid,adultSave,babySave,adult,baby:babyId};
   }
+  // Optional post-upgrade regression fixture; never connects to a remote database.
+  if(process.env.POMINS_TEST_ECONOMY_FOUNDATION==='1')
+    await db.exec(readFileSync('supabase/migrations/20261026173537_economy_continuity_foundation.sql','utf8'));
   return { db, rpc, ids: { immersive, a, b, one, two, foreign, adultOne, adultTwo, baby, credit, paused } };
 }
