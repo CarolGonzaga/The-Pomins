@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { defaultAppearance } from '../../src/features/character-creator/model';
 import { defaultAdultAppearance } from '../../src/features/room/domain';
 import { foundationSchema } from '../../src/features/economy-foundation/model';
+import { projectContinuity } from '../../src/features/continuity/model';
 
 const url = process.env.POMINS_FOUNDATION_TEST_DATABASE_URL;
 const suite = url ? describe : describe.skip;
@@ -80,6 +81,140 @@ async function purchase(uid = a, char = baby, save = babySave, request = randomU
   ).rows[0].id as string;
 }
 suite('6D-A native PostgreSQL foundation, isolated and inactive', () => {
+  it('C1 counts a real server completion at the daily XP cap and replay cannot duplicate rewards/events', async () => {
+    const c = await pool.connect();
+    await c.query('begin');
+    try {
+      const uid = randomUUID(),
+        id = randomUUID(),
+        client = randomUUID();
+      await c.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)', [
+        uid,
+        JSON.stringify({ nickname: 'cap_' + uid.slice(0, 8) }),
+      ]);
+      await c.query('set local role authenticated');
+      await c.query("select set_config('request.jwt.claim.sub',$1,true)", [uid]);
+      const save = (await c.query('select public.get_game_context() data')).rows[0].data.save.id;
+      const character = (
+        await c.query("select public.room_command_for_save($1,'create',$2) data", [
+          save,
+          JSON.stringify({ name: 'Teste', appearance: defaultAdultAppearance }),
+        ])
+      ).rows[0].data.residents[0].id;
+      await c.query('reset role');
+      for (let i = 0; i < 2; i++) {
+        const previous = randomUUID();
+        await c.query(
+          "insert into public.focus_sessions(id,user_id,character_id,client_id,status,planned_seconds,validated_ms,ended_at) values($1,$2,$3,$4,'completed',7200,7200000,clock_timestamp()-interval '1 day')",
+          [previous, uid, character, randomUUID()],
+        );
+        await c.query(
+          'insert into public.focus_rewards(session_id,user_id,life_xp,account_xp,coins,energy,rewarded_minutes) values($1,$2,1200,1200,240,120,120)',
+          [previous, uid],
+        );
+      }
+      await c.query(
+        "insert into public.focus_sessions(id,user_id,character_id,origin_save_id,client_id,status,planned_seconds,validated_ms) values($1,$2,$3,$4,$5,'active',120,120000)",
+        [id, uid, character, save, client],
+      );
+      await c.query('set local role authenticated');
+      const complete = async () =>
+        (
+          await c.query("select to_jsonb(public.focus_command('complete',$1,$2,1)) data", [
+            id,
+            client,
+          ])
+        ).rows[0].data;
+      const first = await complete(),
+        repeated = await complete();
+      expect(first.status).toBe('completed');
+      expect(first.reward_xp).toBe(0);
+      expect(repeated).toEqual(first);
+      const state = (await c.query('select public.get_economy_foundation() data')).rows[0].data;
+      expect(state.last_valid_focus.session_id).toBe(id);
+      expect(projectContinuity(state).next_milestone?.hours).toBe(72);
+      expect(
+        (await c.query('select count(*)::int n from public.focus_events where session_id=$1', [id]))
+          .rows[0].n,
+      ).toBe(1);
+      expect(
+        (
+          await c.query('select count(*)::int n from public.focus_rewards where session_id=$1', [
+            id,
+          ])
+        ).rows[0].n,
+      ).toBe(1);
+      expect(
+        (
+          await c.query('select count(*)::int n from public.continuity_events where user_id=$1', [
+            uid,
+          ])
+        ).rows[0].n,
+      ).toBe(0);
+    } finally {
+      await c.query('rollback');
+      c.release();
+    }
+  });
+  it.each(['active', 'paused', 'interrupted', 'cancelled', 'expired', 'completed'])(
+    'C1 ignores newer %s/incomplete focus and preserves the ledger on repeated reads',
+    async (status) => {
+      const c = await pool.connect();
+      await c.query('begin');
+      try {
+        const uid = randomUUID(),
+          session = randomUUID();
+        await c.query('insert into auth.users(id,raw_user_meta_data) values($1,$2)', [
+          uid,
+          JSON.stringify({ nickname: 'c1_' + uid.slice(0, 8) }),
+        ]);
+        await c.query('set local role authenticated');
+        await c.query("select set_config('request.jwt.claim.sub',$1,true)", [uid]);
+        const save = (await c.query('select public.get_game_context() data')).rows[0].data.save.id;
+        const character = (
+          await c.query("select public.room_command_for_save($1,'create',$2) data", [
+            save,
+            JSON.stringify({ name: 'Teste', appearance: defaultAdultAppearance }),
+          ])
+        ).rows[0].data.residents[0].id;
+        await c.query('reset role');
+        await c.query(
+          "insert into public.focus_sessions(id,user_id,character_id,client_id,status,planned_seconds,validated_ms,ended_at) values($1,$2,$3,$4,'completed',120,120000,clock_timestamp()-interval '4 days')",
+          [session, uid, character, randomUUID()],
+        );
+        await c.query(
+          "insert into public.focus_sessions(id,user_id,character_id,client_id,status,planned_seconds,validated_ms,ended_at) values($1,$2,$3,$4,$5,120,60000,clock_timestamp()-interval '1 day')",
+          [randomUUID(), uid, character, randomUUID(), status],
+        );
+        const ledger = async () =>
+          (
+            await c.query(
+              'select to_jsonb(s) data from public.focus_sessions s where user_id=$1 order by id',
+              [uid],
+            )
+          ).rows;
+        const before = await ledger();
+        await c.query('set local role authenticated');
+        await c.query("select set_config('request.jwt.claim.sub',$1,true)", [uid]);
+        for (let i = 0; i < 2; i++) {
+          const state = (await c.query('select public.get_economy_foundation() data')).rows[0].data;
+          expect(state.last_valid_focus.session_id).toBe(session);
+          const dto = projectContinuity(state);
+          expect(dto.next_milestone?.hours).toBe(168);
+          expect(dto.penalties_active).toBe(false);
+        }
+        expect(await ledger()).toEqual(before);
+        await c.query("select set_config('request.jwt.claim.sub',$1,true)", [b]);
+        expect(
+          (await c.query('select public.get_economy_foundation() data')).rows[0].data
+            .last_valid_focus?.session_id,
+        ).not.toBe(session);
+      } finally {
+        await c.query('rollback');
+        c.release();
+      }
+    },
+  );
   beforeAll(async () => {
     if (!url) throw Error('Dedicated database required');
     const target = new URL(url);

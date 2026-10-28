@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { createSaveSchema,newSaveStorageKey } from './manager';
 import { saveManagerMutation } from './manager-client';
 import styles from './manager.module.css';
+import { ContinuityRules } from '../continuity/continuity-status';
 type Pending={requestId:string;name:string};
 export function NewSaveForm({userId}:{userId:string}){
   const router=useRouter(),lock=useRef(false),key=newSaveStorageKey(userId);
@@ -37,6 +38,7 @@ export function NewSaveForm({userId}:{userId:string}){
   return <form onSubmit={create} className={`${styles.form} ${styles.panel}`}>
     <label>Nome da partida<input required minLength={2} maxLength={80} autoComplete="off" value={name} readOnly={pending!==null} onChange={e=>setName(e.target.value)}/></label>
     <p>Uma residência independente e uma nova história. Seus minutos de foco continuam compartilhados pela conta.</p>
+    <details><summary>Constância compartilhada · regras em preparação</summary><ContinuityRules /></details>
     {pending && <p role="status">Há um pedido guardado. Continuar recupera a mesma partida, mesmo após uma falha de conexão.</p>}
     {error && <p role="alert">{error}</p>}
     <Button disabled={busy||!ready} type="submit">{busy?'Preparando história…':pending?'Continuar pedido de criação':'Criar partida'}</Button>

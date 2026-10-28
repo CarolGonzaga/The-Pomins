@@ -6,6 +6,7 @@ import { getAccount } from '@/features/preferences/server';
 import { defaultPreferences } from '@/features/preferences/model';
 import { PreferencesProvider } from '@/features/preferences/provider';
 import { FocusRuntimeProvider } from '@/features/focus-engine/provider';
+import { ContinuityProvider } from '@/features/continuity/provider';
 const jersey = localFont({
   src: '../../public/fonts/jersey-20/Jersey20-Regular.ttf',
   variable: '--font-game',
@@ -49,7 +50,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           userId={account?.id ?? null}
           initial={preferences}
         >
-          <FocusRuntimeProvider accountId={account?.id ?? 'guest'}>{children}</FocusRuntimeProvider>
+          <FocusRuntimeProvider accountId={account?.id ?? 'guest'}>
+            <ContinuityProvider accountId={account?.id ?? null}>{children}</ContinuityProvider>
+          </FocusRuntimeProvider>
         </PreferencesProvider>
       </body>
     </html>

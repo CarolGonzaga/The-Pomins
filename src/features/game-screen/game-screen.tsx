@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PortalLink } from '../portal/navigation';
+import { ContinuityStatus } from '../continuity/continuity-status';
 import './game-screen.css';
 import './nursery-screen.css';
 
@@ -112,6 +113,7 @@ export function GameScreen({
       <div className="game-screen-deck">
         <section className="game-screen-focus" aria-label="Seu foco e saldo" hidden={!focus}>
           {focus}
+          {focus && <ContinuityStatus />}
         </section>
         {message && (
           <div className="game-screen-notice" role="status">

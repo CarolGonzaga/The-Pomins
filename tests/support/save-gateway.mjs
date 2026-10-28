@@ -28,6 +28,7 @@ const token = (id) =>
   ).toString('base64url') +
   '.'+Buffer.from('fixture-signature').toString('base64url');
 const rpcNames = new Set([
+  'get_economy_foundation',
   'baby_care_catalog',
   'purchase_baby_care',
   'load_game_save',

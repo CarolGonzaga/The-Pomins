@@ -10,7 +10,7 @@ export const ruleSteps=[
   {title:'Pequenos gestos, uma vida',copy:'Alimente, brinque e dê carinho. Uma interação visual pode ser gratuita; aplicar evolução usa os minutos disponíveis.',art:'baby'},
   {title:'Crescer é uma escolha',copy:'Os cuidados preparam o próximo capítulo. O envelhecimento será voluntário; a passagem visual para criança ainda não está disponível.',art:'CRIE · VIVA · CONTINUE'},
   {title:'Cada história, um mundo',copy:'Em Partidas, crie uma história ou continue uma anterior. Você pode arquivar e restaurar sem apagar seus moradores.',art:'01  02  03'},
-  {title:'Um foco, muitas histórias',copy:'Seu saldo pertence à conta. Trocar ou criar partidas não multiplica minutos; cada distribuição tem um personagem e uma atividade de destino.',art:'UM SÓ SALDO'},
+  {title:'Um foco, muitas histórias',copy:'Saldo e constância pertencem à conta. Só o foco concluído e validado reinicia a contagem. Regras futuras: aviso em 3 dias, regressão temporária em 7 e encerramento em 30, com memórias preservadas. Consequências em preparação; nenhuma está ativa. Criar partidas não reinicia a constância nem multiplica minutos.',art:'UM SÓ SALDO'},
 ];
 export function Rules(){
   const [step,setStep]=useState(0),heading=useRef<HTMLHeadingElement>(null),item=ruleSteps[step];

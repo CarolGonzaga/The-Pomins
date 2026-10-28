@@ -1,0 +1,43 @@
+.status {
+  max-width: 100%;
+  color: var(--ink);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+.status summary {
+  min-height: 44px;
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  border-radius: 1rem;
+  background: var(--sage);
+  overflow-wrap: anywhere;
+}
+.details {
+  padding: 1rem;
+  border: 1px solid currentColor;
+  border-radius: 1rem;
+  background: var(--bg);
+}
+.details h2 {
+  font-family: var(--font-game);
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+.details p {
+  margin: 0.65rem 0;
+}
+.details ul {
+  padding-left: 1.25rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+.actions button {
+  min-height: 44px;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid currentColor;
+  border-radius: 0.7rem;
+}
