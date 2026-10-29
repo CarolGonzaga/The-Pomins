@@ -1,19 +1,22 @@
 import type { Appearance } from '@/features/character-creator/model';
 import { defaultAppearance } from '@/features/character-creator/model';
+import type { BabyMood } from '@/features/baby-care/presentation';
 export function Pomin({
   appearance = defaultAppearance,
   className = '',
   label = 'Um pequeno Pomin',
   sleeping = false,
+  mood = 'happy',
 }: {
   appearance?: Appearance;
   className?: string;
   label?: string;
   sleeping?: boolean;
+  mood?: BabyMood;
 }) {
   const a = appearance;
   return (
-    <svg viewBox="0 0 260 300" role="img" aria-label={label} className={className}>
+    <svg viewBox="0 0 260 300" role="img" aria-label={label} className={className} data-mood={mood}>
       <ellipse cx="130" cy="270" rx="70" ry="12" fill="#655444" opacity=".09" />
       <path
         d="M86 184 Q62 210 77 245 Q88 268 130 269 Q174 268 184 244 Q199 211 172 184"
@@ -70,6 +73,11 @@ export function Pomin({
         </g>
       )}
       <g stroke={a.eyeColor} strokeWidth="5" strokeLinecap="round" fill="none">
+        {mood !== 'happy' && !sleeping && (
+          <g strokeWidth="3">
+            <path d={mood === 'sad' ? 'M92 128l20-7M148 121l20 7' : 'M92 123l20 5M148 128l20-5'} />
+          </g>
+        )}
         {sleeping || a.eyes === 'sleepy' ? (
           <>
             <path d="M91 145 Q102 155 113 145" />
@@ -81,7 +89,7 @@ export function Pomin({
               cx="103"
               cy="143"
               rx={a.species === 'alien' ? 8 : 5}
-              ry="9"
+              ry={mood === 'sad' ? 6 : 9}
               fill={a.eyeColor}
               stroke="none"
             />
@@ -89,7 +97,7 @@ export function Pomin({
               cx="157"
               cy="143"
               rx={a.species === 'alien' ? 8 : 5}
-              ry="9"
+              ry={mood === 'sad' ? 6 : 9}
               fill={a.eyeColor}
               stroke="none"
             />
@@ -105,7 +113,13 @@ export function Pomin({
       <ellipse cx="173" cy="163" rx="13" ry="7" fill="#d78485" opacity=".38" />
       <path d="M125 155q-5 7 3 7" fill="none" stroke="#865c50" strokeWidth="2" opacity=".45" />
       <path
-        d="M120 178q10 10 20 0"
+        d={
+          mood === 'happy'
+            ? 'M120 178q10 10 20 0'
+            : mood === 'sad'
+              ? 'M120 184q10-12 20 0'
+              : 'M121 181q9-3 18 0'
+        }
         fill="none"
         stroke="#80524b"
         strokeWidth="3"

@@ -114,6 +114,16 @@ export const FocusDurationDial = memo(function FocusDurationDial({
       aria-label="Seletor de duração do foco"
     >
       <div className="dial-face">
+        {!locked && (
+          <svg
+            className="dial-rotation-hint"
+            viewBox="0 0 160 160"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M15 118A74 74 0 0 1 10 53m0 0-6 5m6-5 3 8M145 42a74 74 0 0 1 5 65m0 0 6-5m-6 5-3-8" />
+          </svg>
+        )}
         <div
           ref={ring}
           className="dial-ring"
@@ -274,9 +284,13 @@ export const FocusDurationDial = memo(function FocusDurationDial({
           +
         </button>
       </div>
+      <p className="dial-gesture-copy" aria-hidden="true">
+        {locked ? 'Duração preservada na sessão' : 'Gire para ajustar o tempo'}
+      </p>
       <p id={help} className="dial-help">
-        Gire a borda ou use as setas do teclado. Home e End vão aos limites; Page Up e Page Down
-        ajustam cinco minutos. A duração fica bloqueada durante a sessão.
+        {locked
+          ? 'Duração preservada nesta sessão. Use o centro para pausar ou retomar conforme o estado do foco.'
+          : 'Gire para ajustar o tempo. Use a borda, + e − ou as setas do teclado. Home e End vão aos limites; Page Up e Page Down ajustam cinco minutos.'}
       </p>
     </div>
   );

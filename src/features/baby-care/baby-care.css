@@ -64,6 +64,44 @@
   width: 100%;
   accent-color: var(--purple);
 }
+.baby-needs meter[data-band='adequate'] {
+  --need-color: #337447;
+}
+.baby-needs meter[data-band='attention'] {
+  --need-color: #956900;
+}
+.baby-needs meter[data-band='critical'] {
+  --need-color: #b34151;
+}
+[data-theme='dark'] .baby-needs meter[data-band='adequate'] {
+  --need-color: #8ac79b;
+}
+[data-theme='dark'] .baby-needs meter[data-band='attention'] {
+  --need-color: #e5bf65;
+}
+[data-theme='dark'] .baby-needs meter[data-band='critical'] {
+  --need-color: #ef9da8;
+}
+.baby-needs meter {
+  accent-color: var(--need-color);
+}
+.baby-needs meter::-webkit-meter-bar {
+  background: var(--border);
+}
+.baby-needs meter::-webkit-meter-optimum-value,
+.baby-needs meter::-webkit-meter-suboptimum-value,
+.baby-needs meter::-webkit-meter-even-less-good-value {
+  background: var(--need-color);
+}
+.baby-needs meter::-moz-meter-bar {
+  background: var(--need-color);
+}
+.baby-mood {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
 .baby-needs dd span {
   min-width: 46px;
   font-size: 12px;

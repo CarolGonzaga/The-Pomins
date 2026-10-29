@@ -17,6 +17,7 @@ import {
 import { babyApi, CareRejected, loadLocalBaby, localCare } from './persistence';
 import './baby-care.css';
 import { CareIcon } from './care-icon';
+import { babyMood, moodLabels, needBand, needDisplay, needLabels } from './presentation';
 import type { ReactNode } from 'react';
 export type BabyCareParts = {
   world: ReactNode;
@@ -198,6 +199,7 @@ export function BabyCare({
     (offer) => offer.activity === selected,
   )?.price_minutes;
   const needs = state?.stats.needs;
+  const mood = needs ? babyMood(needs) : 'happy';
   const ready = state ? growthReadiness(state.stats, state.character, state.rules) : false;
   const world = (
     <div className="baby-care-stage" data-care-reaction={reaction}>
@@ -205,7 +207,8 @@ export function BabyCare({
         <Pomin
           appearance={character.appearance}
           sleeping={reaction === 'baby_sleep'}
-          label={`${character.name}, seu Pomin bebê`}
+          mood={reaction === 'rest' ? mood : 'happy'}
+          label={`${character.name}, seu Pomin bebê · ${moodLabels[mood]}`}
         />
         {reaction === 'baby_feed' && (
           <svg className="care-bottle" viewBox="0 0 40 70" aria-hidden="true">
@@ -241,6 +244,7 @@ export function BabyCare({
           ? 'Uma manta macia, um mundo para descobrir.'
           : careResponses[reaction]}
       </p>
+      {needs && <span className="baby-mood">{moodLabels[mood]}</span>}
       <small>Experimentar é gratuito. A prévia não altera o progresso salvo.</small>
     </div>
   );
@@ -258,10 +262,23 @@ export function BabyCare({
             ] as const
           ).map(([label, value]) => (
             <div key={label}>
-              <dt>{label}</dt>
+              <dt>
+                {label}
+                <small> · {needLabels[needBand(value)]}</small>
+              </dt>
               <dd>
-                <meter aria-label={label} min={0} max={100} value={value} />
-                <span>{value}/100</span>
+                <meter
+                  aria-label={label}
+                  aria-valuetext={`${needDisplay(value)} de 100 · ${needLabels[needBand(value)]}`}
+                  data-band={needBand(value)}
+                  min={0}
+                  max={100}
+                  low={40}
+                  high={60}
+                  optimum={100}
+                  value={value}
+                />
+                <span>{needDisplay(value)}/100</span>
               </dd>
             </div>
           ))}
