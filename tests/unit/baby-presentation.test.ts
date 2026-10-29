@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { babyMood, needBand } from '../../src/features/baby-care/presentation';
+import { babyMood, needBand, needDisplay } from '../../src/features/baby-care/presentation';
 const all = (v: number) => ({ satiety: v, hygiene: v, energy: v, affection: v, fun: v });
 describe('baby need bands and mood from effective, unrounded needs', () => {
+  it('does not display a new critical/band boundary through rounding', () => {
+    expect(needDisplay(74.99999)).toBe(75);
+    expect(needDisplay(39.9999)).toBe(39.9);
+    expect(needDisplay(59.9999)).toBe(59.9);
+    expect(needDisplay(19.9999)).toBe(19.9);
+  });
   it.each([
     [0, 'critical'],
     [19, 'critical'],

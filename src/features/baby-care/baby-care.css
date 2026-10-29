@@ -96,12 +96,6 @@
 .baby-needs meter::-moz-meter-bar {
   background: var(--need-color);
 }
-.baby-mood {
-  display: block;
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
 .baby-needs dd span {
   min-width: 46px;
   font-size: 12px;

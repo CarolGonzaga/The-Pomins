@@ -148,6 +148,15 @@ export const babyStatsSchema = z.object({
 });
 export type BabyStats = z.infer<typeof babyStatsSchema>;
 export const babyStateSchema = z.object({
+  needs_clock: z
+    .object({
+      active: z.boolean(),
+      server_now: z.iso.datetime({ offset: true }),
+      activation_at: z.iso.datetime({ offset: true }).nullable(),
+      version: z.number().int().positive().nullable(),
+      anchor_at: z.iso.datetime({ offset: true }).optional(),
+    })
+    .optional(),
   care_pricing: carePricingSchema.nullable().optional(),
   receipt: careReceiptSchema.optional(),
   ...saveContextFields,
@@ -183,7 +192,7 @@ export function initialBabyStats(): BabyStats {
     history: [],
   };
 }
-// No wall clock or last-seen arithmetic: absence never changes needs.
+// Local exploration has no trusted server clock. Remote 6F snapshots are projected by PostgreSQL.
 export function applyCare(
   stats: BabyStats,
   activity: CareId,

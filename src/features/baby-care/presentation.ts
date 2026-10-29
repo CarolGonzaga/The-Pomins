@@ -17,4 +17,10 @@ export function babyMood(needs: BabyStats['needs']): BabyMood {
   if (mean < 60 || values.some((value) => value < 20)) return 'unhappy';
   return 'happy';
 }
-export const needDisplay = (value: number) => Math.floor(value * 10) / 10;
+export function needDisplay(value: number) {
+  const rounded = Math.round(value * 10) / 10;
+  // Do not visually cross a mood/band boundary merely because a label was rounded.
+  for (const boundary of [20, 40, 60])
+    if (value < boundary && rounded >= boundary) return boundary - 0.1;
+  return rounded;
+}

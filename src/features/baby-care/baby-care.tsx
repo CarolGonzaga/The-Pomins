@@ -51,6 +51,7 @@ export function BabyCare({
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [needsStale, setNeedsStale] = useState(false);
   const [pending, setPending] = useState<CareInput | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const writing = useRef(false);
@@ -72,7 +73,18 @@ export function BabyCare({
   const accept = useCallback(
     (next: BabyState) => {
       if (next.character.id !== character.id) return;
-      setState((prev) => (!prev || isCurrentSnapshot(prev, next) ? next : prev));
+      setState((prev) => {
+        if (!prev) return next;
+        if (!isCurrentSnapshot(prev, next)) return prev;
+        // Two reads can have the same save revision while effective needs differ.
+        if (
+          prev.needs_clock &&
+          next.needs_clock &&
+          Date.parse(next.needs_clock.server_now) < Date.parse(prev.needs_clock.server_now)
+        )
+          return prev;
+        return next;
+      });
     },
     [character.id],
   );
@@ -84,6 +96,10 @@ export function BabyCare({
   useEffect(() => {
     let live = true;
     const load = async () => {
+      if (!navigator.onLine) {
+        if (live) setNeedsStale(true);
+        return;
+      }
       try {
         const next = authenticated
           ? await babyApi(character.id, undefined, saveId)
@@ -91,8 +107,10 @@ export function BabyCare({
         if (live) {
           accept(next);
           setError('');
+          setNeedsStale(!navigator.onLine);
         }
       } catch {
+        if (live) setNeedsStale(true);
         if (live)
           setError(
             'Não foi possível carregar os cuidados salvos. Você ainda pode experimentar as reações. Na conta, confira a conexão e a migração de cuidados.',
@@ -101,8 +119,16 @@ export function BabyCare({
     };
     void load();
     const restore = () => {
+      if (document.visibilityState === 'hidden') {
+        setNeedsStale(true);
+        return;
+      }
       if (document.visibilityState === 'visible' && !writing.current) void load();
     };
+    const offline = () => setNeedsStale(true);
+    const poll = setInterval(restore, 60000);
+    window.addEventListener('online', restore);
+    window.addEventListener('offline', offline);
     window.addEventListener('focus', restore);
     window.addEventListener('storage', restore);
     document.addEventListener('visibilitychange', restore);
@@ -126,6 +152,9 @@ export function BabyCare({
     }
     return () => {
       live = false;
+      clearInterval(poll);
+      window.removeEventListener('online', restore);
+      window.removeEventListener('offline', offline);
       if (timer.current) clearTimeout(timer.current);
       window.removeEventListener('focus', restore);
       window.removeEventListener('storage', restore);
@@ -156,6 +185,7 @@ export function BabyCare({
         ? await babyApi(character.id, input, saveId)
         : await localCare(character, input);
       accept(next);
+      setNeedsStale(!navigator.onLine);
       sessionStorage.removeItem(pendingKey);
       setPending(null);
       react(input.activity);
@@ -241,10 +271,11 @@ export function BabyCare({
       </div>
       <p className="baby-reaction-copy" aria-live="polite">
         {reaction === 'rest'
-          ? 'Uma manta macia, um mundo para descobrir.'
+          ? needs
+            ? moodLabels[mood]
+            : 'Uma manta macia, um mundo para descobrir.'
           : careResponses[reaction]}
       </p>
-      {needs && <span className="baby-mood">{moodLabels[mood]}</span>}
       <small>Experimentar é gratuito. A prévia não altera o progresso salvo.</small>
     </div>
   );
@@ -283,6 +314,20 @@ export function BabyCare({
             </div>
           ))}
         </dl>
+      )}
+      {state?.needs_clock && (
+        <p className="baby-needs-clock" role={needsStale ? 'status' : undefined}>
+          {needsStale
+            ? 'Necessidades aguardam confirmação do servidor. Reconecte para atualizar.'
+            : state.needs_clock.active
+              ? 'Necessidades acompanham o tempo real, inclusive quando você sai.'
+              : 'Desgaste temporal em preparação.'}
+        </p>
+      )}
+      {!authenticated && (
+        <p className="baby-needs-clock">
+          Exploração local: sem desgaste por tempo real; a conta utiliza horário do servidor.
+        </p>
       )}
       <div className="baby-care-actions" role="group" aria-label="Experimentar cuidados">
         {careIds.map((id) => (
@@ -326,7 +371,9 @@ export function BabyCare({
         <Button
           disabled={!state || busy || !!pending || !price || balance < price}
           aria-describedby={confirming ? `care-confirm-${character.id}` : undefined}
-          onClick={() => {
+          onClick={(event) => {
+            // The second click of one double-tap must not accept first-use spending.
+            if (event.detail > 1) return;
             if (!costAccepted && !confirming) setConfirming(true);
             else void save();
           }}
@@ -335,7 +382,14 @@ export function BabyCare({
           {careLabels[selected]} · 2 min
         </Button>
         {confirming && (
-          <button className="text-button" onClick={() => setConfirming(false)} disabled={busy}>
+          <button
+            className="text-button"
+            onClick={(event) => {
+              if (event.detail > 1) return;
+              setConfirming(false);
+            }}
+            disabled={busy}
+          >
             Agora não
           </button>
         )}
@@ -415,7 +469,7 @@ export function BabyCare({
         <div>
           <span className="eyebrow">PEQUENOS CUIDADOS · GRANDES COMEÇOS</span>
           <h2 id="care-title">Um aconchego para {character.name}.</h2>
-          <p>Um momento juntos, no seu ritmo. Nada se perde quando você sai.</p>
+          <p>Um momento juntos, no seu ritmo. As memórias ficam guardadas quando você sai.</p>
         </div>
       </div>
       <div className="baby-care-layout">

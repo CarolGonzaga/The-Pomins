@@ -130,5 +130,6 @@ export async function createSaveFixture({immersive:withImmersive=false,paidCare=
   if(paidCare||process.env.POMINS_TEST_ECONOMY_FOUNDATION==='1')
     await db.exec(readFileSync('supabase/migrations/20261026173537_economy_continuity_foundation.sql','utf8'));
   if(paidCare) await db.exec(readFileSync('supabase/migrations/20261026183003_fixed_price_baby_care.sql','utf8'));
+  if(paidCare && process.env.POMINS_TEST_ELAPSED_NEEDS==='1') await db.exec(readFileSync('supabase/migrations/20261029195215_elapsed_time_baby_needs.sql','utf8'));
   return { db, rpc, ids: { immersive, a, b, one, two, foreign, adultOne, adultTwo, baby, credit, paused } };
 }
