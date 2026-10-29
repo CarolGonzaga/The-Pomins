@@ -1,4 +1,5 @@
 import type { Character } from '../character-creator/model';
+import { needsProtocolHeaders } from '@/lib/needs-protocol';
 import { loadLocalRoom, localTransaction, type LocalSave } from '../room/persistence';
 import {
   applyCare,
@@ -120,7 +121,7 @@ export async function babyApi(
   const scope = saveId ? `&saveId=${encodeURIComponent(saveId)}` : '';
   const response = await fetch(`/api/baby?characterId=${encodeURIComponent(characterId)}${scope}`, {
     method: command ? 'POST' : 'GET',
-    headers: command ? { 'Content-Type': 'application/json' } : undefined,
+    headers: { ...needsProtocolHeaders, ...(command ? { 'Content-Type': 'application/json' } : {}) },
     body: command ? JSON.stringify(careInputSchema.parse(command)) : undefined,
     cache: 'no-store',
     signal: AbortSignal.timeout(12000),

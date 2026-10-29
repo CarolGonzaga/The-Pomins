@@ -39,6 +39,7 @@ function request(path: string, body?: unknown) {
       host: 'localhost:3000',
       origin: 'http://localhost:3000',
       'Content-Type': 'application/json',
+      'x-pomins-needs-version': '2',
     },
     body: body ? JSON.stringify(body) : undefined,
   });

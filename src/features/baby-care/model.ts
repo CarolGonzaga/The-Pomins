@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { characterSchema, type Character } from '../character-creator/model';
 import { saveContextFields } from '../game-saves/model';
+import { needsSchema, integerNeedEffectsSchema } from '../character-needs/model';
 
 export const careIds = [
   'baby_feed',
@@ -11,14 +12,7 @@ export const careIds = [
   'baby_sleep',
 ] as const;
 export type CareId = (typeof careIds)[number];
-const amount = z.number().int().min(0).max(100);
-export const babyNeedsSchema = z.object({
-  satiety: amount,
-  hygiene: amount,
-  energy: amount,
-  affection: amount,
-  fun: amount,
-});
+export const babyNeedsSchema = needsSchema;
 const counter = z.number().int().nonnegative();
 export const babySkillsSchema = z.object({
   knowledge: counter,
@@ -33,7 +27,7 @@ export const traitsSchema = z.object({
   secure_attachment: counter,
 });
 const effectsSchema = z.object({
-  needs: babyNeedsSchema.partial(),
+  needs: integerNeedEffectsSchema,
   skills: babySkillsSchema.partial(),
   traits: traitsSchema.partial(),
 });
@@ -163,6 +157,7 @@ export const babyStateSchema = z.object({
   revision: counter,
   household_id: z.string(),
   character: characterSchema.extend({
+    needs: needsSchema.optional(),
     save_id: z.string().optional(),
     id: z.string(),
     born_at: z.string(),

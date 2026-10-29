@@ -15,11 +15,13 @@ export async function createSaveFixture({immersive:withImmersive=false,paidCare=
   ])
     await db.exec(readFileSync('supabase/migrations/' + name, 'utf8'));
   let queue = Promise.resolve();
-  const rpc = (uid, name, args = {}) => {
+  /** @param {string} uid @param {string} name @param {Record<string, unknown>} args @param {{needsVersion?: string|null}} [options] */
+  const rpc = (uid, name, args = {}, { needsVersion = '2' } = {}) => {
     const run = queue.then(async () => {
       await db.exec('begin;set local role authenticated');
       try {
         await db.query("select set_config('request.jwt.claim.sub',$1,true)", [uid]);
+        await db.query("select set_config('request.headers',$1,true)", [JSON.stringify(needsVersion ? {'x-pomins-needs-version':needsVersion} : {})]);
         const names = Object.keys(args);
         const result = await db.query(
           `select to_jsonb(public.${name}(${names.map((k, i) => k + '=> $' + (i + 1)).join(',')})) data`,

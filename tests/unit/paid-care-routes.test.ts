@@ -22,6 +22,7 @@ function request(body?: unknown) {
       host: 'localhost:3000',
       origin: 'http://localhost:3000',
       'content-type': 'application/json',
+      'x-pomins-needs-version': '2',
     },
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -41,6 +42,17 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 describe('paid care API safety with simulated transport', () => {
+  it.each([null, '1', '3'])('rejects stale or unknown browser contract %s before resolving a save or spending', async (version) => {
+    const req = request(input);
+    if (version === null) req.headers.delete('x-pomins-needs-version');
+    else req.headers.set('x-pomins-needs-version', version);
+    const response = await POST(req);
+    expect(response.status).toBe(426);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect((await response.json()).error).toContain('pause pelos controles');
+    expect(mock.context).not.toHaveBeenCalled();
+    expect(mock.rpc).not.toHaveBeenCalled();
+  });
   it('sends only intent and verified save to the server purchase RPC', async () => {
     expect((await POST(request(input))).status).toBe(200);
     expect(mock.rpc).toHaveBeenCalledWith('purchase_baby_care', { p_save: save, p_payload: input });

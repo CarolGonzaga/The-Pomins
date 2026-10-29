@@ -21,6 +21,20 @@ alter table game_private.baby_need_release enable row level security;
 revoke all on game_private.baby_need_rule_versions,game_private.baby_need_release from public,anon,authenticated;
 insert into game_private.baby_need_release(singleton) values(true);
 insert into game_private.baby_need_rule_versions(version,rates_per_hour) values(1,'{"satiety":2.5,"hygiene":1.5,"energy":1.8,"affection":1.3,"fun":2.0}');
+-- This migration is still local/unapplied. Gate stale deployments at the database
+-- before any debit once decay is activated; an HTTP-only check cannot cover them.
+create function game_private.require_baby_need_client() returns void
+language plpgsql set search_path='' as $$
+declare activation timestamptz;
+begin
+ -- Account lock is acquired by the caller first. Hold the release until its
+ -- transaction ends so activation cannot race an accepted old-client purchase.
+ select activation_at into strict activation from game_private.baby_need_release where singleton for share;
+ if activation<=clock_timestamp()
+  and (coalesce(nullif(current_setting('request.headers',true),''),'{}')::jsonb->>'x-pomins-needs-version') is distinct from '2' then
+  raise exception using message='NEEDS_CLIENT_UPDATE_REQUIRED',errcode='P0001';
+ end if;
+end $$;
 create function game_private.freeze_baby_need_rules() returns trigger language plpgsql set search_path='' as $$
 begin
  if old.effective_at is not null then
@@ -72,6 +86,7 @@ declare u uuid:=auth.uid(); c public.characters; h public.households; r jsonb; p
 begin
  if u is null then raise exception 'Authentication required'; end if;
  perform 1 from public.profiles where id=u for share;
+ perform game_private.require_baby_need_client();
  perform game_private.checked_save(p_save);
  select * into h from public.households where save_id=p_save and user_id=u and id=(select primary_household_id from public.game_saves where id=p_save);
  select * into c from public.characters where id=p_character and user_id=u and household_id=h.id
@@ -102,6 +117,7 @@ begin
  if rid is null or char_id is null or action not in ('baby_feed','baby_bath','baby_diaper','baby_play','baby_cuddle','baby_sleep') or action is null then raise exception 'Invalid care intent';end if;
  -- Existing outer lock, then destination character, then FIFO credits. No focus engine changes.
  perform 1 from public.profiles where id=u for update;if not found then raise exception 'Account not found';end if;
+ perform game_private.require_baby_need_client();
  perform game_private.checked_save(p_save);
  select * into c from public.characters where id=char_id and user_id=u and save_id=p_save and archived_at is null and render_system='legacy' and life_stage='baby' for update;
  if not found then raise exception 'Baby not found';end if;
@@ -154,7 +170,7 @@ begin
  return public.baby_state_for_save(p_save,c.id)||jsonb_build_object('receipt',v_receipt,'care_pricing',public.baby_care_catalog());
 end $$;
 
-revoke all on function game_private.valid_baby_need_values(jsonb),game_private.freeze_baby_need_rules(),game_private.freeze_baby_need_activation(),game_private.project_baby_needs(public.characters,timestamptz) from public,anon,authenticated;
+revoke all on function game_private.require_baby_need_client(),game_private.valid_baby_need_values(jsonb),game_private.freeze_baby_need_rules(),game_private.freeze_baby_need_activation(),game_private.project_baby_needs(public.characters,timestamptz) from public,anon,authenticated;
 revoke all on function public.baby_state_for_save(uuid,uuid),public.purchase_baby_care(uuid,jsonb) from public,anon,authenticated;
 grant execute on function public.baby_state_for_save(uuid,uuid),public.purchase_baby_care(uuid,jsonb) to authenticated;
 comment on function game_private.project_baby_needs(public.characters,timestamptz) is '6F on-demand numeric projection. No writes, spending, cron or continuity consequences.';

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { careIds } from '../baby-care/model';
 import { saveContextFields } from '../game-saves/model';
 import { lifeStages, adultAppearanceSchema } from '../character-visuals/model';
+import { needsSchema } from '../character-needs/model';
 export {
   lifeStages,
   adultAppearanceSchema,
@@ -15,13 +16,7 @@ export const attributes = z.object({
   autonomy: z.number().int().nonnegative(),
   wellbeing: z.number().int().nonnegative(),
 });
-export const needs = z.object({
-  satiety: z.number().int().min(0).max(100),
-  hygiene: z.number().int().min(0).max(100),
-  energy: z.number().int().min(0).max(100),
-  affection: z.number().int().min(0).max(100),
-  fun: z.number().int().min(0).max(100),
-});
+export const needs = needsSchema;
 export type Tile = { x: number; y: number };
 export const activityIds = ['study', 'read', 'sleep'] as const;
 export type ActivityId = (typeof activityIds)[number];

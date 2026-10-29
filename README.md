@@ -1,5 +1,7 @@
 # pomins.
 
+**Hotfix 6F/6G — local, sem publicação:** necessidades finitas de 0 a 100 aceitam frações nos contratos compartilhados. Cuidados preservam preço de 2 minutos e precisão no servidor. Barreira de protocolo preparada para abas/deployments antigos na proposta 6F ainda não aplicada, sem ativar taxas. [Contratos, testes e plano revisado de publicação](docs/FRACTIONAL_NEEDS_HOTFIX.md).
+
 **Entrega 6G — local, sem publicação:** entrada autenticada, menu com Iniciar/Carregar/Regras/Configurações/Sair, configurações por categoria, ajuda opcional e painéis sob demanda. Exploração anterior preservada em `/explore`; foco, cuidados de 2 minutos e 6F reutilizados. Nenhuma migração ou taxa foi ativada. [Fluxo, testes, limitações e plano coordenado de publicação 6F + 6G](docs/NAVIGATION_6G.md).
 
 **Entrega 6F — local, sem publicação:** indicação de giro, faixas acessíveis de necessidades, expressões do bebê e cálculo temporal pelo servidor preparados. A migração incremental permanece **somente local**, com taxas candidatas e ativação nula. A produção continua na 6D-C1 até autorização de migração/publicação. [Diagnóstico, simulações, testes e plano coordenado](docs/BABY_NEEDS_6F.md).

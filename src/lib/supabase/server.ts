@@ -1,11 +1,13 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-export async function serverClient() {
+import { needsProtocolHeaders } from '../needs-protocol';
+export async function serverClient(options?: { needsProtocol: true }) {
   const store = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      ...(options?.needsProtocol ? { global: { headers: needsProtocolHeaders } } : {}),
       cookies: {
         getAll: () => store.getAll(),
         setAll: (values) => {

@@ -3,6 +3,7 @@ import { Pool, type PoolClient } from 'pg';
 import { readFileSync, readdirSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { defaultAppearance } from '../../src/features/character-creator/model';
+import { babyStateSchema } from '../../src/features/baby-care/model';
 const url = process.env.POMINS_NEEDS_TEST_DATABASE_URL;
 const suite = url ? describe : describe.skip;
 const migration = '20261029195215_elapsed_time_baby_needs.sql';
@@ -24,11 +25,12 @@ async function ledgerSnapshot() {
   }
   return result;
 }
-async function rpc(u: User, name: string, args: unknown[] = [], client?: PoolClient) {
+async function rpc(u: User, name: string, args: unknown[] = [], client?: PoolClient, needsVersion: string | null = '2') {
   const c = client ?? (await db.connect());
   await c.query('begin;set local role authenticated');
   try {
     await c.query("select set_config('request.jwt.claim.sub',$1,true)", [u.uid]);
+    await c.query("select set_config('request.headers',$1,true)", [JSON.stringify(needsVersion ? { 'x-pomins-needs-version':needsVersion } : {})]);
     const data = (
       await c.query(
         `select to_jsonb(public.${name}(${args.map((_, i) => '$' + (i + 1)).join(',')})) data`,
@@ -128,9 +130,23 @@ suite('6F native PostgreSQL needs: projection, atomic settlement, isolation', ()
     const state = await rpc(existing, 'baby_state_for_save', [existing.save, existing.baby]);
     expect(state.needs_clock.active).toBe(false);
     expect(state.stats.needs.satiety).toBe(75);
+    expect(babyStateSchema.parse(JSON.parse(JSON.stringify(state))).stats.needs.satiety).toBe(75);
     expect((await db.query('select count(*)::int n from public.continuity_events')).rows[0].n).toBe(
       0,
     );
+  });
+  it('serializes activation with an in-flight old-client purchase and rolls both test transactions back', async () => {
+    const u=await user(4), before=await ledgerSnapshot(), buyer=await db.connect(), activator=await db.connect();
+    try {
+      await buyer.query('begin;set local role authenticated');
+      await buyer.query("select set_config('request.jwt.claim.sub',$1,true),set_config('request.headers','{}',true)",[u.uid]);
+      await buyer.query('select public.purchase_baby_care($1,$2)',[u.save,JSON.stringify({requestId:randomUUID(),characterId:u.baby,activity:'baby_feed'})]);
+      await activator.query("begin;set local lock_timeout='100ms'");
+      await expect(activator.query('update game_private.baby_need_release set activation_at=clock_timestamp()')).rejects.toMatchObject({code:'55P03'});
+    } finally {
+      await activator.query('rollback');await buyer.query('rollback');activator.release();buyer.release();
+    }
+    expect(await ledgerSnapshot()).toEqual(before);
   });
   it('activates only in the local fixture with a server timestamp and no retrospective loss', async () => {
     await db.query('begin');
@@ -209,6 +225,18 @@ suite('6F native PostgreSQL needs: projection, atomic settlement, isolation', ()
     const second = await rpc(existing, 'baby_state', [existing.baby]);
     expect(Math.abs(first.stats.needs.satiety - second.stats.needs.satiety)).toBeLessThan(0.01);
     expect(await stored(existing)).toEqual(old);
+    expect(babyStateSchema.parse(JSON.parse(JSON.stringify(first))).stats.needs).toEqual(first.stats.needs);
+  });
+  it('blocks old deployment contracts and legacy aliases before any debit when decay is active', async () => {
+    const u=await user(8), before=await ledgerSnapshot();
+    for(const protocol of [null,'1','3']) {
+      const payload=JSON.stringify({ requestId:randomUUID(),characterId:u.baby,activity:'baby_feed' });
+      await expect(rpc(u,'purchase_baby_care',[u.save,payload],undefined,protocol)).rejects.toThrow('NEEDS_CLIENT_UPDATE_REQUIRED');
+      await expect(rpc(u,'baby_care_for_save',[u.save,payload],undefined,protocol)).rejects.toThrow('NEEDS_CLIENT_UPDATE_REQUIRED');
+      await expect(rpc(u,'baby_care',[payload],undefined,protocol)).rejects.toThrow('NEEDS_CLIENT_UPDATE_REQUIRED');
+      await expect(rpc(u,'baby_state',[u.baby],undefined,protocol)).rejects.toThrow('NEEDS_CLIENT_UPDATE_REQUIRED');
+    }
+    expect(await ledgerSnapshot()).toEqual(before);
   });
   it.each(['baby_feed', 'baby_bath', 'baby_diaper', 'baby_play', 'baby_cuddle', 'baby_sleep'])(
     'settles and applies %s at exactly two minutes',
@@ -218,6 +246,7 @@ suite('6F native PostgreSQL needs: projection, atomic settlement, isolation', ()
       expect(result.receipt.chargedMinutes).toBe(2);
       expect(await balance(u)).toBe(2);
       expect(result.stats.progress_minutes).toBe(2);
+      expect(babyStateSchema.parse(result).receipt?.chargedMinutes).toBe(2);
       expect(result.needs_clock.active).toBe(true);
       expect(
         (await db.query('select needs_settled_at from public.characters where id=$1', [u.baby]))
@@ -269,6 +298,7 @@ suite('6F native PostgreSQL needs: projection, atomic settlement, isolation', ()
       ]);
       await c.query('set local role authenticated');
       await c.query("select set_config('request.jwt.claim.sub',$1,true)", [u.uid]);
+      await c.query("select set_config('request.headers',$1,true)", [JSON.stringify({ 'x-pomins-needs-version':'2' })]);
       const state = (
         await c.query('select public.purchase_baby_care($1,$2) data', [
           u.save,

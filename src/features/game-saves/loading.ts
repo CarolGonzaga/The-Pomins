@@ -4,6 +4,7 @@ import { gameContextSchema } from './model';
 import { SaveContextError } from './server';
 import { roomStateSchema } from '../room/domain';
 import type { FocusSession } from '../focus-engine/model';
+import { needsSchema } from '../character-needs/model';
 export const saveCharacterSchema = z
   .object({
     id: z.uuid(),
@@ -13,6 +14,7 @@ export const saveCharacterSchema = z
     name: z.string(),
     life_stage: z.string(),
     render_system: z.string(),
+    needs: needsSchema.optional(),
     archived_at: z.string().nullable(),
   born_at:z.string(),life_xp:z.number().int().nonnegative(),birth_read:z.boolean(),first_memory:z.string().nullable(),
   })

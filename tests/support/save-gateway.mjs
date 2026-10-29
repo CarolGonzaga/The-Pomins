@@ -2,6 +2,10 @@
 import http from 'node:http';
 import { createSaveFixture } from './save-fixture.mjs';
 const f = await createSaveFixture({immersive:true,paidCare:true});
+if(process.env.POMINS_TEST_DECIMAL_NEEDS==='1') {
+  if(process.env.POMINS_TEST_ELAPSED_NEEDS!=='1') throw Error('Decimal UI tests require local 6F fixture');
+  await f.db.exec("update public.characters set born_at=clock_timestamp()-interval '4 hours' where life_stage='baby';update game_private.baby_need_rule_versions set effective_at=clock_timestamp()-interval '1 hour' where version=1;update game_private.baby_need_release set activation_at=(select effective_at from game_private.baby_need_rule_versions where version=1)");
+}
 const commands = [];
 const metadata=new Map([[f.ids.a,{nickname:'fixture_a'}],[f.ids.b,{nickname:'fixture_b'}]]);
 const allowedUsers=[f.ids.a,f.ids.b,...Object.values(f.ids.immersive).map(x=>x.userId)];
@@ -124,7 +128,7 @@ const server = http.createServer(async (req, res) => {
     const args = JSON.parse(body || '{}');
     if (Object.keys(args).some((k) => !/^p_[a-z_]+$/.test(k))) return send(400, {});
     commands.push(name);
-    return send(200, await f.rpc(uid, name, args));
+    return send(200, await f.rpc(uid, name, args, { needsVersion:req.headers['x-pomins-needs-version']??null }));
   } catch (e) {
     return send(409, { code: e.code ?? 'P0001', message: 'Fixture command rejected' });
   }

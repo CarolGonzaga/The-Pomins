@@ -109,11 +109,13 @@ export function BabyCare({
           setError('');
           setNeedsStale(!navigator.onLine);
         }
-      } catch {
+      } catch (e) {
         if (live) setNeedsStale(true);
         if (live)
           setError(
-            'Não foi possível carregar os cuidados salvos. Você ainda pode experimentar as reações. Na conta, confira a conexão e a migração de cuidados.',
+            e instanceof CareRejected && e.status === 426
+              ? e.message
+              : 'Não foi possível carregar os cuidados salvos. Você ainda pode experimentar as reações. Na conta, confira a conexão e a migração de cuidados.',
           );
       }
     };

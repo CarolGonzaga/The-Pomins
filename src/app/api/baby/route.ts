@@ -3,7 +3,13 @@ import { z } from 'zod';
 import { serverClient } from '@/lib/supabase/server';
 import { careInputSchema, carePricingSchema } from '@/features/baby-care/model';
 import { resolveGameContext, SaveContextError } from '@/features/game-saves/server';
-const headers = { 'Cache-Control': 'private, no-store' };
+import {
+  NEEDS_PROTOCOL_HEADER,
+  NEEDS_PROTOCOL_VERSION,
+  needsProtocolHeaders,
+  needsUpdateMessage,
+} from '@/lib/needs-protocol';
+const headers = { 'Cache-Control': 'private, no-store', ...needsProtocolHeaders };
 async function execute(request: Request, write: boolean) {
   if (write) {
     try {
@@ -22,7 +28,7 @@ async function execute(request: Request, write: boolean) {
       { error: 'Configure o Supabase para salvar na conta.' },
       { status: 503, headers },
     );
-  const db = await serverClient();
+  const db = await serverClient({ needsProtocol: true });
   const {
     data: { user },
   } = await db.auth.getUser();
@@ -30,6 +36,12 @@ async function execute(request: Request, write: boolean) {
     return NextResponse.json(
       { error: 'Entre novamente para cuidar do seu Pomin.' },
       { status: 401, headers },
+    );
+  // Before resolving a save or calling a purchase: stale tabs cannot debit then fail to parse.
+  if (request.headers.get(NEEDS_PROTOCOL_HEADER) !== NEEDS_PROTOCOL_VERSION)
+    return NextResponse.json(
+      { error: needsUpdateMessage, code: 'NEEDS_CLIENT_UPDATE_REQUIRED' },
+      { status: 426, headers },
     );
   let id: string;
   let command;
@@ -70,6 +82,11 @@ async function execute(request: Request, write: boolean) {
     : context
       ? await db.rpc('baby_state_for_save', { p_save: context.save.id, p_character: id })
       : await db.rpc('baby_state', { p_character: id });
+  if (error?.message?.includes('NEEDS_CLIENT_UPDATE_REQUIRED'))
+    return NextResponse.json(
+      { error: needsUpdateMessage, code: 'NEEDS_CLIENT_UPDATE_REQUIRED' },
+      { status: 426, headers },
+    );
   if (error)
     return NextResponse.json(
       {
