@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { browserClient, isConfigured } from '@/lib/supabase/browser';
 import { Nursery } from '@/components/characters/nursery';
 import { authErrorMessage } from './error-message';
-import {loginDestination} from '../preferences/model';
+import { loginDestination } from '../preferences/model';
 const schema = z.object({
   email: z.email('Digite um e-mail válido.'),
   password: z.string(),
@@ -18,9 +18,12 @@ const schema = z.object({
   nickname: z.string(),
 });
 type Fields = z.infer<typeof schema>;
-export function AuthForm() {
+export function AuthForm({ entry = false }: { entry?: boolean }) {
   const params = useSearchParams();
-  const [mode, setMode] = useState(params.get('mode') === 'update' ? 'update' : 'login');
+  const initial = params.get('mode');
+  const [mode, setMode] = useState(
+    initial === 'update' || initial === 'signup' || initial === 'reset' ? initial : 'login',
+  );
   const [message, setMessage] = useState(
     params.get('error') ? 'Este link expirou ou já foi utilizado. Solicite um novo.' : '',
   );
@@ -81,10 +84,9 @@ export function AuthForm() {
       if (error) {
         setMessage(authErrorMessage(mode, error));
       } else if (mode === 'login' || mode === 'update') {
-        const next=params.get('next');
-        location.assign(loginDestination(mode==='login'?next:null));
-      }
-      else
+        const next = params.get('next');
+        location.assign(loginDestination(mode === 'login' ? next : null));
+      } else
         setMessage(
           mode === 'signup'
             ? 'Confira seu e-mail para confirmar a conta. Depois, volte para entrar.'
@@ -97,10 +99,12 @@ export function AuthForm() {
     }
   });
   return (
-    <main id="main" className="auth-page">
-      <Link href="/" className="back-link">
-        <ArrowLeft size={18} /> Voltar ao Pomins
-      </Link>
+    <main id="main" className={`auth-page${entry ? ' auth-entry' : ''}`}>
+      {!entry && (
+        <Link href="/" className="back-link">
+          <ArrowLeft size={18} /> Voltar ao Pomins
+        </Link>
+      )}
       <div className="auth-grid">
         <div className="auth-story">
           <span className="brand">
@@ -112,10 +116,9 @@ export function AuthForm() {
             <em>Infinitas histórias.</em>
           </h1>
           <Nursery />
-          <p>Seu tempo abre espaço para uma vida florescer.</p>
+          <p>Seu foco. As histórias deles.</p>
         </div>
         <section className="auth-card">
-          <p className="eyebrow">SEU PRÓXIMO COMEÇO</p>
           <h2>
             {mode === 'signup'
               ? 'Vamos criar sua conta?'
@@ -125,20 +128,24 @@ export function AuthForm() {
                   ? 'Sua nova senha.'
                   : 'Que bom ter você aqui.'}
           </h2>
-          <p className="muted">
-            {mode === 'login'
-              ? 'Entre para continuar sua história de onde parou.'
-              : 'Um passo de cada vez. Seu Pomin espera por você.'}
-          </p>
           <form onSubmit={submit} noValidate>
             {mode !== 'update' && (
               <label>
                 E-mail
-                <input autoComplete="email" type="email" aria-invalid={!!errors.email}
-                  aria-describedby={errors.email ? 'auth-email-error' : undefined} {...register('email')} />
+                <input
+                  autoComplete="email"
+                  type="email"
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'auth-email-error' : undefined}
+                  {...register('email')}
+                />
               </label>
             )}
-            {errors.email && <p id="auth-email-error" className="field-error" role="alert">{errors.email.message}</p>}
+            {errors.email && (
+              <p id="auth-email-error" className="field-error" role="alert">
+                {errors.email.message}
+              </p>
+            )}
             {mode === 'signup' && (
               <label>
                 Apelido público
@@ -198,7 +205,7 @@ export function AuthForm() {
                 setMessage('');
               }}
             >
-              {mode === 'signup' ? 'Entrar' : 'Começar minha história'}
+              {mode === 'signup' ? 'Entrar' : 'Cadastro'}
             </button>
           </div>
           {!isConfigured() && (

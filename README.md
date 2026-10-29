@@ -1,5 +1,7 @@
 # pomins.
 
+**Entrega 6G — local, sem publicação:** entrada autenticada, menu com Iniciar/Carregar/Regras/Configurações/Sair, configurações por categoria, ajuda opcional e painéis sob demanda. Exploração anterior preservada em `/explore`; foco, cuidados de 2 minutos e 6F reutilizados. Nenhuma migração ou taxa foi ativada. [Fluxo, testes, limitações e plano coordenado de publicação 6F + 6G](docs/NAVIGATION_6G.md).
+
 **Entrega 6F — local, sem publicação:** indicação de giro, faixas acessíveis de necessidades, expressões do bebê e cálculo temporal pelo servidor preparados. A migração incremental permanece **somente local**, com taxas candidatas e ativação nula. A produção continua na 6D-C1 até autorização de migração/publicação. [Diagnóstico, simulações, testes e plano coordenado](docs/BABY_NEEDS_6F.md).
 
 **Entrega 6A — auditoria mobile (consolidada localmente):** correções de listeners do Phaser, arraste acidental do dial, legibilidade dos campos, erros acessíveis, tutorial, contraste do nascimento, avisos offline e safe areas. **289 testes repetidos em 24/10/2026**, lint, TypeScript e build isolado aprovados. Sem alteração do motor de foco, banco ou migrações. [Relatório de gravidade, arquivos, testes e limites](docs/MOBILE_UX_AUDIT.md) · [Roteiro de iPhone físico ainda pendente](docs/IOS_TEST_CHECKLIST.md). Base 5G consolidada em `ac834e3`; sem push.

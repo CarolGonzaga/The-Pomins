@@ -145,6 +145,7 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/game/' + info.babySave);
   await expect(page.getByRole('heading', { name: 'Lumi', exact: true })).toBeVisible();
+  await openGamePanel(page,'Cuidados');
   await expect(page.getByTestId('room-canvas')).toHaveCount(0);
   await expect(page.getByRole('meter', { name: 'Saciedade', exact: true })).toBeVisible();
   await layout(page);
@@ -174,6 +175,7 @@ test('reuses baby reactions, saved care, balance and restoration without adult s
     (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()).violations,
   ).toEqual([]);
   await page.reload();
+  await openGamePanel(page,'Cuidados');
   await expect(page.getByText('0 min disponíveis', { exact: true })).toBeVisible();
   expect(
     await page.locator('.baby-care-portrait').evaluate((el) => getComputedStyle(el).animationName),
@@ -258,7 +260,7 @@ test('retains focus across panels and internal routes without pausing', async ({
   await page.locator('.game-screen-menu summary').click();
   await page.getByRole('link', { name: 'Menu principal', exact: true }).click();
   await expect(page).toHaveURL(/\/menu$/);
-  await page.getByRole('link', { name: 'Começar', exact: true }).click();
+  await page.getByRole('link', { name: 'Carregar', exact: true }).click();
   await page.locator('a[href="/game/' + info.adultSave + '"]').click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await timer.evaluate((el) => el.setAttribute('data-instance', 'same-timer'));
@@ -267,6 +269,7 @@ test('retains focus across panels and internal routes without pausing', async ({
   await expect(page.getByRole('button', { name: 'Retomar foco', exact: true })).toBeVisible();
   await openGamePanel(page, 'Progresso');
   await expect(timer).toHaveAttribute('data-instance', 'same-timer');
+  await openFocus(page);
   await page.getByRole('button', { name: 'Retomar foco', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pausar', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Encerrar', exact: true }).click();

@@ -587,10 +587,10 @@ export function RoomApp({
                     ))}
                   </dl>
                 </div>
-                {ledger}
               </>
             ),
           },
+          {id:'history',label:'História',content:ledger},
           { id: 'appearance', label: 'Aparência', secondary: true, content: editor },
           { id: 'residents', label: 'Moradores', content: residents ?? <p>{resident.name}</p> },
         ]}

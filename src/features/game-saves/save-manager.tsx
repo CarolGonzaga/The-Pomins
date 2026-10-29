@@ -51,7 +51,7 @@ export function SaveManager({entries,archived}:{entries:SaveEntry[];archived:boo
       {focus_pending && <p>Há uma sessão de foco pendente nesta partida. Continue por ela antes de arquivar.</p>}
       <div className={styles.actions}>
         {!archived && <Link className="button" href={`/game/${s.id}`} prefetch={false}>{s.state==='draft'?'Retomar criação':s.state==='pending_selection'?'Escolher protagonista':'Continuar'}</Link>}
-        {archived?<Button disabled={busy} variant="secondary" onClick={()=>update(s)}>Restaurar</Button>:<Button variant="secondary" disabled={busy||focus_pending} onClick={()=>{setConfirm(s.id);setError('');}}>Arquivar</Button>}
+        {archived?<Button disabled={busy} variant="secondary" onClick={()=>update(s)}>Restaurar</Button>:<details><summary>Opções</summary><Button variant="secondary" disabled={busy||focus_pending} onClick={()=>{setConfirm(s.id);setError('');}}>Arquivar</Button></details>}
       </div>
       {confirm===s.id && <div className={styles.confirmation} role="group" aria-label={`Confirmar arquivamento de ${s.name}`}>
         <p>Arquivar “{s.name}”? Personagens e histórico serão mantidos. Você poderá restaurar a partida.</p>

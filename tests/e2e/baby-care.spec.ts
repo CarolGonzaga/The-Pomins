@@ -25,7 +25,7 @@ test('six free care reactions preserve the save and remain accessible on mobile'
   await seed(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 740 });
-  await page.goto('/');
+  await page.goto('/explore');
   if (await page.getByRole('button', { name: 'Cuidar do meu bebê' }).isVisible())
     await page.getByRole('button', { name: 'Cuidar do meu bebê' }).click();
   const panel = page.locator('.baby-care');
@@ -63,7 +63,7 @@ test('existing focus credits feed care, restore after reload and deduplicate a l
 }) => {
   await seed(page);
   await page.clock.install();
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Abrir foco' }).click();
   await page.bringToFront();
   await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();

@@ -6,7 +6,7 @@ const fixture = process.env.POMINS_SAVE_FIXTURE_ORIGIN;
 test.skip(!fixture, 'Only disposable local SQL and simulated Auth.');
 
 for (const width of [320, 375, 390, 430, 1280]) {
-  test(`creation, introduction, care and history use one document scroll at ${width}px`, async ({
+  test(`creation keeps document flow and care/history use one on-demand sheet at ${width}px`, async ({
     page,
     context,
     request,
@@ -33,8 +33,7 @@ for (const width of [320, 375, 390, 430, 1280]) {
       },
     ]);
     await page.goto('/menu');
-    await page.getByRole('link', { name: 'Começar', exact: true }).click();
-    await page.getByRole('link', { name: 'Nova partida', exact: true }).click();
+    await page.getByRole('link', { name: 'Iniciar', exact: true }).click();
     await page
       .getByRole('textbox', { name: 'Nome da partida' })
       .fill(`UX ${width} ${info.project.name}`);
@@ -77,7 +76,6 @@ for (const width of [320, 375, 390, 430, 1280]) {
     ).toHaveCount(0);
     await openGamePanel(page, 'Cuidados');
     await openGamePanel(page, 'Progresso');
-    await expect(page.getByText('Mais opções', { exact: true })).toBeFocused();
     await expect(page.getByText('XP de vida: 0', { exact: true })).toBeVisible();
     await openGamePanel(page, 'Cuidados');
     const fonts = await page.locator('.game-screen-header h1').evaluate(async (el) => {
@@ -100,16 +98,12 @@ for (const width of [320, 375, 390, 430, 1280]) {
         .locator('.game-screen-panel:visible')
         .evaluate((el) => getComputedStyle(el).overflowY),
     ).toBe('visible');
-    expect(
-      await page
-        .locator('.game-screen')
-        .evaluate(
-          (el) =>
-            el.getBoundingClientRect().bottom >=
-            el.querySelector('.game-screen-panel:not([hidden])')!.getBoundingClientRect().bottom,
-        ),
-    ).toBe(true);
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const drawer = page.locator('.game-panel-drawer');
+    expect(await drawer.evaluate((el) => {
+      const bounds = el.getBoundingClientRect();
+      return bounds.top >= 0 && bounds.bottom <= innerHeight;
+    })).toBe(true);
+    await drawer.evaluate((el) => { el.scrollTop = el.scrollHeight; });
     const needs = await page.getByRole('meter', { name: 'Diversão', exact: true }).boundingBox();
     const navigation = await page.locator('.game-screen-tabs').boundingBox();
     expect(needs!.y + needs!.height).toBeLessThanOrEqual(navigation!.y);
@@ -119,12 +113,13 @@ for (const width of [320, 375, 390, 430, 1280]) {
     ).toEqual([]);
     await page.screenshot({ path: info.outputPath(`care-${width}.png`), fullPage: true });
     await page.reload();
+    await openGamePanel(page, 'Cuidados');
     await expect(page.getByRole('region', { name: 'Cuidados', exact: true })).toBeVisible();
   });
 }
 
 test('skipping introduction opens care without inventing a first memory', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Criar meu primeiro Pomin', exact: true }).click();
   await page.getByRole('textbox', { name: 'Nome do seu Pomin' }).fill('Lumi');
   await page.getByRole('button', { name: 'Dar boas-vindas ao mundo', exact: true }).click();

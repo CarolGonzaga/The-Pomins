@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 test('creates an alien, saves a birth memory, reloads and starts strict local focus', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/explore');
   await expect(page.getByRole('heading', { name: /Há uma história/ })).toBeVisible();
   await page.getByRole('button', { name: 'Criar meu primeiro Pomin' }).click();
   await page.getByRole('button', { name: 'Alienígena', exact: true }).click();
@@ -41,7 +41,7 @@ test('home, login, and small viewport remain accessible', async ({ page }) => {
   await page.goto('/auth');
   await page.getByRole('button', { name: 'Entrar na minha história' }).click();
   await expect(page.getByText('Digite um e-mail válido.')).toBeVisible();
-  await page.getByRole('button', { name: 'Começar minha história' }).click();
+  await page.getByRole('button', { name: 'Cadastro' }).click();
   await expect(page.getByLabel('Confirme a senha', { exact: true })).toBeVisible();
 });
 test('API rejects unauthenticated or cross-origin commands', async ({ request, baseURL }) => {

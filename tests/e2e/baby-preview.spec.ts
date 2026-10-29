@@ -9,7 +9,7 @@ for (const size of [
 ]) {
   test(`baby preview stays centered across appearances at ${size.width}px`, async ({ page }) => {
     await page.setViewportSize(size);
-    await page.goto('/');
+    await page.goto('/explore');
     await page.getByRole('button', { name: 'Criar meu primeiro Pomin', exact: true }).click();
     const card = page.locator('.creator-grid .character-preview');
     const preview = card.getByRole('img', { name: 'Prévia de seu bebê', exact: true });

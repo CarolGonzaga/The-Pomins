@@ -55,6 +55,7 @@ test('uses saved defaults, conventional controls and keyboard without writing te
 }, info) => {
   const account = await enter(page, context, request, info.project.name);
   await page.goto('/settings');
+  await page.getByRole('button',{name:'Jogo e foco',exact:true}).click();
   await page
     .getByRole('spinbutton', { name: 'Duração padrão do foco (minutos)', exact: true })
     .fill('31');
@@ -94,6 +95,7 @@ test('uses saved defaults, conventional controls and keyboard without writing te
     .fill('15.6');
   await expect(dial).toHaveAttribute('aria-valuetext', '16 minutos');
   await page.goto('/settings');
+  await page.getByRole('button',{name:'Jogo e foco',exact:true}).click();
   await expect(
     page.getByRole('spinbutton', { name: 'Duração padrão do foco (minutos)', exact: true }),
   ).toHaveValue('31');

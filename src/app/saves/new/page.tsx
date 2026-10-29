@@ -10,7 +10,7 @@ export default async function NewSavePage(){
   let user;
   try{user=await requireSaveUser(await serverClient());}catch(e){
     if(e instanceof SaveContextError && e.status===401)redirect('/auth?next=/saves/new');
-    return <main id="main" className={styles.page}><h1>Nova partida</h1><p role="alert">Não foi possível conectar. Confira a configuração e tente novamente.</p><Link href="/saves">Voltar às partidas</Link></main>;
+    return <main id="main" className={styles.page}><h1>Nova partida</h1><p role="alert">Não foi possível conectar. Confira a configuração e tente novamente.</p><Link href="/menu">Voltar ao menu</Link></main>;
   }
-  return <main id="main" className={styles.page}><Link href="/saves">Voltar às partidas</Link><h1>Uma nova história</h1><p>Escolha o nome da partida. Depois, crie seu Pomin no nascimento já conhecido.</p><NewSaveForm key={user.id} userId={user.id}/></main>;
+  return <main id="main" className={styles.page}><Link href="/menu">Voltar ao menu</Link><h1>Nova partida</h1><NewSaveForm key={user.id} userId={user.id}/></main>;
 }

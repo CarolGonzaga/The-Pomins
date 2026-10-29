@@ -45,3 +45,19 @@
 @media(max-width:420px) { .panel { padding:18px; } .header { margin-bottom:18px; } .avatars { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } .menu { margin-top:0; } }
 @media(prefers-reduced-motion:reduce) { .choice,.tutorial { transition:none; animation:none; } }
 :global([data-reduce-motion=true]) .choice,:global([data-reduce-motion=true]) .tutorial { transition:none; animation:none; }
+.menu { max-width:420px; margin:0 auto; padding:clamp(8px,2dvh,24px) 0; position:relative; }
+.menu h1 { font-size:clamp(50px,13vw,72px); margin:0; }
+.menu .subtitle { margin:0 0 4px; font-size:20px; }
+.menu .landscape { max-width:280px; margin:4px auto 8px; filter:drop-shadow(0 7px 0 var(--sage)); }
+.menu .badge { margin:0 0 12px; }
+.choices { gap:6px; max-width:300px; }
+.choice { border:0; border-radius:6px; min-height:48px; padding:6px 16px; box-shadow:none; background:transparent; font-size:27px; }
+.choice:hover,.choice:focus-visible { transform:none; background:var(--purple-soft); }
+.categories { display:grid; gap:8px; }
+.categories button { min-height:56px; padding:12px 16px; text-align:left; background:var(--surface); border-radius:8px; font:24px var(--font-game),monospace; }
+.categoryBack { min-height:44px; margin-bottom:12px; color:var(--purple); }
+.compactRules { display:grid; gap:12px; padding:16px 0; }
+.compactRules p { margin:4px 0; }
+@media (max-height:650px) {
+ .menu .landscape { max-width:220px; margin:0 auto 6px; }
+}

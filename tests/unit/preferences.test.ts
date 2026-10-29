@@ -14,7 +14,7 @@ it('restores account preferences without treating metadata as authorization',()=
   expect(readPreferences({pomins_preferences:{...defaultPreferences,theme:'dark',focus_minutes:37},role:'admin'})).toEqual({...defaultPreferences,theme:'dark',focus_minutes:37});
 });
 it('allows only explicit internal destinations after login',()=>{
-  expect(loginDestination('/settings')).toBe('/settings');expect(loginDestination('/saves/new')).toBe('/saves/new');
+  expect(loginDestination('/settings')).toBe('/menu');expect(loginDestination('/saves/new')).toBe('/menu');
   for(const value of [null,'//foreign.test','https://foreign.test','/game/anything','/settings?next=foreign'])expect(loginDestination(value)).toBe('/menu');
 });
 it('persists only the current account metadata and returns verified preferences',async()=>{

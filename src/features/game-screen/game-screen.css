@@ -621,3 +621,14 @@
  .game-screen-tabs > button, .game-screen-more summary { font-size: 20px; white-space: normal; text-align: center; justify-content: center; }
  .game-screen-more { margin-left: 0; }
 }
+/* 6G: four stable controls and one on-demand sheet; opening it never moves the world. */
+.game-screen .game-screen-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; }
+.game-screen .game-screen-tabs > button { font-family:var(--font-game),monospace; font-size:clamp(16px,4.5vw,20px); min-height:48px; padding:8px 2px; white-space:normal; overflow-wrap:anywhere; }
+.game-screen .game-screen-menu nav button { min-height:44px; text-align:left; padding:8px; }
+.game-screen .game-panel-drawer { position:fixed; z-index:8; bottom:calc(76px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(calc(100% - 20px),800px); max-height:55dvh; overflow:auto; overscroll-behavior:contain; background:var(--surface); border:1px solid var(--border); border-radius:18px 18px 6px 6px; padding:8px; box-shadow:0 -10px 36px #0002; scroll-padding:54px; }
+.game-screen .game-panel-drawer .game-screen-panel { max-height:none; padding:12px; overflow:visible; }
+.game-panel-close { position:sticky; top:0; min-height:44px; padding:8px 12px; background:var(--surface); color:var(--purple); z-index:2; width:100%; text-align:right; }
+.context-help { font-size:13px; margin:.5rem 0; }
+.context-help summary,.context-help button,.context-help a { min-height:44px; display:inline-flex; align-items:center; padding:6px 10px; }
+.context-help summary { display:list-item; cursor:pointer; padding:10px; }
+.context-help p { max-width:420px; margin:0 auto; }

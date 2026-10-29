@@ -1,3 +1,4 @@
+import { openGamePanel, openFocus } from '../support/ui';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const fixture = process.env.POMINS_SAVE_FIXTURE_ORIGIN;
@@ -32,11 +33,13 @@ test('nursery stays cozy, centered and accessible from 320px to desktop', async 
     expect(Math.abs(baby!.x + baby!.width / 2 - (world!.x + world!.width / 2))).toBeLessThan(2);
     expect(Math.abs(dial!.x + dial!.width / 2 - (world!.x + world!.width / 2))).toBeLessThan(2);
     expect(baby!.width).toBeGreaterThanOrEqual(170);
+    await openGamePanel(page, 'Cuidados');
     await expect(page.locator('.care-icon')).toHaveCount(6);
     await expect(
       page.getByRole('button', { name: 'Alimentar · 2 min', exact: true }),
     ).toBeVisible();
     await page.screenshot({ path: info.outputPath('nursery-' + width + '.png'), fullPage: true });
+    await openFocus(page);
   }
   await page.getByRole('button', { name: 'Cuidados', exact: true }).click();
   await expect(
@@ -133,7 +136,7 @@ test('internal routes preserve canonical focus time and keep Ending stable throu
   await expect(page).toHaveURL(/\/menu$/);
   await page.clock.runFor(6000);
   expect(calls.filter((c) => c === 'heartbeat').length).toBeGreaterThan(3);
-  await page.getByRole('link', { name: 'Começar', exact: true }).click();
+  await page.getByRole('link', { name: 'Carregar', exact: true }).click();
   await page.locator('a[href="/game/' + data.babySave + '"]').click();
   await expect(page.getByRole('button', { name: 'Pausar pelo seletor' })).toBeVisible();
   expect(seconds((await timer.textContent())!)).toBeLessThanOrEqual(seconds(previous));

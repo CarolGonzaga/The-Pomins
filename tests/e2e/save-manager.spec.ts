@@ -22,6 +22,7 @@ test('manages two new stories, resumes creation, birth, archive, restore and log
   const info=await(await request.get(fixture+'/__test/info')).json();await signIn(context,info.session);
   const prefix=`História ${testInfo.project.name} ${Date.now()}`;
   await page.goto('/saves');await expect(page.getByRole('heading',{name:'Suas partidas',exact:true})).toBeVisible();
+  await page.getByRole('article',{name:'Minha primeira partida',exact:true}).getByText('Opções',{exact:true}).click();
   await expect(page.getByRole('article',{name:'Minha primeira partida',exact:true}).getByRole('button',{name:'Arquivar',exact:true})).toBeDisabled();
   const initial=await(await page.request.get('/api/game-saves/'+info.one)).json();
   await page.getByRole('link',{name:'Nova partida',exact:true}).click();
@@ -49,7 +50,7 @@ test('manages two new stories, resumes creation, birth, archive, restore and log
   expect(a.data.room.credits).toEqual(initial.data.room.credits);expect(b.data.sessions).toEqual(initial.data.sessions);
   await page.goto('/saves');let card=page.getByRole('article',{name:prefix+' A',exact:true});
   await expect(card.getByRole('img',{name:'Aparência de Lua'})).toBeVisible();
-  await card.getByRole('button',{name:'Arquivar',exact:true}).click();await card.getByRole('button',{name:'Manter partida'}).click();await expect(card).toBeVisible();
+  await card.getByText('Opções',{exact:true}).click();await card.getByRole('button',{name:'Arquivar',exact:true}).click();await card.getByRole('button',{name:'Manter partida'}).click();await expect(card).toBeVisible();
   await card.getByRole('button',{name:'Arquivar',exact:true}).click();await card.getByRole('button',{name:'Confirmar arquivamento'}).click();await expect(card).toHaveCount(0);
   await page.getByRole('link',{name:'Arquivadas',exact:true}).click();card=page.getByRole('article',{name:prefix+' A',exact:true});await expect(card).toBeVisible();
   await page.goto('/game/'+first);await expect(page.getByRole('heading',{name:'Partida indisponível'})).toBeVisible();

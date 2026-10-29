@@ -32,7 +32,7 @@ test('creator and focus stay within 320px with no serious accessibility violatio
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 740 });
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Criar meu primeiro Pomin' }).click();
   await expect(page.getByRole('heading', { name: /Toda história começa/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -45,7 +45,7 @@ test('creator and focus stay within 320px with no serious accessibility violatio
     fullPage: true,
   });
   await seed(page);
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Abrir foco' }).click();
   await expect(page.getByRole('heading', { name: /Seu foco abre/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -58,7 +58,7 @@ test('creator and focus stay within 320px with no serious accessibility violatio
 });
 test('background and connectivity interrupt local focus without rewards', async ({ page }) => {
   await seed(page);
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Abrir foco' }).click();
   await page.context().setOffline(false);
   await page.bringToFront();
@@ -78,7 +78,7 @@ test('background and connectivity interrupt local focus without rewards', async 
 test('a full two minute local session completes without granting XP', async ({ page }) => {
   await seed(page);
   await page.clock.install();
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Abrir foco' }).click();
   await page.getByRole('button', { name: 'Iniciar foco' }).click();
   await page.clock.runFor(125_000);

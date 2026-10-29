@@ -105,8 +105,16 @@ const server = http.createServer(async (req, res) => {
     }
     if(req.url?.startsWith('/rest/v1/focus_sessions?')){
       const p=new URL(req.url,'http://fixture.test').searchParams;
+      if(p.get('select')==='status'&&p.get('user_id')==='eq.'+uid&&p.get('status')==='in.(active,paused,interrupted)')return send(200,(await f.db.query("select status from public.focus_sessions where user_id=$1 and status in ('active','paused','interrupted') limit 1",[uid])).rows);
       if(p.get('select')!=='id'||p.get('user_id')!=='eq.'+uid||p.get('status')!=='eq.active')return send(400,{});
       return send(200,(await f.db.query("select id from public.focus_sessions where user_id=$1 and status='active' limit 1",[uid])).rows);
+    }
+    if(req.url?.startsWith('/rest/v1/profiles?')){
+      const p=new URL(req.url,'http://fixture.test').searchParams;
+      if(p.get('user_id')||p.get('id')!=='eq.'+uid)return send(400,{});
+      if(req.method==='PATCH'){let text='';for await(const chunk of req)text+=chunk;const body=JSON.parse(text);if(typeof body.is_public!=='boolean'||Object.keys(body).length!==1)return send(400,{});await f.db.query('update public.profiles set is_public=$1 where id=$2',[body.is_public,uid]);}
+      const row=(await f.db.query('select id,nickname,is_public,account_xp from public.profiles where id=$1',[uid])).rows[0];
+      return send(200,req.headers.accept?.includes('vnd.pgrst.object')?row:[row]);
     }
     const name = req.url?.split('?')[0].split('/rest/v1/rpc/')[1];
     if (!rpcNames.has(name))

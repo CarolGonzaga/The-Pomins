@@ -1,8 +1,42 @@
-import {NextResponse} from 'next/server';
-import {createClient} from '@supabase/supabase-js';
-import {z} from 'zod';
-import {serverClient} from '@/lib/supabase/server';
-const headers={'Cache-Control':'private, no-store'};
+import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { z } from 'zod';
+import { serverClient } from '@/lib/supabase/server';
+const headers = { 'Cache-Control': 'private, no-store' };
+export async function GET() {
+  try {
+    const db = await serverClient(),
+      {
+        data: { user },
+        error,
+      } = await db.auth.getUser();
+    if (error || !user)
+      return NextResponse.json({ error: 'Entre novamente.' }, { status: 401, headers });
+    const [focus, profile] = await Promise.all([
+      db
+        .from('focus_sessions')
+        .select('status')
+        .eq('user_id', user.id)
+        .in('status', ['active', 'paused', 'interrupted'])
+        .limit(1),
+      db.from('profiles').select('is_public').eq('id', user.id).single(),
+    ]);
+    if (focus.error || profile.error) throw Error('Read failed');
+    return NextResponse.json(
+      {
+        userId: user.id,
+        focus: focus.data?.[0]?.status ?? null,
+        publicProfile: profile.data.is_public,
+      },
+      { headers },
+    );
+  } catch {
+    return NextResponse.json(
+      { error: 'Não foi possível conferir a conta.' },
+      { status: 503, headers },
+    );
+  }
+}
 const schema=z.discriminatedUnion('action',[
   z.object({action:z.literal('email'),email:z.email().max(254),password:z.string().min(1).max(256)}).strict(),
   z.object({action:z.literal('password-link')}).strict(),

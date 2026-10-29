@@ -1,3 +1,4 @@
+import { openGamePanel } from '../support/ui';
 import { test, expect } from '@playwright/test';
 const fixture = process.env.POMINS_SAVE_FIXTURE_ORIGIN;
 test.skip(!fixture, 'Only disposable SQL and simulated Auth.');
@@ -20,6 +21,7 @@ test('fixed-price care confirms first use, recovers a lost acknowledgement and n
     ]);
   await login();
   await page.goto('/game/' + info.babySave);
+  await openGamePanel(page, 'Cuidados');
   await expect(page.getByText('2 min disponíveis', { exact: true })).toBeVisible();
   await expect(page.getByRole('spinbutton', { name: 'Minutos para o cuidado' })).toHaveCount(0);
   const before = await (await page.request.get('/api/game-saves/' + info.babySave)).json();
@@ -65,6 +67,7 @@ test('fixed-price care confirms first use, recovers a lost acknowledgement and n
   await expect(page.getByRole('button', { name: 'Iniciar foco', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.reload();
+  await openGamePanel(page, 'Cuidados');
   await expect(page.getByRole('meter', { name: 'Saciedade', exact: true })).toHaveAttribute(
     'value',
     '99',
@@ -74,6 +77,7 @@ test('fixed-price care confirms first use, recovers a lost acknowledgement and n
   await expect(page).toHaveURL(/\/auth/);
   await login();
   await page.goto('/game/' + info.babySave);
+  await openGamePanel(page, 'Cuidados');
   await expect(page.getByText('0 min disponíveis', { exact: true })).toBeVisible();
   const after = await (await page.request.get('/api/game-saves/' + info.babySave)).json();
   expect(after.data.sessions).toEqual(before.data.sessions);

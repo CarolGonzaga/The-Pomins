@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PortalLink } from '../portal/navigation';
 import { ContinuityStatus } from '../continuity/continuity-status';
+import { ContextHelp } from '../portal/context-help';
 import './game-screen.css';
 import './nursery-screen.css';
 
@@ -38,27 +39,31 @@ export function GameScreen({
 }) {
   const [panel, setPanel] = useState(panels[0]?.id);
   const selectedPanel = panelId ?? panel;
+  const [panelOpen, setPanelOpen] = useState(mode === 'creation' || selectedPanel === 'birth' || !focus);
+  const tabs = useRef<HTMLElement>(null);
   const menu = useRef<HTMLDetailsElement>(null);
-  const more = useRef<HTMLDetailsElement>(null);
+  const primaryLabels = ['Cuidados', 'Atividades', 'Progresso', 'História', 'Moradores'];
+  const primary = panels
+    .filter((p) => primaryLabels.includes(p.label))
+    .sort((a, b) => primaryLabels.indexOf(a.label) - primaryLabels.indexOf(b.label));
+  const secondary = panels.filter((p) => !primaryLabels.includes(p.label));
+  const restoreControlFocus = () => {
+    const control = tabs.current?.querySelector<HTMLButtonElement>(
+      'button[aria-controls="game-panel-' + selectedPanel + '"]',
+    ) ?? menu.current?.querySelector('summary');
+    control?.focus({ preventScroll: true });
+  };
   const select = (id: string) => {
     if (onPanelChange) onPanelChange(id);
     else setPanel(id);
-    const wasOpen = more.current?.open;
-    more.current?.removeAttribute('open');
-    if (wasOpen) more.current?.querySelector('summary')?.focus();
-    // The nursery uses one document scroll; selecting a section must reveal its controls.
-    if (scene === 'nursery')
-      requestAnimationFrame(() => {
-        document
-          .getElementById(`game-panel-${id}`)
-          ?.scrollIntoView({ block: 'start', behavior: 'auto' });
-      });
+    setPanelOpen(true);
+    menu.current?.removeAttribute('open');
   };
   const panelButton = (p: GamePanel) => (
     <button
       key={p.id}
       type="button"
-      aria-expanded={selectedPanel === p.id}
+      aria-expanded={panelOpen && selectedPanel === p.id}
       aria-controls={`game-panel-${p.id}`}
       onClick={() => select(p.id)}
     >
@@ -70,6 +75,12 @@ export function GameScreen({
       id="main"
       className={`game-screen game-screen-${mode}${scene ? ' game-screen-nursery' : ''}`}
       data-testid="immersive-game"
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' && mode !== 'creation') {
+          setPanelOpen(false);
+          restoreControlFocus();
+        }
+      }}
     >
       <header className="game-screen-header">
         <div className="game-screen-back">
@@ -84,10 +95,14 @@ export function GameScreen({
         <details
           ref={menu}
           className="game-screen-menu"
+          onToggle={(e) => {
+            if (e.currentTarget.open && mode !== 'creation') setPanelOpen(false);
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
+              e.stopPropagation();
               menu.current?.removeAttribute('open');
-              menu.current?.querySelector('summary')?.focus();
+              menu.current?.querySelector('summary')?.focus({ preventScroll: true });
             }
           }}
         >
@@ -96,6 +111,7 @@ export function GameScreen({
             <PortalLink href="/menu">Menu principal</PortalLink>
             <PortalLink href="/settings">Configurações</PortalLink>
             <PortalLink href="/saves">Minhas partidas</PortalLink>
+            {secondary.map(panelButton)}
           </nav>
         </details>
       </header>
@@ -114,31 +130,31 @@ export function GameScreen({
         <section className="game-screen-focus" aria-label="Seu foco e saldo" hidden={!focus}>
           {focus}
           {focus && <ContinuityStatus />}
+          {focus && <ContextHelp />}
         </section>
         {message && (
           <div className="game-screen-notice" role="status">
             {message}
           </div>
         )}
-        <nav className="game-screen-tabs" aria-label="Controles do jogo">
-          {panels.filter((p) => !p.secondary).map(panelButton)}
-          {panels.some((p) => p.secondary) && (
-            <details
-              className="game-screen-more"
-              ref={more}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  more.current?.removeAttribute('open');
-                  more.current?.querySelector('summary')?.focus();
-                }
+        <nav ref={tabs} className="game-screen-tabs" aria-label="Controles do jogo" hidden={!primary.length}>
+          {primary.map(panelButton)}
+        </nav>
+        <div
+          className={`game-screen-panels${mode === 'creation' ? '' : ' game-panel-drawer'}`}
+          hidden={!panelOpen && mode !== 'creation'}
+        >
+          {mode !== 'creation' && (
+            <button
+              className="game-panel-close"
+              onClick={() => {
+                setPanelOpen(false);
+                restoreControlFocus();
               }}
             >
-              <summary>Mais opções</summary>
-              <div>{panels.filter((p) => p.secondary).map(panelButton)}</div>
-            </details>
+              Voltar ao jogo
+            </button>
           )}
-        </nav>
-        <div className="game-screen-panels">
           {panels.map((p) => (
             <section
               key={p.id}

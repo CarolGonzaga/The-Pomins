@@ -1,3 +1,4 @@
+import { openGamePanel, openFocus } from '../support/ui';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const fixture = process.env.POMINS_SAVE_FIXTURE_ORIGIN;
@@ -38,6 +39,7 @@ test('reconnection replaces cached needs with server-effective values despite a 
     await route.fulfill({ json: body });
   });
   await page.goto('/game/' + data.babySave);
+  await openGamePanel(page, 'Cuidados');
   await expect(page.locator('.baby-care-portrait > svg')).toHaveAttribute('data-mood', 'happy');
   await context.setOffline(true);
   await expect(
@@ -94,13 +96,16 @@ test('effective needs set all five accessible bands and the existing baby expres
   ] as const) {
     value = n;
     await page.goto('/game/' + data.babySave);
+  await openGamePanel(page, 'Cuidados');
     await page.reload();
+  await openGamePanel(page, 'Cuidados');
     await expect(page.locator('.baby-care-portrait > svg')).toHaveAttribute('data-mood', mood);
     await expect(page.locator(`meter[data-band="${band}"]`)).toHaveCount(5);
   }
   value = 100;
   critical = true;
   await page.reload();
+  await openGamePanel(page, 'Cuidados');
   await expect(page.locator('.baby-care-portrait > svg')).toHaveAttribute('data-mood', 'unhappy');
   await expect(page.getByRole('meter', { name: 'Saciedade', exact: true })).toHaveAttribute(
     'aria-valuetext',
@@ -152,11 +157,13 @@ test('rotation arrows never capture touches and idle hint disappears during focu
     });
   });
   await page.goto('/game/' + data.babySave);
+  await openGamePanel(page, 'Cuidados');
   await expect(page.locator('.dial-rotation-hint')).toBeVisible();
   expect(
     await page.locator('.dial-rotation-hint').evaluate((el) => getComputedStyle(el).pointerEvents),
   ).toBe('none');
   await expect(page.getByText('Gire para ajustar o tempo', { exact: true })).toBeVisible();
+  await openFocus(page);
   await page.getByRole('button', { name: 'Iniciar foco', exact: true }).click();
   await expect(page.locator('.dial-rotation-hint')).toHaveCount(0);
   await expect(page.getByText('Duração preservada na sessão', { exact: true })).toBeVisible();

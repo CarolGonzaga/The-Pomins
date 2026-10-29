@@ -37,7 +37,7 @@ export function NewSaveForm({userId}:{userId:string}){
   }
   return <form onSubmit={create} className={`${styles.form} ${styles.panel}`}>
     <label>Nome da partida<input required minLength={2} maxLength={80} autoComplete="off" value={name} readOnly={pending!==null} onChange={e=>setName(e.target.value)}/></label>
-    <p>Uma residência independente e uma nova história. Seus minutos de foco continuam compartilhados pela conta.</p>
+    <p>Seu saldo é compartilhado; esta partida terá seus próprios personagens.</p>
     <details><summary>Constância compartilhada · regras em preparação</summary><ContinuityRules /></details>
     {pending && <p role="status">Há um pedido guardado. Continuar recupera a mesma partida, mesmo após uma falha de conexão.</p>}
     {error && <p role="alert">{error}</p>}

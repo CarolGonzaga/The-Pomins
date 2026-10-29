@@ -66,7 +66,7 @@ test('auth fields remain legible and errors announce themselves on small screens
     'aria-invalid',
     'true',
   );
-  await page.getByRole('button', { name: 'Começar minha história' }).click();
+  await page.getByRole('button', { name: 'Cadastro' }).click();
   await expect(page.getByLabel('Confirme a senha', { exact: true })).toBeVisible();
   await noHorizontalOverflow(page);
   await axe(page);
@@ -85,7 +85,9 @@ test('portal and settings reflow at phone and desktop sizes without hiding field
       await noHorizontalOverflow(page);
     }
     await page.setViewportSize(sizes[2]);
+    if (path === '/settings') await page.getByRole('button',{name:'Aparência e acessibilidade',exact:true}).click();
     if (path === '/rules') {
+      await page.getByText('Tutorial completo',{exact:true}).click();
       await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
       await page.getByRole('button', { name: 'Próximo', exact: true }).click();
       await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '2');
@@ -386,7 +388,7 @@ test('legacy birth stays readable and keyboard reachable on a narrow screen', as
   page,
 }, info) => {
   await page.setViewportSize(sizes[0]);
-  await page.goto('/');
+  await page.goto('/explore');
   await page.getByRole('button', { name: 'Criar meu primeiro Pomin' }).click();
   const name = page.getByRole('textbox', { name: 'Nome do seu Pomin' });
   await name.fill('Pequena Aurora');
