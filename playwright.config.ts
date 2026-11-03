@@ -5,6 +5,8 @@ const production = process.env.POMINS_TEST_SERVER_MODE === 'production';
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: false,
+  // Files share the disposable gateway. Keep local and CI concurrency identical.
+  workers: 1,
   timeout: 40000,
   use: { baseURL, trace: 'retain-on-failure' },
   webServer: {

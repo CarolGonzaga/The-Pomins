@@ -85,12 +85,19 @@ test('extended appearance changes pixels in every pose/direction and survives sa
   });
 });
 
-test('walking preview advances frames without changing its composition', async ({ page }) => {
+test('walking preview advances frames without changing its composition', async ({ page }, info) => {
   await page.clock.install();
   await page.goto('/play');
   const preview = page.locator('.adult-editor .lpc-preview');
-  await page.getByRole('button', { name: 'Ondulado', exact: true }).click();
+  // A painted atlas proves hydration and asynchronous image composition finished.
+  await expect(preview).toHaveAttribute('data-ready-key', /"hair":"plain"/);
+  const hair = page.getByRole('button', { name: 'Ondulado', exact: true });
+  if (info.project.use.hasTouch) await hair.tap();
+  else await hair.click();
+  await expect(hair).toHaveAttribute('aria-pressed', 'true');
+  await expect(preview).toHaveAttribute('data-ready-key', /"hair":"wavy"/);
   await page.getByRole('button', { name: 'Caminhar', exact: true }).click();
+  await expect(preview).toHaveAttribute('data-clip', 'walk');
   await expect(preview).toHaveAttribute('data-ready-key', /"hair":"wavy"/);
   const key = await preview.getAttribute('data-ready-key');
   const frame = await preview.getAttribute('data-frame');
